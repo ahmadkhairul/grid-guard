@@ -9,7 +9,9 @@ interface GameBoardProps {
   enemies: Enemy[];
   selectedDefender: DefenderType | null;
   onCellClick: (x: number, y: number) => void;
+  onDrop: (x: number, y: number, type: DefenderType) => void;
   attackAnimations: Set<string>;
+  isDragging: boolean;
 }
 
 export const GameBoard = memo(({ 
@@ -17,7 +19,9 @@ export const GameBoard = memo(({
   enemies, 
   selectedDefender, 
   onCellClick,
-  attackAnimations 
+  onDrop,
+  attackAnimations,
+  isDragging,
 }: GameBoardProps) => {
   const grid = [];
   
@@ -32,7 +36,9 @@ export const GameBoard = memo(({
           defender={defender}
           selectedDefender={selectedDefender}
           onCellClick={onCellClick}
+          onDrop={onDrop}
           isAttacking={defender ? attackAnimations.has(defender.id) : false}
+          isDragging={isDragging}
         />
       );
     }

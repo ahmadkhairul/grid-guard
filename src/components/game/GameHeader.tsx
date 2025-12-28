@@ -1,5 +1,5 @@
 import { memo } from 'react';
-import { Coins, Heart, Waves, Play, Pause, RotateCcw } from 'lucide-react';
+import { Coins, Heart, Waves, Play, Pause, RotateCcw, HelpCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface GameHeaderProps {
@@ -10,6 +10,7 @@ interface GameHeaderProps {
   onStart: () => void;
   onPause: () => void;
   onReset: () => void;
+  onOpenTutorial: () => void;
 }
 
 export const GameHeader = memo(({ 
@@ -19,7 +20,8 @@ export const GameHeader = memo(({
   isPlaying, 
   onStart, 
   onPause, 
-  onReset 
+  onReset,
+  onOpenTutorial,
 }: GameHeaderProps) => {
   return (
     <div className="flex items-center justify-between bg-card rounded-xl p-4 border border-border">
@@ -64,6 +66,14 @@ export const GameHeader = memo(({
             {lives <= 0 ? 'Game Over' : 'Start'}
           </Button>
         )}
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={onOpenTutorial}
+          className="border-secondary/50 text-secondary hover:bg-secondary/20"
+        >
+          <HelpCircle className="w-5 h-5" />
+        </Button>
         <Button
           variant="outline"
           size="icon"
