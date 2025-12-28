@@ -1,8 +1,10 @@
-import { DefenderConfig, Position } from '@/types/game';
+import { DefenderConfig, Position, DefenderType } from '@/types/game';
 
 export const GRID_WIDTH = 10;
 export const GRID_HEIGHT = 7;
 export const CELL_SIZE = 64;
+export const MAX_WAVE = 10;
+export const MAX_DEFENDERS_PER_TYPE = 3;
 
 // Path that enemies follow (loops around the grid)
 export const ENEMY_PATH: Position[] = [
@@ -27,7 +29,7 @@ export const ENEMY_PATH: Position[] = [
   { x: 9, y: 2 },
 ];
 
-export const DEFENDER_CONFIGS: Record<string, DefenderConfig> = {
+export const DEFENDER_CONFIGS: Record<DefenderType, DefenderConfig> = {
   warrior: {
     type: 'warrior',
     name: 'Warrior',
@@ -66,4 +68,11 @@ export const isPathCell = (x: number, y: number): boolean => {
 
 export const getPathCellIndex = (x: number, y: number): number => {
   return ENEMY_PATH.findIndex(pos => pos.x === x && pos.y === y);
+};
+
+// Boss immunity phases based on HP percentage
+export const getBossImmunity = (hpPercentage: number): DefenderType | undefined => {
+  if (hpPercentage > 66) return 'warrior';      // First 33% immune to warrior
+  if (hpPercentage > 33) return 'archer';       // Second 33% immune to archer
+  return 'mage';                                 // Last 33% immune to mage
 };

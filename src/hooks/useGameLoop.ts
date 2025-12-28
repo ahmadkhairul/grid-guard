@@ -1,11 +1,11 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { GameState, Enemy, Defender, DefenderType } from '@/types/game';
-import { ENEMY_PATH, DEFENDER_CONFIGS, isPathCell } from '@/config/gameConfig';
+import { ENEMY_PATH, DEFENDER_CONFIGS, isPathCell, MAX_WAVE, MAX_DEFENDERS_PER_TYPE, getBossImmunity } from '@/config/gameConfig';
 
 const generateEnemyId = () => `enemy-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 const generateDefenderId = () => `defender-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
-export const useGameLoop = () => {
+export const useGameLoop = (onAttack?: (defenderType: DefenderType) => void) => {
   const [gameState, setGameState] = useState<GameState>({
     coins: 100,
     wave: 1,
@@ -14,12 +14,18 @@ export const useGameLoop = () => {
     lives: 10,
     isPlaying: false,
     selectedDefender: null,
+    isLoading: true,
+    gameWon: false,
   });
 
   const lastUpdateRef = useRef<number>(Date.now());
   const enemySpawnTimerRef = useRef<number>(0);
   const enemiesSpawnedRef = useRef<number>(0);
   const attackAnimationsRef = useRef<Set<string>>(new Set());
+
+  const finishLoading = useCallback(() => {
+    setGameState(prev => ({ ...prev, isLoading: false }));
+  }, []);
 
   const startGame = useCallback(() => {
     setGameState(prev => ({ ...prev, isPlaying: true }));
@@ -39,12 +45,18 @@ export const useGameLoop = () => {
       lives: 10,
       isPlaying: false,
       selectedDefender: null,
+      isLoading: false,
+      gameWon: false,
     });
     enemiesSpawnedRef.current = 0;
   }, []);
 
   const selectDefender = useCallback((type: DefenderType | null) => {
     setGameState(prev => ({ ...prev, selectedDefender: type }));
+  }, []);
+
+  const getDefenderCount = useCallback((type: DefenderType, defenders: Defender[]) => {
+    return defenders.filter(d => d.type === type).length;
   }, []);
 
   const placeDefender = useCallback((x: number, y: number) => {
@@ -54,6 +66,10 @@ export const useGameLoop = () => {
       
       const config = DEFENDER_CONFIGS[prev.selectedDefender];
       if (prev.coins < config.cost) return prev;
+      
+      // Check max defenders per type
+      const currentCount = getDefenderCount(prev.selectedDefender, prev.defenders);
+      if (currentCount >= MAX_DEFENDERS_PER_TYPE) return prev;
       
       // Check if cell already has a defender
       const hasDefender = prev.defenders.some(
@@ -79,7 +95,7 @@ export const useGameLoop = () => {
         selectedDefender: null,
       };
     });
-  }, []);
+  }, [getDefenderCount]);
 
   const upgradeDefender = useCallback((defenderId: string) => {
     setGameState(prev => {
@@ -123,32 +139,38 @@ export const useGameLoop = () => {
         let newLives = prev.lives;
 
         // Spawn enemies
-        const enemiesPerWave = 5 + prev.wave * 2;
+        const isBossWave = prev.wave === MAX_WAVE;
+        const enemiesPerWave = isBossWave ? 1 : 5 + prev.wave * 2;
         enemySpawnTimerRef.current += deltaTime;
         
         if (enemySpawnTimerRef.current >= 2000 && enemiesSpawnedRef.current < enemiesPerWave) {
           enemySpawnTimerRef.current = 0;
           enemiesSpawnedRef.current++;
           
+          const isBoss = isBossWave && enemiesSpawnedRef.current === 1;
+          const baseHp = isBoss ? 500 + prev.wave * 50 : 50 + prev.wave * 20;
+          
           const newEnemy: Enemy = {
             id: generateEnemyId(),
             position: { ...ENEMY_PATH[0] },
-            hp: 50 + prev.wave * 20,
-            maxHp: 50 + prev.wave * 20,
+            hp: baseHp,
+            maxHp: baseHp,
             pathIndex: 0,
-            speed: 0.5 + prev.wave * 0.1,
-            reward: 10 + prev.wave * 2,
+            speed: isBoss ? 0.3 : 0.5 + prev.wave * 0.1,
+            reward: isBoss ? 200 : 10 + prev.wave * 2,
+            type: isBoss ? 'boss' : 'normal',
+            immuneTo: isBoss ? getBossImmunity(100) : undefined,
           };
           newEnemies.push(newEnemy);
         }
 
-        // Move enemies along path
+        // Move enemies along path and update boss immunity
         newEnemies = newEnemies.map(enemy => {
           const nextPathIndex = enemy.pathIndex + enemy.speed * (deltaTime / 1000);
           
           if (nextPathIndex >= ENEMY_PATH.length - 1) {
             // Enemy reached the end
-            newLives--;
+            newLives -= enemy.type === 'boss' ? 5 : 1;
             return null;
           }
 
@@ -158,13 +180,19 @@ export const useGameLoop = () => {
           const currentPos = ENEMY_PATH[currentIndex];
           const nextPos = ENEMY_PATH[Math.min(currentIndex + 1, ENEMY_PATH.length - 1)];
           
-          return {
+          // Update boss immunity based on HP
+          const immuneTo = enemy.type === 'boss' 
+            ? getBossImmunity((enemy.hp / enemy.maxHp) * 100) 
+            : undefined;
+          
+          const updatedEnemy: Enemy = {
             ...enemy,
             pathIndex: nextPathIndex,
             position: {
               x: currentPos.x + (nextPos.x - currentPos.x) * progress,
               y: currentPos.y + (nextPos.y - currentPos.y) * progress,
             },
+            immuneTo,
           };
         }).filter((e): e is Enemy => e !== null);
 
@@ -172,8 +200,11 @@ export const useGameLoop = () => {
         const updatedDefenders = prev.defenders.map(defender => {
           if (now - defender.lastAttack < defender.attackSpeed) return defender;
 
-          // Find enemies in range
+          // Find enemies in range (excluding immune ones for boss)
           const enemyInRange = newEnemies.find(enemy => {
+            // Check if boss is immune to this defender type
+            if (enemy.immuneTo === defender.type) return false;
+            
             const dx = enemy.position.x - defender.position.x;
             const dy = enemy.position.y - defender.position.y;
             const distance = Math.sqrt(dx * dx + dy * dy);
@@ -183,6 +214,11 @@ export const useGameLoop = () => {
           if (enemyInRange) {
             attackAnimationsRef.current.add(defender.id);
             setTimeout(() => attackAnimationsRef.current.delete(defender.id), 300);
+            
+            // Trigger attack sound
+            if (onAttack) {
+              onAttack(defender.type);
+            }
             
             // Deal damage
             newEnemies = newEnemies.map(e =>
@@ -204,7 +240,20 @@ export const useGameLoop = () => {
 
         // Check for wave completion
         let newWave = prev.wave;
+        let gameWon = prev.gameWon;
+        
         if (newEnemies.length === 0 && enemiesSpawnedRef.current >= enemiesPerWave) {
+          if (prev.wave >= MAX_WAVE) {
+            // Player won!
+            gameWon = true;
+            return {
+              ...prev,
+              enemies: [],
+              coins: newCoins,
+              isPlaying: false,
+              gameWon: true,
+            };
+          }
           newWave++;
           enemiesSpawnedRef.current = 0;
           newCoins += 25 * prev.wave; // Wave completion bonus
@@ -227,12 +276,13 @@ export const useGameLoop = () => {
           coins: newCoins,
           lives: newLives,
           wave: newWave,
+          gameWon,
         };
       });
     }, 50);
 
     return () => clearInterval(gameLoop);
-  }, [gameState.isPlaying]);
+  }, [gameState.isPlaying, onAttack]);
 
   return {
     gameState,
@@ -242,6 +292,8 @@ export const useGameLoop = () => {
     selectDefender,
     placeDefender,
     upgradeDefender,
+    finishLoading,
     attackAnimations: attackAnimationsRef.current,
+    getDefenderCount,
   };
 };
