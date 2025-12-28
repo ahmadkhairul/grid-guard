@@ -1,4 +1,4 @@
-import { memo } from 'react';
+import { memo, DragEvent, useState } from 'react';
 import { isPathCell } from '@/config/gameConfig';
 import { Defender, DefenderType } from '@/types/game';
 import { DEFENDER_CONFIGS } from '@/config/gameConfig';
@@ -10,7 +10,9 @@ interface GameCellProps {
   defender: Defender | undefined;
   selectedDefender: DefenderType | null;
   onCellClick: (x: number, y: number) => void;
+  onDrop: (x: number, y: number, type: DefenderType) => void;
   isAttacking: boolean;
+  isDragging: boolean;
 }
 
 export const GameCell = memo(({ 
@@ -19,10 +21,33 @@ export const GameCell = memo(({
   defender, 
   selectedDefender, 
   onCellClick,
-  isAttacking 
+  onDrop,
+  isAttacking,
+  isDragging,
 }: GameCellProps) => {
+  const [isDragOver, setIsDragOver] = useState(false);
   const isPath = isPathCell(x, y);
-  const canPlace = selectedDefender && !isPath && !defender;
+  const canPlace = (selectedDefender || isDragging) && !isPath && !defender;
+
+  const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
+    if (!canPlace) return;
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+    setIsDragOver(true);
+  };
+
+  const handleDragLeave = () => {
+    setIsDragOver(false);
+  };
+
+  const handleDrop = (e: DragEvent<HTMLDivElement>) => {
+    e.preventDefault();
+    setIsDragOver(false);
+    const type = e.dataTransfer.getData('defenderType') as DefenderType;
+    if (type && canPlace) {
+      onDrop(x, y, type);
+    }
+  };
 
   return (
     <div
@@ -30,14 +55,18 @@ export const GameCell = memo(({
         'game-cell w-16 h-16',
         isPath && 'game-cell-path',
         canPlace && 'game-cell-placeable',
+        isDragOver && 'game-cell-dragover',
       )}
       onClick={() => canPlace && onCellClick(x, y)}
+      onDragOver={handleDragOver}
+      onDragLeave={handleDragLeave}
+      onDrop={handleDrop}
     >
       {defender && (
         <div 
           className={cn(
             'defender-unit w-12 h-12 text-2xl',
-            isAttacking && 'animate-attack'
+            isAttacking && 'animate-defender-attack'
           )}
         >
           {DEFENDER_CONFIGS[defender.type].emoji}

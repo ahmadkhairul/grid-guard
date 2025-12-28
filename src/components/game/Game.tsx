@@ -1,8 +1,11 @@
+import { useState, useCallback } from 'react';
 import { useGameLoop } from '@/hooks/useGameLoop';
 import { GameBoard } from './GameBoard';
 import { GameHeader } from './GameHeader';
 import { ShopPanel } from './ShopPanel';
 import { DefendersList } from './DefendersList';
+import { TutorialModal } from './TutorialModal';
+import { DefenderType } from '@/types/game';
 
 export const Game = () => {
   const {
@@ -15,6 +18,24 @@ export const Game = () => {
     upgradeDefender,
     attackAnimations,
   } = useGameLoop();
+
+  const [showTutorial, setShowTutorial] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+
+  const handleDragStart = useCallback((type: DefenderType) => {
+    setIsDragging(true);
+    selectDefender(type);
+  }, [selectDefender]);
+
+  const handleDragEnd = useCallback(() => {
+    setIsDragging(false);
+  }, []);
+
+  const handleDrop = useCallback((x: number, y: number, type: DefenderType) => {
+    selectDefender(type);
+    placeDefender(x, y);
+    setIsDragging(false);
+  }, [selectDefender, placeDefender]);
 
   return (
     <div className="min-h-screen bg-background p-4 md:p-8">
@@ -33,6 +54,7 @@ export const Game = () => {
           onStart={startGame}
           onPause={pauseGame}
           onReset={resetGame}
+          onOpenTutorial={() => setShowTutorial(true)}
         />
         
         {/* Game Area */}
@@ -44,7 +66,9 @@ export const Game = () => {
               enemies={gameState.enemies}
               selectedDefender={gameState.selectedDefender}
               onCellClick={placeDefender}
+              onDrop={handleDrop}
               attackAnimations={attackAnimations}
+              isDragging={isDragging}
             />
           </div>
           
@@ -54,6 +78,8 @@ export const Game = () => {
               coins={gameState.coins}
               selectedDefender={gameState.selectedDefender}
               onSelectDefender={selectDefender}
+              onDragStart={handleDragStart}
+              onDragEnd={handleDragEnd}
             />
             <DefendersList
               defenders={gameState.defenders}
@@ -79,6 +105,9 @@ export const Game = () => {
             </div>
           </div>
         )}
+
+        {/* Tutorial Modal */}
+        <TutorialModal open={showTutorial} onOpenChange={setShowTutorial} />
       </div>
     </div>
   );
