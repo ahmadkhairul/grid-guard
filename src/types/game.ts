@@ -3,6 +3,8 @@ export interface Position {
   y: number;
 }
 
+export type EnemyType = 'normal' | 'boss';
+
 export interface Enemy {
   id: string;
   position: Position;
@@ -11,6 +13,8 @@ export interface Enemy {
   pathIndex: number;
   speed: number;
   reward: number;
+  type: EnemyType;
+  immuneTo?: DefenderType; // Current immunity based on HP phase
 }
 
 export interface Defender {
@@ -45,4 +49,6 @@ export interface GameState {
   lives: number;
   isPlaying: boolean;
   selectedDefender: DefenderType | null;
+  isLoading: boolean;
+  gameWon: boolean;
 }
