@@ -19,6 +19,7 @@ export const useGameLoop = (onAttack?: (defenderType: DefenderType) => void) => 
     selectedDefender: null,
     isLoading: true,
     gameWon: false,
+    isPaused: false,
   });
 
   const [isSpeedUp, setIsSpeedUp] = useState(false);
@@ -38,12 +39,12 @@ export const useGameLoop = (onAttack?: (defenderType: DefenderType) => void) => 
   }, []);
 
   const startGame = useCallback(() => {
-    setGameState(prev => ({ ...prev, isPlaying: true }));
+    setGameState(prev => ({ ...prev, isPlaying: true, isPaused: false }));
     enemiesSpawnedRef.current = 0;
   }, []);
 
   const pauseGame = useCallback(() => {
-    setGameState(prev => ({ ...prev, isPlaying: false }));
+    setGameState(prev => ({ ...prev, isPlaying: false, isPaused: true }));
   }, []);
 
   const resetGame = useCallback(() => {
@@ -57,6 +58,7 @@ export const useGameLoop = (onAttack?: (defenderType: DefenderType) => void) => 
       selectedDefender: null,
       isLoading: false,
       gameWon: false,
+      isPaused: false,
     });
     enemiesSpawnedRef.current = 0;
   }, []);

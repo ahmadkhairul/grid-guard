@@ -54,4 +54,5 @@ export interface GameState {
   selectedDefender: DefenderType | null;
   isLoading: boolean;
   gameWon: boolean;
+  isPaused: boolean;
 }

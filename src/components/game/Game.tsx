@@ -136,7 +136,7 @@ export const Game = () => {
         </div>
 
         {/* Pause Modal */}
-        {!gameState.isPlaying && !gameState.isLoading && gameState.lives > 0 && !gameState.gameWon && gameState.defenders.length > 0 && (
+        {gameState.isPaused && (
           <div className="fixed inset-0 bg-background/60 backdrop-blur-sm flex items-center justify-center z-40">
             <div className="bg-card border border-border rounded-2xl p-8 text-center max-w-md mx-4 shadow-lg">
               <Pause className="w-16 h-16 mx-auto text-primary mb-4" />
