@@ -1,5 +1,5 @@
 import { memo } from 'react';
-import { Coins, Heart, Waves, Play, Pause, RotateCcw, HelpCircle } from 'lucide-react';
+import { Coins, Heart, Waves, Play, Pause, RotateCcw, HelpCircle, FastForward } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface GameHeaderProps {
@@ -7,21 +7,25 @@ interface GameHeaderProps {
   lives: number;
   wave: number;
   isPlaying: boolean;
+  isSpeedUp: boolean;
   onStart: () => void;
   onPause: () => void;
   onReset: () => void;
   onOpenTutorial: () => void;
+  onToggleSpeed: () => void;
 }
 
 export const GameHeader = memo(({ 
   coins, 
   lives, 
   wave, 
-  isPlaying, 
+  isPlaying,
+  isSpeedUp,
   onStart, 
   onPause, 
   onReset,
   onOpenTutorial,
+  onToggleSpeed,
 }: GameHeaderProps) => {
   return (
     <div className="flex items-center justify-between bg-card rounded-xl p-4 border border-border">
@@ -66,6 +70,15 @@ export const GameHeader = memo(({
             {lives <= 0 ? 'Game Over' : 'Start'}
           </Button>
         )}
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={onToggleSpeed}
+          className={isSpeedUp ? "border-accent bg-accent/20 text-accent hover:bg-accent/30" : "border-muted-foreground/50 text-muted-foreground hover:bg-muted"}
+          title={isSpeedUp ? "Normal Speed" : "Fast Forward (2x)"}
+        >
+          <FastForward className="w-5 h-5" />
+        </Button>
         <Button
           variant="outline"
           size="icon"

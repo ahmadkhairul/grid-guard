@@ -18,10 +18,17 @@ export const useGameLoop = (onAttack?: (defenderType: DefenderType) => void) => 
     gameWon: false,
   });
 
+  const [isSpeedUp, setIsSpeedUp] = useState(false);
+  const speedMultiplier = isSpeedUp ? 2 : 1;
+
   const lastUpdateRef = useRef<number>(Date.now());
   const enemySpawnTimerRef = useRef<number>(0);
   const enemiesSpawnedRef = useRef<number>(0);
   const attackAnimationsRef = useRef<Set<string>>(new Set());
+
+  const toggleSpeed = useCallback(() => {
+    setIsSpeedUp(prev => !prev);
+  }, []);
 
   const finishLoading = useCallback(() => {
     setGameState(prev => ({ ...prev, isLoading: false }));
@@ -166,7 +173,7 @@ export const useGameLoop = (onAttack?: (defenderType: DefenderType) => void) => 
 
         // Move enemies along path and update boss immunity
         newEnemies = newEnemies.map(enemy => {
-          const nextPathIndex = enemy.pathIndex + enemy.speed * (deltaTime / 1000);
+          const nextPathIndex = enemy.pathIndex + enemy.speed * speedMultiplier * (deltaTime / 1000);
 
           if (nextPathIndex >= ENEMY_PATH.length - 1) {
             // Enemy reached the end
@@ -200,7 +207,7 @@ export const useGameLoop = (onAttack?: (defenderType: DefenderType) => void) => 
 
         // Defenders attack
         const updatedDefenders = prev.defenders.map(defender => {
-          if (now - defender.lastAttack < defender.attackSpeed) return defender;
+          if (now - defender.lastAttack < defender.attackSpeed / speedMultiplier) return defender;
 
           // Find enemies in range (excluding immune ones for boss)
           const enemyInRange = newEnemies.find(enemy => {
@@ -222,12 +229,22 @@ export const useGameLoop = (onAttack?: (defenderType: DefenderType) => void) => 
               onAttack(defender.type);
             }
 
-            // Deal damage
+            // Deal damage and mark as hit
             newEnemies = newEnemies.map(e =>
               e.id === enemyInRange.id
-                ? { ...e, hp: e.hp - defender.damage }
+                ? { ...e, hp: e.hp - defender.damage, isHit: true }
                 : e
             );
+
+            // Clear hit indicator after a short delay
+            setTimeout(() => {
+              setGameState(prev => ({
+                ...prev,
+                enemies: prev.enemies.map(e =>
+                  e.id === enemyInRange.id ? { ...e, isHit: false } : e
+                ),
+              }));
+            }, 200);
 
             return { ...defender, lastAttack: now };
           }
@@ -284,7 +301,7 @@ export const useGameLoop = (onAttack?: (defenderType: DefenderType) => void) => 
     }, 50);
 
     return () => clearInterval(gameLoop);
-  }, [gameState.isPlaying, onAttack]);
+  }, [gameState.isPlaying, onAttack, speedMultiplier]);
 
   return {
     gameState,
@@ -297,5 +314,7 @@ export const useGameLoop = (onAttack?: (defenderType: DefenderType) => void) => 
     finishLoading,
     attackAnimations: attackAnimationsRef.current,
     getDefenderCount,
+    isSpeedUp,
+    toggleSpeed,
   };
 };
