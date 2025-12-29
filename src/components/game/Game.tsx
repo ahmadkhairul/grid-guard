@@ -22,6 +22,7 @@ export const Game = () => {
     selectDefender,
     placeDefender,
     upgradeDefender,
+    sellDefender,
     finishLoading,
     attackAnimations,
     isSpeedUp,
@@ -129,6 +130,7 @@ export const Game = () => {
               defenders={gameState.defenders}
               coins={gameState.coins}
               onUpgrade={upgradeDefender}
+              onSell={sellDefender}
             />
           </div>
         </div>

@@ -216,3 +216,12 @@
 .animate-hit {
   animation: hit-flash 0.2s ease-out, damage-shake 0.2s ease-in-out;
 }
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+
+.animate-float {
+  animation: float 1.5s ease-in-out infinite;
+}

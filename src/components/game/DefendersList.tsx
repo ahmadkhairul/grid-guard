@@ -1,16 +1,17 @@
 import { memo } from 'react';
 import { Defender } from '@/types/game';
 import { DEFENDER_CONFIGS } from '@/config/gameConfig';
-import { ArrowUp, Coins } from 'lucide-react';
+import { ArrowUp, Coins, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface DefendersListProps {
   defenders: Defender[];
   coins: number;
   onUpgrade: (defenderId: string) => void;
+  onSell: (defenderId: string) => void;
 }
 
-export const DefendersList = memo(({ defenders, coins, onUpgrade }: DefendersListProps) => {
+export const DefendersList = memo(({ defenders, coins, onUpgrade, onSell }: DefendersListProps) => {
   if (defenders.length === 0) {
     return (
       <div className="bg-card rounded-xl p-4 border border-border">
@@ -31,6 +32,7 @@ export const DefendersList = memo(({ defenders, coins, onUpgrade }: DefendersLis
           const config = DEFENDER_CONFIGS[defender.type];
           const upgradeCost = config.upgradeCost * defender.level;
           const canUpgrade = coins >= upgradeCost;
+          const sellValue = Math.floor(config.sellValue * defender.level);
           
           return (
             <div 
@@ -48,17 +50,31 @@ export const DefendersList = memo(({ defenders, coins, onUpgrade }: DefendersLis
                   DMG: {Math.round(defender.damage)}
                 </p>
               </div>
-              <Button
-                size="sm"
-                variant="ghost"
-                disabled={!canUpgrade}
-                onClick={() => onUpgrade(defender.id)}
-                className="h-8 px-2 text-xs hover:bg-primary/20 hover:text-primary disabled:opacity-50"
-              >
-                <ArrowUp className="w-3 h-3 mr-1" />
-                <Coins className="w-3 h-3 mr-1" />
-                {upgradeCost}
-              </Button>
+              <div className="flex items-center gap-1">
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  disabled={!canUpgrade}
+                  onClick={() => onUpgrade(defender.id)}
+                  className="h-7 px-2 text-xs hover:bg-primary/20 hover:text-primary disabled:opacity-50"
+                  title={`Upgrade for ${upgradeCost} coins`}
+                >
+                  <ArrowUp className="w-3 h-3 mr-1" />
+                  <Coins className="w-3 h-3 mr-0.5" />
+                  {upgradeCost}
+                </Button>
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => onSell(defender.id)}
+                  className="h-7 px-2 text-xs hover:bg-destructive/20 hover:text-destructive"
+                  title={`Sell for ${sellValue} coins`}
+                >
+                  <Trash2 className="w-3 h-3 mr-1" />
+                  <Coins className="w-3 h-3 mr-0.5" />
+                  {sellValue}
+                </Button>
+              </div>
             </div>
           );
         })}
