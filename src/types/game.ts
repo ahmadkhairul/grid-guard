@@ -3,7 +3,7 @@ export interface Position {
   y: number;
 }
 
-export type EnemyType = 'normal' | 'boss';
+export type EnemyType = 'normal' | 'boss' | 'fast' | 'tank' | 'flying';
 
 export interface Enemy {
   id: string;
@@ -14,8 +14,9 @@ export interface Enemy {
   speed: number;
   reward: number;
   type: EnemyType;
-  immuneTo?: DefenderType; // Current immunity based on HP phase
-  isHit?: boolean; // Shows hit indicator when attacked
+  immuneTo?: DefenderType;
+  isHit?: boolean;
+  isFlying?: boolean;
 }
 
 export interface Defender {
@@ -40,6 +41,7 @@ export interface DefenderConfig {
   attackSpeed: number;
   emoji: string;
   upgradeCost: number;
+  sellValue: number;
 }
 
 export interface GameState {

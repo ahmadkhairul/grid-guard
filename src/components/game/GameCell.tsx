@@ -1,7 +1,6 @@
 import { memo, DragEvent, useState } from 'react';
-import { isPathCell } from '@/config/gameConfig';
+import { isPathCell, DEFENDER_CONFIGS, CELL_SIZE } from '@/config/gameConfig';
 import { Defender, DefenderType } from '@/types/game';
-import { DEFENDER_CONFIGS } from '@/config/gameConfig';
 import { cn } from '@/lib/utils';
 
 interface GameCellProps {
@@ -13,6 +12,7 @@ interface GameCellProps {
   onDrop: (x: number, y: number, type: DefenderType) => void;
   isAttacking: boolean;
   isDragging: boolean;
+  showAoePreview: boolean;
 }
 
 export const GameCell = memo(({ 
@@ -24,6 +24,7 @@ export const GameCell = memo(({
   onDrop,
   isAttacking,
   isDragging,
+  showAoePreview,
 }: GameCellProps) => {
   const [isDragOver, setIsDragOver] = useState(false);
   const isPath = isPathCell(x, y);
@@ -49,10 +50,19 @@ export const GameCell = memo(({
     }
   };
 
+  // Get AOE range for preview
+  const getAoeRange = () => {
+    if (!showAoePreview || !selectedDefender) return 0;
+    return DEFENDER_CONFIGS[selectedDefender].range;
+  };
+
+  const aoeRange = getAoeRange();
+  const aoeSize = aoeRange * CELL_SIZE * 2;
+
   return (
     <div
       className={cn(
-        'game-cell w-16 h-16',
+        'game-cell w-16 h-16 relative',
         isPath && 'game-cell-path',
         canPlace && 'game-cell-placeable',
         isDragOver && 'game-cell-dragover',
@@ -62,6 +72,19 @@ export const GameCell = memo(({
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
     >
+      {/* AOE Preview Circle */}
+      {showAoePreview && canPlace && aoeRange > 0 && (
+        <div 
+          className="absolute pointer-events-none z-20 rounded-full border-2 border-primary/60 bg-primary/10 animate-pulse"
+          style={{
+            width: aoeSize,
+            height: aoeSize,
+            left: `calc(50% - ${aoeSize / 2}px)`,
+            top: `calc(50% - ${aoeSize / 2}px)`,
+          }}
+        />
+      )}
+
       {defender && (
         <div 
           className={cn(
