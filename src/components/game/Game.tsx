@@ -27,6 +27,7 @@ export const Game = () => {
     attackAnimations,
     isSpeedUp,
     toggleSpeed,
+    resumeGame,
   } = useGameLoop(playAttackSound);
 
   const [showTutorial, setShowTutorial] = useState(false);
@@ -141,7 +142,13 @@ export const Game = () => {
             <div className="bg-card border border-border rounded-2xl p-8 text-center max-w-md mx-4 shadow-lg">
               <Pause className="w-16 h-16 mx-auto text-primary mb-4" />
               <h2 className="font-game text-2xl text-foreground mb-2">GAME PAUSED</h2>
-              <p className="text-muted-foreground">Click Start to continue playing</p>
+              <p className="text-muted-foreground">Click Resume to continue playing</p>
+              <button
+                onClick={resumeGame}
+                className="bg-primary text-primary-foreground font-semibold px-8 py-3 rounded-lg hover:bg-primary/90 transition-colors"
+              >
+                Resume
+              </button>
             </div>
           </div>
         )}

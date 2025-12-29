@@ -47,6 +47,10 @@ export const useGameLoop = (onAttack?: (defenderType: DefenderType) => void) => 
     setGameState(prev => ({ ...prev, isPlaying: false, isPaused: true }));
   }, []);
 
+  const resumeGame = useCallback(() => {
+    setGameState(prev => ({ ...prev, isPlaying: true, isPaused: false }));
+  }, []);
+
   const resetGame = useCallback(() => {
     setGameState({
       coins: 100,
@@ -328,6 +332,7 @@ export const useGameLoop = (onAttack?: (defenderType: DefenderType) => void) => 
     startGame,
     pauseGame,
     resetGame,
+    resumeGame,
     selectDefender,
     placeDefender,
     upgradeDefender,
