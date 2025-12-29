@@ -63,14 +63,14 @@ export const useGameLoop = (onAttack?: (defenderType: DefenderType) => void) => 
     setGameState(prev => {
       if (!prev.selectedDefender) return prev;
       if (isPathCell(x, y)) return prev;
-      
+
       const config = DEFENDER_CONFIGS[prev.selectedDefender];
       if (prev.coins < config.cost) return prev;
-      
+
       // Check max defenders per type
       const currentCount = getDefenderCount(prev.selectedDefender, prev.defenders);
       if (currentCount >= MAX_DEFENDERS_PER_TYPE) return prev;
-      
+
       // Check if cell already has a defender
       const hasDefender = prev.defenders.some(
         d => d.position.x === x && d.position.y === y
@@ -101,10 +101,10 @@ export const useGameLoop = (onAttack?: (defenderType: DefenderType) => void) => 
     setGameState(prev => {
       const defender = prev.defenders.find(d => d.id === defenderId);
       if (!defender) return prev;
-      
+
       const config = DEFENDER_CONFIGS[defender.type];
       const upgradeCost = config.upgradeCost * defender.level;
-      
+
       if (prev.coins < upgradeCost) return prev;
 
       return {
@@ -113,11 +113,11 @@ export const useGameLoop = (onAttack?: (defenderType: DefenderType) => void) => 
         defenders: prev.defenders.map(d =>
           d.id === defenderId
             ? {
-                ...d,
-                level: d.level + 1,
-                damage: d.damage + config.damage * 0.5,
-                range: d.range + 0.2,
-              }
+              ...d,
+              level: d.level + 1,
+              damage: d.damage + config.damage * 0.5,
+              range: d.range + 0.2,
+            }
             : d
         ),
       };
@@ -142,14 +142,14 @@ export const useGameLoop = (onAttack?: (defenderType: DefenderType) => void) => 
         const isBossWave = prev.wave === MAX_WAVE;
         const enemiesPerWave = isBossWave ? 1 : 5 + prev.wave * 2;
         enemySpawnTimerRef.current += deltaTime;
-        
+
         if (enemySpawnTimerRef.current >= 2000 && enemiesSpawnedRef.current < enemiesPerWave) {
           enemySpawnTimerRef.current = 0;
           enemiesSpawnedRef.current++;
-          
+
           const isBoss = isBossWave && enemiesSpawnedRef.current === 1;
           const baseHp = isBoss ? 500 + prev.wave * 50 : 50 + prev.wave * 20;
-          
+
           const newEnemy: Enemy = {
             id: generateEnemyId(),
             position: { ...ENEMY_PATH[0] },
@@ -167,7 +167,7 @@ export const useGameLoop = (onAttack?: (defenderType: DefenderType) => void) => 
         // Move enemies along path and update boss immunity
         newEnemies = newEnemies.map(enemy => {
           const nextPathIndex = enemy.pathIndex + enemy.speed * (deltaTime / 1000);
-          
+
           if (nextPathIndex >= ENEMY_PATH.length - 1) {
             // Enemy reached the end
             newLives -= enemy.type === 'boss' ? 5 : 1;
@@ -176,15 +176,15 @@ export const useGameLoop = (onAttack?: (defenderType: DefenderType) => void) => 
 
           const currentIndex = Math.floor(nextPathIndex);
           const progress = nextPathIndex - currentIndex;
-          
+
           const currentPos = ENEMY_PATH[currentIndex];
           const nextPos = ENEMY_PATH[Math.min(currentIndex + 1, ENEMY_PATH.length - 1)];
-          
+
           // Update boss immunity based on HP
-          const immuneTo = enemy.type === 'boss' 
-            ? getBossImmunity((enemy.hp / enemy.maxHp) * 100) 
+          const immuneTo = enemy.type === 'boss'
+            ? getBossImmunity((enemy.hp / enemy.maxHp) * 100)
             : undefined;
-          
+
           const updatedEnemy: Enemy = {
             ...enemy,
             pathIndex: nextPathIndex,
@@ -194,6 +194,8 @@ export const useGameLoop = (onAttack?: (defenderType: DefenderType) => void) => 
             },
             immuneTo,
           };
+
+          return updatedEnemy;
         }).filter((e): e is Enemy => e !== null);
 
         // Defenders attack
@@ -204,7 +206,7 @@ export const useGameLoop = (onAttack?: (defenderType: DefenderType) => void) => 
           const enemyInRange = newEnemies.find(enemy => {
             // Check if boss is immune to this defender type
             if (enemy.immuneTo === defender.type) return false;
-            
+
             const dx = enemy.position.x - defender.position.x;
             const dy = enemy.position.y - defender.position.y;
             const distance = Math.sqrt(dx * dx + dy * dy);
@@ -214,12 +216,12 @@ export const useGameLoop = (onAttack?: (defenderType: DefenderType) => void) => 
           if (enemyInRange) {
             attackAnimationsRef.current.add(defender.id);
             setTimeout(() => attackAnimationsRef.current.delete(defender.id), 300);
-            
+
             // Trigger attack sound
             if (onAttack) {
               onAttack(defender.type);
             }
-            
+
             // Deal damage
             newEnemies = newEnemies.map(e =>
               e.id === enemyInRange.id
@@ -241,7 +243,7 @@ export const useGameLoop = (onAttack?: (defenderType: DefenderType) => void) => 
         // Check for wave completion
         let newWave = prev.wave;
         let gameWon = prev.gameWon;
-        
+
         if (newEnemies.length === 0 && enemiesSpawnedRef.current >= enemiesPerWave) {
           if (prev.wave >= MAX_WAVE) {
             // Player won!
