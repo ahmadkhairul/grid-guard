@@ -207,3 +207,12 @@
 .animate-damage {
   animation: damage-shake 0.2s ease-in-out;
 }
+
+@keyframes hit-flash {
+  0%, 100% { filter: brightness(1); }
+  50% { filter: brightness(1.5) saturate(1.5); }
+}
+
+.animate-hit {
+  animation: hit-flash 0.2s ease-out, damage-shake 0.2s ease-in-out;
+}

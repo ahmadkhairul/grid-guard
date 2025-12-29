@@ -10,6 +10,7 @@ interface EnemyUnitProps {
 export const EnemyUnit = memo(({ enemy }: EnemyUnitProps) => {
   const hpPercentage = (enemy.hp / enemy.maxHp) * 100;
   const isBoss = enemy.type === 'boss';
+  const isHit = enemy.isHit;
   
   // Get immunity indicator
   const getImmunityEmoji = () => {
@@ -21,7 +22,8 @@ export const EnemyUnit = memo(({ enemy }: EnemyUnitProps) => {
     <div
       className={cn(
         "enemy-unit animate-spawn",
-        isBoss ? "w-14 h-14 text-2xl" : "w-10 h-10 text-lg"
+        isBoss ? "w-14 h-14 text-2xl" : "w-10 h-10 text-lg",
+        isHit && "animate-hit"
       )}
       style={{
         left: enemy.position.x * CELL_SIZE + CELL_SIZE / 2 - (isBoss ? 28 : 20),
@@ -30,6 +32,13 @@ export const EnemyUnit = memo(({ enemy }: EnemyUnitProps) => {
       }}
     >
       <span className="z-10">{isBoss ? '👹' : '👾'}</span>
+      
+      {/* Hit Indicator */}
+      {isHit && (
+        <div className="absolute -right-1 -top-1 w-5 h-5 flex items-center justify-center text-sm animate-bounce">
+          💥
+        </div>
+      )}
       
       {/* Boss Immunity Indicator */}
       {isBoss && enemy.immuneTo && (

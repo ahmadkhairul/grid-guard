@@ -9,7 +9,7 @@ import { TutorialModal } from './TutorialModal';
 import { LoadingScreen } from './LoadingScreen';
 import { DefenderType } from '@/types/game';
 import { MAX_WAVE } from '@/config/gameConfig';
-import { Volume2, VolumeX } from 'lucide-react';
+import { Volume2, VolumeX, Pause } from 'lucide-react';
 
 export const Game = () => {
   const { playAttackSound, playBgMusic, stopBgMusic, toggleMute, isMuted, musicPlaying } = useAudio();
@@ -24,6 +24,8 @@ export const Game = () => {
     upgradeDefender,
     finishLoading,
     attackAnimations,
+    isSpeedUp,
+    toggleSpeed,
   } = useGameLoop(playAttackSound);
 
   const [showTutorial, setShowTutorial] = useState(false);
@@ -90,10 +92,12 @@ export const Game = () => {
           lives={gameState.lives}
           wave={gameState.wave}
           isPlaying={gameState.isPlaying}
+          isSpeedUp={isSpeedUp}
           onStart={startGame}
           onPause={pauseGame}
           onReset={resetGame}
           onOpenTutorial={() => setShowTutorial(true)}
+          onToggleSpeed={toggleSpeed}
         />
         
         {/* Game Area */}
@@ -128,6 +132,17 @@ export const Game = () => {
             />
           </div>
         </div>
+
+        {/* Pause Modal */}
+        {!gameState.isPlaying && !gameState.isLoading && gameState.lives > 0 && !gameState.gameWon && gameState.defenders.length > 0 && (
+          <div className="fixed inset-0 bg-background/60 backdrop-blur-sm flex items-center justify-center z-40">
+            <div className="bg-card border border-border rounded-2xl p-8 text-center max-w-md mx-4 shadow-lg">
+              <Pause className="w-16 h-16 mx-auto text-primary mb-4" />
+              <h2 className="font-game text-2xl text-foreground mb-2">GAME PAUSED</h2>
+              <p className="text-muted-foreground">Click Start to continue playing</p>
+            </div>
+          </div>
+        )}
         
         {/* Game Over Overlay */}
         {gameState.lives <= 0 && (

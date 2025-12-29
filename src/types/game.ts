@@ -15,6 +15,7 @@ export interface Enemy {
   reward: number;
   type: EnemyType;
   immuneTo?: DefenderType; // Current immunity based on HP phase
+  isHit?: boolean; // Shows hit indicator when attacked
 }
 
 export interface Defender {
