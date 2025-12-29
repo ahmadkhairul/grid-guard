@@ -11,7 +11,7 @@ interface GameBoardProps {
   onCellClick: (x: number, y: number) => void;
   onDrop: (x: number, y: number, type: DefenderType) => void;
   attackAnimations: Set<string>;
-  isDragging: boolean;
+  draggedDefender: DefenderType | null;
 }
 
 export const GameBoard = memo(({ 
@@ -21,7 +21,7 @@ export const GameBoard = memo(({
   onCellClick,
   onDrop,
   attackAnimations,
-  isDragging,
+  draggedDefender,
 }: GameBoardProps) => {
   const [hoveredCell, setHoveredCell] = useState<{ x: number; y: number } | null>(null);
   
@@ -46,8 +46,8 @@ export const GameBoard = memo(({
             onCellClick={onCellClick}
             onDrop={onDrop}
             isAttacking={defender ? attackAnimations.has(defender.id) : false}
-            isDragging={isDragging}
-            showAoePreview={isHovered && (!!selectedDefender || isDragging)}
+            draggedDefender={draggedDefender}
+            showAoePreview={isHovered && (!!selectedDefender || !!draggedDefender)}
           />
         </div>
       );
@@ -55,7 +55,7 @@ export const GameBoard = memo(({
   }
 
   return (
-    <div className="relative bg-card rounded-xl p-4 shadow-2xl border border-border overflow-visible">
+    <div className="relative bg-card rounded-xl p-4 shadow-2xl border border-border overflow-hidden">
       <div 
         className="grid gap-1"
         style={{ 

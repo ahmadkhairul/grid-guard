@@ -31,7 +31,7 @@ export const Game = () => {
   } = useGameLoop(playAttackSound);
 
   const [showTutorial, setShowTutorial] = useState(false);
-  const [isDragging, setIsDragging] = useState(false);
+  const [draggedDefender, setDraggedDefender] = useState<DefenderType | null>(null);
 
   // Start/stop background music based on game state
   useEffect(() => {
@@ -43,18 +43,18 @@ export const Game = () => {
   }, [gameState.isPlaying, isMuted, playBgMusic, stopBgMusic]);
 
   const handleDragStart = useCallback((type: DefenderType) => {
-    setIsDragging(true);
+    setDraggedDefender(type);
     selectDefender(type);
   }, [selectDefender]);
 
   const handleDragEnd = useCallback(() => {
-    setIsDragging(false);
+    setDraggedDefender(null);
   }, []);
 
   const handleDrop = useCallback((x: number, y: number, type: DefenderType) => {
     selectDefender(type);
     placeDefender(x, y);
-    setIsDragging(false);
+    setDraggedDefender(null);
   }, [selectDefender, placeDefender]);
 
   if (gameState.isLoading) {
@@ -105,7 +105,7 @@ export const Game = () => {
         {/* Game Area */}
         <div className="mt-6 flex flex-col lg:flex-row gap-6">
           {/* Game Board */}
-          <div className="flex-1 flex justify-center overflow-x-auto">
+          <div className="flex-1 flex justify-center">
             <GameBoard
               defenders={gameState.defenders}
               enemies={gameState.enemies}
@@ -113,7 +113,7 @@ export const Game = () => {
               onCellClick={placeDefender}
               onDrop={handleDrop}
               attackAnimations={attackAnimations}
-              isDragging={isDragging}
+              draggedDefender={draggedDefender}
             />
           </div>
           
@@ -141,8 +141,8 @@ export const Game = () => {
           <div className="fixed inset-0 bg-background/60 backdrop-blur-sm flex items-center justify-center z-40">
             <div className="bg-card border border-border rounded-2xl p-8 text-center max-w-md mx-4 shadow-lg">
               <Pause className="w-16 h-16 mx-auto text-primary mb-4" />
-              <h2 className="font-game text-2xl text-foreground mb-2">GAME PAUSED</h2>
-              <p className="text-muted-foreground">Click Resume to continue playing</p>
+              <h2 className="font-game text-3xl text-primary mb-4">GAME PAUSED</h2>
+              <p className="text-muted-foreground mb-6">Click Resume to continue playing</p>
               <button
                 onClick={resumeGame}
                 className="bg-primary text-primary-foreground font-semibold px-8 py-3 rounded-lg hover:bg-primary/90 transition-colors"

@@ -11,7 +11,7 @@ interface GameCellProps {
   onCellClick: (x: number, y: number) => void;
   onDrop: (x: number, y: number, type: DefenderType) => void;
   isAttacking: boolean;
-  isDragging: boolean;
+  draggedDefender: DefenderType | null;
   showAoePreview: boolean;
 }
 
@@ -23,12 +23,12 @@ export const GameCell = memo(({
   onCellClick,
   onDrop,
   isAttacking,
-  isDragging,
+  draggedDefender,
   showAoePreview,
 }: GameCellProps) => {
   const [isDragOver, setIsDragOver] = useState(false);
   const isPath = isPathCell(x, y);
-  const canPlace = (selectedDefender || isDragging) && !isPath && !defender;
+  const canPlace = (selectedDefender || draggedDefender) && !isPath && !defender;
 
   const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
     if (!canPlace) return;
@@ -50,10 +50,13 @@ export const GameCell = memo(({
     }
   };
 
-  // Get AOE range for preview
   const getAoeRange = () => {
-    if (!showAoePreview || !selectedDefender) return 0;
-    return DEFENDER_CONFIGS[selectedDefender].range;
+    // Show AOE preview when hovering (showAoePreview) OR when dragging over this cell (isDragOver)
+    const shouldShow = showAoePreview || isDragOver;
+    if (!shouldShow) return 0;
+    const defenderType = draggedDefender || selectedDefender;
+    if (!defenderType) return 0;
+    return DEFENDER_CONFIGS[defenderType].range;
   };
 
   const aoeRange = getAoeRange();
@@ -72,8 +75,8 @@ export const GameCell = memo(({
       onDragLeave={handleDragLeave}
       onDrop={handleDrop}
     >
-      {/* AOE Preview Circle */}
-      {showAoePreview && canPlace && aoeRange > 0 && (
+
+      {(showAoePreview || isDragOver) && canPlace && aoeRange > 0 && (
         <div 
           className="absolute pointer-events-none z-20 rounded-full border-2 border-primary/60 bg-primary/10 animate-pulse"
           style={{

@@ -48,6 +48,8 @@ export const useGameLoop = (onAttack?: (defenderType: DefenderType) => void) => 
   }, []);
 
   const resumeGame = useCallback(() => {
+    // Reset lastUpdateRef to prevent huge deltaTime after pause
+    lastUpdateRef.current = Date.now();
     setGameState(prev => ({ ...prev, isPlaying: true, isPaused: false }));
   }, []);
 
