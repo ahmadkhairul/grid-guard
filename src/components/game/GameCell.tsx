@@ -13,6 +13,8 @@ interface GameCellProps {
   isAttacking: boolean;
   draggedDefender: DefenderType | null;
   showAoePreview: boolean;
+  onDragEnter: () => void;
+  onDragLeave: () => void;
 }
 
 export const GameCell = memo(({ 
@@ -25,8 +27,9 @@ export const GameCell = memo(({
   isAttacking,
   draggedDefender,
   showAoePreview,
+  onDragEnter,
+  onDragLeave,
 }: GameCellProps) => {
-  const [isDragOver, setIsDragOver] = useState(false);
   const isPath = isPathCell(x, y);
   const canPlace = (selectedDefender || draggedDefender) && !isPath && !defender;
 
@@ -34,16 +37,16 @@ export const GameCell = memo(({
     if (!canPlace) return;
     e.preventDefault();
     e.dataTransfer.dropEffect = 'move';
-    setIsDragOver(true);
+    onDragEnter();
   };
 
   const handleDragLeave = () => {
-    setIsDragOver(false);
+    onDragLeave();
   };
 
   const handleDrop = (e: DragEvent<HTMLDivElement>) => {
     e.preventDefault();
-    setIsDragOver(false);
+    onDragLeave();
     const type = e.dataTransfer.getData('defenderType') as DefenderType;
     if (type && canPlace) {
       onDrop(x, y, type);
@@ -51,9 +54,7 @@ export const GameCell = memo(({
   };
 
   const getAoeRange = () => {
-    // Show AOE preview when hovering (showAoePreview) OR when dragging over this cell (isDragOver)
-    const shouldShow = showAoePreview || isDragOver;
-    if (!shouldShow) return 0;
+    if (!showAoePreview) return 0;
     const defenderType = draggedDefender || selectedDefender;
     if (!defenderType) return 0;
     return DEFENDER_CONFIGS[defenderType].range;
@@ -68,7 +69,7 @@ export const GameCell = memo(({
         'game-cell w-16 h-16 relative',
         isPath && 'game-cell-path',
         canPlace && 'game-cell-placeable',
-        isDragOver && 'game-cell-dragover',
+        showAoePreview && 'game-cell-dragover',
       )}
       onClick={() => canPlace && onCellClick(x, y)}
       onDragOver={handleDragOver}
@@ -76,9 +77,9 @@ export const GameCell = memo(({
       onDrop={handleDrop}
     >
 
-      {(showAoePreview || isDragOver) && canPlace && aoeRange > 0 && (
+      {(showAoePreview) && canPlace && (selectedDefender || draggedDefender) && aoeRange > 0 && (
         <div 
-          className="absolute pointer-events-none z-20 rounded-full border-2 border-primary/60 bg-primary/10 animate-pulse"
+          className="absolute pointer-events-none z-10 rounded-sm border-2 border-primary/60 bg-primary/10 animate-pulse"
           style={{
             width: aoeSize,
             height: aoeSize,
@@ -86,6 +87,13 @@ export const GameCell = memo(({
             top: `calc(50% - ${aoeSize / 2}px)`,
           }}
         />
+      )}
+
+      {/* Ghost Defender Preview */}
+      {(showAoePreview) && canPlace && (selectedDefender || draggedDefender) && (
+        <div className="absolute inset-0 flex items-center justify-center opacity-50 text-2xl z-20 pointer-events-none">
+          {DEFENDER_CONFIGS[draggedDefender || selectedDefender!].emoji}
+        </div>
       )}
 
       {defender && (

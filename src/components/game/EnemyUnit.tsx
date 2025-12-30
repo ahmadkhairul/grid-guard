@@ -30,6 +30,8 @@ export const EnemyUnit = memo(({ enemy }: EnemyUnitProps) => {
   const typeLabel = getTypeLabel();
   const size = isBoss ? 14 : enemy.type === 'tank' ? 12 : 10;
   
+  const GAP_SIZE = 4; // gap-1 is 4px
+  
   return (
     <div
       className={cn(
@@ -39,8 +41,8 @@ export const EnemyUnit = memo(({ enemy }: EnemyUnitProps) => {
         enemy.isFlying && "animate-float"
       )}
       style={{
-        left: enemy.position.x * CELL_SIZE + CELL_SIZE / 2 - (size * 2),
-        top: enemy.position.y * CELL_SIZE + CELL_SIZE / 2 - (size * 2),
+        left: enemy.position.x * (CELL_SIZE + GAP_SIZE) + CELL_SIZE / 2 - (size * 2),
+        top: enemy.position.y * (CELL_SIZE + GAP_SIZE) + CELL_SIZE / 2 - (size * 2),
         transition: 'left 0.05s linear, top 0.05s linear',
       }}
     >

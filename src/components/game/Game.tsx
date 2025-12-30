@@ -12,7 +12,7 @@ import { MAX_WAVE } from '@/config/gameConfig';
 import { Volume2, VolumeX, Pause } from 'lucide-react';
 
 export const Game = () => {
-  const { playAttackSound, playBgMusic, stopBgMusic, toggleMute, isMuted, musicPlaying } = useAudio();
+  const { playAttackSound, playBgMusic, stopBgMusic, toggleMute, isMuted } = useAudio();
   
   const {
     gameState,

@@ -1,7 +1,7 @@
 import { memo } from 'react';
 import { Defender } from '@/types/game';
 import { DEFENDER_CONFIGS } from '@/config/gameConfig';
-import { ArrowUp, Coins, Trash2 } from 'lucide-react';
+import { ArrowUp, Trash2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface DefendersListProps {
@@ -77,7 +77,6 @@ export const DefendersList = memo(({ defenders, coins, onUpgrade, onSell }: Defe
                       title={`Upgrade for ${upgradeCost} coins`}
                     >
                       <ArrowUp className="w-3 h-3 mr-1" />
-                      <Coins className="w-3 h-3 mr-0.5" />
                       {upgradeCost}
                     </Button>
                     <Button
@@ -88,7 +87,6 @@ export const DefendersList = memo(({ defenders, coins, onUpgrade, onSell }: Defe
                       title={`Sell for ${sellValue} coins`}
                     >
                       <Trash2 className="w-3 h-3 mr-1" />
-                      <Coins className="w-3 h-3 mr-0.5" />
                       {sellValue}
                     </Button>
                   </div>
