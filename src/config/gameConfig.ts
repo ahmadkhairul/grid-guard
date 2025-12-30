@@ -41,9 +41,9 @@ export const DEFENDER_CONFIGS: Record<DefenderType, DefenderConfig> = {
     type: 'warrior',
     name: 'Warrior',
     cost: 50,
-    damage: 15,
+    damage: 20,
     range: 1.5,
-    attackSpeed: 1000,
+    attackSpeed: 800,
     emoji: '⚔️',
     upgradeCost: 30,
     sellValue: 25,
@@ -51,22 +51,22 @@ export const DEFENDER_CONFIGS: Record<DefenderType, DefenderConfig> = {
   archer: {
     type: 'archer',
     name: 'Archer',
-    cost: 75,
-    damage: 10,
-    range: 3,
+    cost: 90,
+    damage: 12,
+    range: 3.5,
     attackSpeed: 800,
     emoji: '🏹',
     upgradeCost: 40,
     sellValue: 40,
   },
-  mage: {
-    type: 'mage',
-    name: 'Mage',
+  miner: {
+    type: 'miner',
+    name: 'Miner',
     cost: 100,
-    damage: 25,
-    range: 2.5,
-    attackSpeed: 1500,
-    emoji: '🔮',
+    damage: 0,
+    range: 0,
+    attackSpeed: 5000,
+    emoji: '⛏️',
     upgradeCost: 50,
     sellValue: 50,
   },
@@ -83,10 +83,10 @@ export interface EnemyConfig {
 
 export const ENEMY_CONFIGS: Record<EnemyType, EnemyConfig> = {
   normal: { emoji: '👾', hpMultiplier: 1, speedMultiplier: 1, rewardMultiplier: 1 },
-  fast: { emoji: '🏃', hpMultiplier: 0.5, speedMultiplier: 2, rewardMultiplier: 1.5 },
-  tank: { emoji: '🛡️', hpMultiplier: 3, speedMultiplier: 0.5, rewardMultiplier: 2 },
+  fast: { emoji: '🏃', hpMultiplier: 0.5, speedMultiplier: 2.2, rewardMultiplier: 1.5 },
+  tank: { emoji: '🛡️', hpMultiplier: 4, speedMultiplier: 0.5, rewardMultiplier: 2 },
   flying: { emoji: '🦅', hpMultiplier: 0.8, speedMultiplier: 1.2, rewardMultiplier: 1.8, isFlying: true },
-  boss: { emoji: '👹', hpMultiplier: 10, speedMultiplier: 0.3, rewardMultiplier: 20 },
+  boss: { emoji: '👹', hpMultiplier: 15, speedMultiplier: 0.3, rewardMultiplier: 20 },
 };
 
 export const isPathCell = (x: number, y: number): boolean => {
@@ -101,7 +101,7 @@ export const getPathCellIndex = (x: number, y: number): number => {
 export const getBossImmunity = (hpPercentage: number): DefenderType | undefined => {
   if (hpPercentage > 66) return 'warrior';
   if (hpPercentage > 33) return 'archer';
-  return 'mage';
+  return 'warrior';
 };
 
 // Get random enemy type based on wave (higher waves = more variety)

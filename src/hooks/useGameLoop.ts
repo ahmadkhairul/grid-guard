@@ -159,9 +159,9 @@ export const useGameLoop = (onAttack?: (defenderType: DefenderType) => void) => 
   // Create enemy based on type
   const createEnemy = (type: EnemyType, wave: number): Enemy => {
     const config = ENEMY_CONFIGS[type];
-    const baseHp = 50 + wave * 20;
+    const baseHp = 60 + wave * 35;
     const baseSpeed = 0.5 + wave * 0.1;
-    const baseReward = 10 + wave * 2;
+    const baseReward = 8 + wave * 1;
 
     const startPath = config.isFlying ? FLYING_PATH[0] : ENEMY_PATH[0];
 
@@ -198,7 +198,10 @@ export const useGameLoop = (onAttack?: (defenderType: DefenderType) => void) => 
         const enemiesPerWave = isBossWave ? 1 : 5 + prev.wave * 2;
         enemySpawnTimerRef.current += deltaTime;
 
-        if (enemySpawnTimerRef.current >= 2000 && enemiesSpawnedRef.current < enemiesPerWave) {
+        // Dynamic spawn rate: faster spawns in later waves (min 500ms)
+        const spawnInterval = Math.max(500, 2000 - (prev.wave * 150));
+
+        if (enemySpawnTimerRef.current >= spawnInterval && enemiesSpawnedRef.current < enemiesPerWave) {
           enemySpawnTimerRef.current = 0;
           enemiesSpawnedRef.current++;
 
@@ -241,6 +244,16 @@ export const useGameLoop = (onAttack?: (defenderType: DefenderType) => void) => 
         // Defenders attack
         const updatedDefenders = prev.defenders.map(defender => {
           if (now - defender.lastAttack < defender.attackSpeed / speedMultiplier) return defender;
+
+          if (defender.type === 'miner') {
+            onAttack?.(defender.type); // Trigger mining animation/sound
+
+            // Visual feedback for mining could be handled here or in the component via onAttack
+            // For now, we just add coins directly
+            newCoins += 15;
+
+            return { ...defender, lastAttack: now };
+          }
 
           const enemyInRange = newEnemies.find(enemy => {
             if (enemy.immuneTo === defender.type) return false;

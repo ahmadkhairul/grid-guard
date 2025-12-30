@@ -30,7 +30,7 @@ export interface Defender {
   type: DefenderType;
 }
 
-export type DefenderType = 'warrior' | 'archer' | 'mage';
+export type DefenderType = 'warrior' | 'archer' | 'miner';
 
 export interface DefenderConfig {
   type: DefenderType;
