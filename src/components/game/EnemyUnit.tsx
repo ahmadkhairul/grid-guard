@@ -30,7 +30,7 @@ export const EnemyUnit = memo(({ enemy }: EnemyUnitProps) => {
   const typeLabel = getTypeLabel();
   const size = isBoss ? 14 : enemy.type === 'tank' ? 12 : 10;
   
-  const GAP_SIZE = 4; // gap-1 is 4px
+  const GAP_SIZE = 4; // gap-1 is 4px 
   
   return (
     <div
