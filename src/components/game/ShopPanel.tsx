@@ -1,6 +1,6 @@
 import { memo, DragEvent } from 'react';
 import { DefenderType, Defender } from '@/types/game';
-import { DEFENDER_CONFIGS, MAX_DEFENDERS_PER_TYPE } from '@/config/gameConfig';
+import { DEFENDER_CONFIGS, MAX_PER_TYPE } from '@/config/gameConfig';
 import { cn } from '@/lib/utils';
 import { Coins, GripVertical } from 'lucide-react';
 
@@ -70,7 +70,7 @@ export const ShopPanel = memo(({
           const canAfford = coins >= config.cost;
           const isSelected = selectedDefender === config.type;
           const currentCount = getDefenderCount(config.type);
-          const atMaxCapacity = currentCount >= MAX_DEFENDERS_PER_TYPE;
+          const atMaxCapacity = currentCount >= MAX_PER_TYPE;
           const isDisabled = !canAfford || atMaxCapacity;
           
           return (
@@ -109,7 +109,7 @@ export const ShopPanel = memo(({
                     "text-[10px] px-1 py-0.5 rounded font-medium",
                     atMaxCapacity ? "bg-destructive/20 text-destructive" : "bg-muted text-muted-foreground"
                   )}>
-                    {currentCount}/{MAX_DEFENDERS_PER_TYPE}
+                    {currentCount}/{MAX_PER_TYPE}
                   </span>
                 </div>
                 <div className="flex items-center justify-between">

@@ -8,6 +8,7 @@ import { DefendersList } from './DefendersList';
 import { TutorialModal } from './TutorialModal';
 import { LoadingScreen } from './LoadingScreen';
 import { MobileBottomBar } from './MobileBottomBar';
+import { AchievementToast } from './AchievementToast';
 import { DefenderType } from '@/types/game';
 import { MAX_WAVE } from '@/config/gameConfig';
 import { Volume2, VolumeX, Pause } from 'lucide-react';
@@ -29,6 +30,7 @@ export const Game = () => {
     isSpeedUp,
     toggleSpeed,
     resumeGame,
+    dismissAchievement,
   } = useGameLoop(playAttackSound);
 
   const [showTutorial, setShowTutorial] = useState(false);
@@ -121,6 +123,7 @@ export const Game = () => {
                 onDrop={handleDrop}
                 attackAnimations={attackAnimations}
                 draggedDefender={draggedDefender}
+                floatingTexts={gameState.floatingTexts || []}
               />
             </div>
           </div>
@@ -210,6 +213,12 @@ export const Game = () => {
 
       {/* Tutorial Modal */}
       <TutorialModal open={showTutorial} onOpenChange={setShowTutorial} />
+
+      {/* Achievement Toast */}
+      <AchievementToast 
+        achievement={gameState.lastUnlockedAchievement} 
+        onClose={dismissAchievement} 
+      />
     </div>
   );
 };

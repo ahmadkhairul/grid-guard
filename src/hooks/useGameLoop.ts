@@ -1,12 +1,9 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
-import { GameState, Enemy, Defender, DefenderType, EnemyType } from '@/types/game';
-import { ENEMY_PATH, DEFENDER_CONFIGS, isPathCell, MAX_WAVE, MAX_MINERS, getBossImmunity, ENEMY_CONFIGS, getRandomEnemyType, GRID_WIDTH } from '@/config/gameConfig';
+import { GameState, Enemy, Defender, DefenderType, EnemyType, ACHIEVEMENTS, Achievement } from '@/types/game';
+import { ENEMY_PATH, FLYING_PATH, DEFENDER_CONFIGS, isPathCell, MAX_WAVE, MAX_PER_TYPE, MAX_LEVEL, getBossImmunity, ENEMY_CONFIGS, getRandomEnemyType, GRID_WIDTH } from '@/config/gameConfig';
 
 const generateEnemyId = () => `enemy-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 const generateDefenderId = () => `defender-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-
-// Flying path - straight line across the top
-const FLYING_PATH = Array.from({ length: GRID_WIDTH + 1 }, (_, i) => ({ x: i, y: 0 }));
 
 export const useGameLoop = (onAttack?: (defenderType: DefenderType) => void) => {
   const [gameState, setGameState] = useState<GameState>({
@@ -20,6 +17,10 @@ export const useGameLoop = (onAttack?: (defenderType: DefenderType) => void) => 
     isLoading: true,
     gameWon: false,
     isPaused: false,
+    totalMined: 0,
+    unlockedAchievements: [],
+    lastUnlockedAchievement: null,
+    floatingTexts: [],
   });
 
   const [isSpeedUp, setIsSpeedUp] = useState(false);
@@ -65,6 +66,10 @@ export const useGameLoop = (onAttack?: (defenderType: DefenderType) => void) => 
       isLoading: false,
       gameWon: false,
       isPaused: false,
+      totalMined: 0,
+      unlockedAchievements: [], // Persist? No, resets on new game for now (User request imply "in one session"?) "Mine 100k gold through the game" - ambiguous. Let's reset for now or keep separate persistent storage. User said "100k gold through the game" - assume per run? Or total? "Single game" implies run.
+      lastUnlockedAchievement: null,
+      floatingTexts: [],
     });
     enemiesSpawnedRef.current = 0;
   }, []);
@@ -86,16 +91,9 @@ export const useGameLoop = (onAttack?: (defenderType: DefenderType) => void) => 
       if (prev.coins < config.cost) return prev;
 
 
-      // Check limits: Miners capped, others unlimited
-      if (prev.selectedDefender === 'miner') {
-        const currentCount = getDefenderCount('miner', prev.defenders);
-        if (currentCount >= MAX_MINERS) return prev;
-      }
-
-      const hasDefender = prev.defenders.some(
-        d => d.position.x === x && d.position.y === y
-      );
-      if (hasDefender) return prev;
+      // Check limits: Max 5 per type
+      const currentCount = getDefenderCount(prev.selectedDefender, prev.defenders);
+      if (currentCount >= MAX_PER_TYPE) return prev;
 
       const newDefender: Defender = {
         id: generateDefenderId(),
@@ -142,6 +140,7 @@ export const useGameLoop = (onAttack?: (defenderType: DefenderType) => void) => 
       const upgradeCost = config.upgradeCost * defender.level;
 
       if (prev.coins < upgradeCost) return prev;
+      if (defender.level >= MAX_LEVEL) return prev; // Max Level Check
 
       return {
         ...prev,
@@ -200,6 +199,23 @@ export const useGameLoop = (onAttack?: (defenderType: DefenderType) => void) => 
         let newCoins = prev.coins;
         let newLives = prev.lives;
 
+        let totalMinedThisTick = 0;
+        let achievementUnlocked: Achievement | null = null;
+        let newUnlockedIds = [...(prev.unlockedAchievements || [])];
+        let newFloatingTexts = [...prev.floatingTexts];
+
+        // Helper to add floating text
+        const addFloatingText = (x: number, y: number, text: string, color: string) => {
+          newFloatingTexts.push({
+            id: `ft-${Date.now()}-${Math.random()}`,
+            x,
+            y,
+            text,
+            color,
+            life: 1.0,
+          });
+        };
+
         // Spawn enemies
         const isBossWave = prev.wave === MAX_WAVE;
         const isMiniBossWave = prev.wave === 7;
@@ -232,7 +248,9 @@ export const useGameLoop = (onAttack?: (defenderType: DefenderType) => void) => 
           const nextPathIndex = enemy.pathIndex + enemy.speed * speedMultiplier * (deltaTime / 1000);
 
           if (nextPathIndex >= path.length - 1) {
-            newLives -= enemy.type === 'boss' ? 5 : 1;
+            // Bosses deal 5 damage, others 1
+            const isBoss = enemy.type === 'boss' || enemy.type === 'boss_warrior' || enemy.type === 'boss_archer';
+            newLives -= isBoss ? 5 : 1;
             return null;
           }
 
@@ -264,9 +282,23 @@ export const useGameLoop = (onAttack?: (defenderType: DefenderType) => void) => 
           if (defender.type === 'miner') {
             onAttack?.(defender.type);
 
-            newCoins += 15 + (defender.level - 1) * 10;
+            const goldGain = 15 + (defender.level - 1) * 10;
+            newCoins += goldGain;
 
-            return { ...defender, lastAttack: now };
+            // Rich Man Achievement Check
+            const newTotalMined = (prev.totalMined || 0) + goldGain;
+            let newUnlocked = [...(prev.unlockedAchievements || [])];
+            let newAchievement: Achievement | null = prev.lastUnlockedAchievement;
+
+            if (newTotalMined >= 1000 && !newUnlocked.includes('rich_man')) {
+              newUnlocked.push('rich_man');
+              newAchievement = ACHIEVEMENTS.find(a => a.id === 'rich_man') || null;
+            }
+
+            // Spawn floating text for miner
+            addFloatingText(defender.position.x, defender.position.y, `+${goldGain}`, 'text-yellow-400');
+
+            return { ...defender, lastAttack: now, _tempMined: newTotalMined, _tempUnlocked: newUnlocked, _tempAch: newAchievement };
           }
 
           const enemyInRange = newEnemies.find(enemy => {
@@ -307,10 +339,31 @@ export const useGameLoop = (onAttack?: (defenderType: DefenderType) => void) => 
           return defender;
         });
 
+        // Update Total Mined & Rich Man Check
+        const newTotalMined = (prev.totalMined || 0) + totalMinedThisTick;
+        if (newTotalMined >= 1000 && !newUnlockedIds.includes('rich_man')) {
+          newUnlockedIds.push('rich_man');
+          achievementUnlocked = ACHIEVEMENTS.find(a => a.id === 'rich_man') || null;
+        }
+
         // Remove dead enemies and give coins
         const deadEnemies = newEnemies.filter(e => e.hp <= 0);
-        newCoins += deadEnemies.reduce((sum, e) => sum + e.reward, 0);
+        deadEnemies.forEach(e => {
+          newCoins += e.reward;
+          // Spawn floating text for kills
+          addFloatingText(e.position.x, e.position.y, `+${e.reward}`, 'text-yellow-400');
+        });
+
         newEnemies = newEnemies.filter(e => e.hp > 0);
+
+        // Update Floating Texts (Float up and fade)
+        newFloatingTexts = newFloatingTexts
+          .map(ft => ({
+            ...ft,
+            y: ft.y - (deltaTime / 1000) * 1.5, // Float up speed
+            life: ft.life - (deltaTime / 1000) * 1.5, // Fade speed
+          }))
+          .filter(ft => ft.life > 0);
 
         // Check for wave completion
         let newWave = prev.wave;
@@ -319,12 +372,37 @@ export const useGameLoop = (onAttack?: (defenderType: DefenderType) => void) => 
         if (newEnemies.length === 0 && enemiesSpawnedRef.current >= enemiesPerWave) {
           if (prev.wave >= MAX_WAVE) {
             gameWon = true;
+
+            // Check Win Achievements
+            // 1. Man of Steel: Full Lives (10)
+            if (newLives >= 10 && !newUnlockedIds.includes('man_of_steel')) {
+              newUnlockedIds.push('man_of_steel');
+              // Prioritize showing this if multiple unlocked, or queue? For now just overwrite
+              achievementUnlocked = ACHIEVEMENTS.find(a => a.id === 'man_of_steel') || achievementUnlocked;
+            }
+
+            // 2. Solo Leveling: 1 Warrior + 1 Archer ONLY (Miners don't count?) Description: "Win with exactly 1 Warrior and 1 Archer"
+            const warriorCount = prev.defenders.filter(d => d.type === 'warrior').length;
+            const archerCount = prev.defenders.filter(d => d.type === 'archer').length;
+            // What about miners? Assuming ignoring miners or strictly ONLY 2 units total?
+            // "Win with exactly 1 Warrior and 1 Archer" usually implies army composition.
+            // Let's assume ignoring miners for identifying the "SOLO" feel, or strict total count?
+            // "1 Warrior and 1 Archer" -> Total combat units = 2.
+            const combatUnitCount = prev.defenders.filter(d => d.type === 'warrior' || d.type === 'archer').length;
+
+            if (warriorCount === 1 && archerCount === 1 && combatUnitCount === 2 && !newUnlockedIds.includes('solo_leveling')) {
+              newUnlockedIds.push('solo_leveling');
+              achievementUnlocked = ACHIEVEMENTS.find(a => a.id === 'solo_leveling') || achievementUnlocked;
+            }
+
             return {
               ...prev,
               enemies: [],
               coins: newCoins,
               isPlaying: false,
               gameWon: true,
+              unlockedAchievements: newUnlockedIds,
+              lastUnlockedAchievement: achievementUnlocked || prev.lastUnlockedAchievement
             };
           }
           newWave++;
@@ -349,6 +427,10 @@ export const useGameLoop = (onAttack?: (defenderType: DefenderType) => void) => 
           lives: newLives,
           wave: newWave,
           gameWon,
+          totalMined: newTotalMined,
+          unlockedAchievements: newUnlockedIds,
+          lastUnlockedAchievement: achievementUnlocked || prev.lastUnlockedAchievement,
+          floatingTexts: newFloatingTexts,
         };
       });
     }, 50);
@@ -371,5 +453,6 @@ export const useGameLoop = (onAttack?: (defenderType: DefenderType) => void) => 
     getDefenderCount,
     isSpeedUp,
     toggleSpeed,
+    dismissAchievement: () => setGameState(prev => ({ ...prev, lastUnlockedAchievement: null })),
   };
 };

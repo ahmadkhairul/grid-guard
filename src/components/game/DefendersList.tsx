@@ -28,7 +28,7 @@ export const DefendersList = memo(({ defenders, coins, onUpgrade, onSell }: Defe
       <h2 className="md:block hidden font-game text-xs text-primary mb-3 tracking-wide">DEFENDERS</h2>
       
       <div className="space-y-1.5 max-h-48 lg:max-h-64 overflow-y-auto pr-1 scrollbar-thin">
-        {defenders.map(defender => {
+        {defenders.map((defender, index) => {
           const config = DEFENDER_CONFIGS[defender.type];
           const upgradeCost = config.upgradeCost * defender.level;
           const canUpgrade = coins >= upgradeCost;
@@ -53,17 +53,23 @@ export const DefendersList = memo(({ defenders, coins, onUpgrade, onSell }: Defe
                 {/* Defender Info */}
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center justify-between gap-1 mb-0.5">
-                    <span className="text-xs font-semibold text-foreground truncate">
-                      {config.name}
-                    </span>
-                    <span className="text-[9px] text-muted-foreground flex-shrink-0">
-                      ({defender.position.x},{defender.position.y})
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-2 text-[9px] text-muted-foreground">
-                    <span>DMG: <span className="text-foreground">{Math.round(defender.damage)}</span></span>
-                    <span>RNG: <span className="text-foreground">{defender.range.toFixed(1)}</span></span>
-                  </div>
+                      <span className="text-xs font-semibold text-foreground truncate">
+                        #{index + 1} {config.name}
+                      </span>
+                      <span className="text-[9px] text-muted-foreground flex-shrink-0">
+                        ({defender.position.x},{defender.position.y})
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2 text-[9px] text-muted-foreground">
+                      {defender.type === 'miner' ? (
+                         <span>Gen: <span className="text-yellow-400">+{15 + (defender.level - 1) * 10}g</span>/5s</span>
+                      ) : (
+                        <>
+                          <span>DMG: <span className="text-foreground">{Math.round(defender.damage)}</span></span>
+                          <span>RNG: <span className="text-foreground">{defender.range.toFixed(1)}</span></span>
+                        </>
+                      )}
+                    </div>
                 </div>
 
                 {/* Action Buttons */}
@@ -73,19 +79,11 @@ export const DefendersList = memo(({ defenders, coins, onUpgrade, onSell }: Defe
                     variant="ghost"
                     disabled={!canUpgrade}
                     onClick={() => onUpgrade(defender.id)}
-                    className="h-10 w-10 lg:h-6 lg:w-6 p-0 hover:bg-primary/20 hover:text-primary disabled:opacity-40"
+                    className="h-10 px-2 lg:h-6 lg:px-2 hover:bg-primary/20 hover:text-primary disabled:opacity-40 flex gap-1 w-auto"
                     title={`Upgrade for ${upgradeCost} coins`}
                   >
-                    <ArrowUp className="w-5 h-5 lg:w-3 lg:h-3" />
-                  </Button>
-                  <Button
-                    size="sm"
-                    variant="ghost"
-                    onClick={() => onSell(defender.id)}
-                    className="h-10 w-10 lg:h-6 lg:w-6 p-0 hover:bg-destructive/20 hover:text-destructive"
-                    title={`Sell for ${sellValue} coins`}
-                  >
-                    <Trash2 className="w-5 h-5 lg:w-3 lg:h-3" />
+                    <ArrowUp className="w-4 h-4 lg:w-3 lg:h-3" />
+                    <span className="text-[10px] font-bold">{upgradeCost}g</span>
                   </Button>
                 </div>
               </div>

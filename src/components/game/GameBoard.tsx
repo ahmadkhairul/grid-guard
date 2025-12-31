@@ -2,7 +2,7 @@ import { memo, useState, useEffect, useRef } from 'react';
 import { GameCell } from './GameCell';
 import { EnemyUnit } from './EnemyUnit';
 import { GRID_WIDTH, GRID_HEIGHT } from '@/config/gameConfig';
-import { Defender, Enemy, DefenderType } from '@/types/game';
+import { Defender, Enemy, DefenderType, FloatingText } from '@/types/game';
 
 interface GameBoardProps {
   defenders: Defender[];
@@ -12,6 +12,7 @@ interface GameBoardProps {
   onDrop: (x: number, y: number, type: DefenderType) => void;
   attackAnimations: Set<string>;
   draggedDefender: DefenderType | null;
+  floatingTexts: FloatingText[];
 }
 
 export const GameBoard = memo(({ 
@@ -22,6 +23,7 @@ export const GameBoard = memo(({
   onDrop,
   attackAnimations,
   draggedDefender,
+  floatingTexts,
 }: GameBoardProps) => {
   const [hoveredCell, setHoveredCell] = useState<{ x: number; y: number } | null>(null);
   const [draggedOverCell, setDraggedOverCell] = useState<{ x: number; y: number } | null>(null);
@@ -81,6 +83,7 @@ export const GameBoard = memo(({
             onDragEnter={() => setDraggedOverCell({ x, y })}
             onDragLeave={() => setDraggedOverCell(null)}
             cellSize={cellSize}
+            defenderIndex={defender ? defenders.findIndex(d => d.id === defender.id) : undefined}
           />
         </div>
       );
@@ -103,6 +106,23 @@ export const GameBoard = memo(({
       <div className="absolute inset-4 pointer-events-none z-45">
         {enemies.map(enemy => (
           <EnemyUnit key={enemy.id} enemy={enemy} cellSize={cellSize} />
+        ))}
+        
+        {/* Floating Text Layer */}
+        {floatingTexts.map(ft => (
+          <div
+            key={ft.id}
+            className={`absolute font-game font-bold text-shadow-sm pointer-events-none z-50 transition-opacity duration-100 ${ft.color}`}
+            style={{
+              left: ft.x * cellSize + cellSize / 2, // Centered on cell? x is grid coord
+              top: ft.y * cellSize,
+              transform: 'translate(-50%, -50%)',
+              opacity: ft.life,
+              fontSize: cellSize * 0.4,
+            }}
+          >
+            {ft.text}
+          </div>
         ))}
       </div>
     </div>

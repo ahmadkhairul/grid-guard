@@ -4,8 +4,8 @@ export const GRID_WIDTH = 10;
 export const GRID_HEIGHT = 7;
 export const CELL_SIZE = 64;
 export const MAX_WAVE = 10;
-export const MAX_DEFENDERS_PER_TYPE = 10;
-export const MAX_MINERS = 5;
+export const MAX_PER_TYPE = 5; // Hard limit for ALL towers
+export const MAX_LEVEL = 20;
 
 export const ENEMY_PATH: Position[] = [
   { x: 0, y: 5 },
@@ -35,6 +35,15 @@ export const ENEMY_PATH: Position[] = [
   { x: 2, y: 3 },
   { x: 1, y: 3 },
   { x: 0, y: 3 },
+];
+
+// Flies Left -> Right (y=1), then Right -> Left (y=3) into exit
+export const FLYING_PATH: Position[] = [
+  ...Array.from({ length: 9 }, (_, i) => ({ x: i, y: 1 })), // 0,1 -> 8,1
+  { x: 9, y: 1 },
+  { x: 9, y: 2 },
+  { x: 9, y: 3 },
+  ...Array.from({ length: 10 }, (_, i) => ({ x: 9 - i, y: 3 })), // 9,3 -> 0,3 (Exit)
 ];
 
 export const DEFENDER_CONFIGS: Record<DefenderType, DefenderConfig> = {

@@ -16,6 +16,7 @@ interface GameCellProps {
   onDragEnter: () => void;
   onDragLeave: () => void;
   cellSize: number;
+  defenderIndex?: number;
 }
 
 export const GameCell = memo(({ 
@@ -31,6 +32,7 @@ export const GameCell = memo(({
   onDragEnter,
   onDragLeave,
   cellSize,
+  defenderIndex,
 }: GameCellProps) => {
   const isPath = isPathCell(x, y);
   const canPlace = (selectedDefender || draggedDefender) && !isPath && !defender;
@@ -109,9 +111,14 @@ export const GameCell = memo(({
         >
           {DEFENDER_CONFIGS[defender.type].emoji}
           {defender.level > 1 && (
-            <span className="absolute -top-1 -right-1 bg-accent text-accent-foreground text-xs rounded-full w-5 h-5 flex items-center justify-center font-bold">
+            <span className="absolute -top-1 -right-1 bg-accent text-accent-foreground text-[10px] rounded-full w-4 h-4 flex items-center justify-center font-bold z-10">
               {defender.level}
             </span>
+          )}
+          {defenderIndex !== undefined && (
+             <span className="absolute -bottom-1 -left-1 bg-primary text-primary-foreground text-[9px] rounded-md px-1 font-bold z-10 border border-background">
+               #{defenderIndex + 1}
+             </span>
           )}
         </div>
       )}
