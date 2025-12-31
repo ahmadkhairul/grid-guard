@@ -35,7 +35,7 @@ export const LoadingScreen = memo(({ onComplete }: LoadingScreenProps) => {
 
   return (
     <div className="fixed inset-0 bg-background flex flex-col items-center justify-center z-50">
-      <h1 className="font-game text-4xl md:text-5xl text-primary mb-8 animate-pulse">
+      <h1 className="text-center font-game text-4xl md:text-5xl text-primary mb-8 animate-pulse">
         GRID DEFENDER
       </h1>
       

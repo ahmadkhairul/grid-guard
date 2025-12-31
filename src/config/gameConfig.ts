@@ -4,6 +4,7 @@ export const GRID_WIDTH = 10;
 export const GRID_HEIGHT = 7;
 export const CELL_SIZE = 64;
 export const MAX_WAVE = 10;
+export const MAX_DEFENDERS_PER_TYPE = 10;
 export const MAX_MINERS = 5;
 
 export const ENEMY_PATH: Position[] = [

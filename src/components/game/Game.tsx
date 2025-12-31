@@ -69,7 +69,7 @@ export const Game = () => {
         {/* Left Section - Game Area */}
         <div className="flex-1 flex flex-col min-w-0 min-h-0">
           {/* Game Container - Centers header + board together */}
-          <div className="flex-1 flex flex-col items-center justify-center px-3 py-2 md:px-6 md:py-4 min-h-0 pb-20 lg:pb-4">
+          <div className="flex-1 flex flex-col items-center md:justify-center px-3 py-2 md:px-6 md:py-4 min-h-0 pb-20 lg:pb-4">
             {/* Header Container - Same width as game board */}
             <div className="w-full max-w-[min(calc(100vw-1.5rem),calc((100dvh-10rem)*1.25))] lg:max-w-[min(calc(100vw-22rem),calc((100vh-6rem)*1.25))]">
               {/* Title Bar */}

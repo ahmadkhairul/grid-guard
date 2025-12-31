@@ -15,7 +15,7 @@ export const DefendersList = memo(({ defenders, coins, onUpgrade, onSell }: Defe
   if (defenders.length === 0) {
     return (
       <div className="bg-card rounded-lg p-3 border border-border/50">
-        <h2 className="font-game text-xs text-primary mb-3 tracking-wide">DEFENDERS</h2>
+        <h2 className="md:block hidden font-game text-xs text-primary mb-3 tracking-wide">DEFENDERS</h2>
         <p className="text-muted-foreground text-xs text-center py-3">
           No defenders placed yet
         </p>
@@ -25,7 +25,7 @@ export const DefendersList = memo(({ defenders, coins, onUpgrade, onSell }: Defe
 
   return (
     <div className="bg-card rounded-lg p-3 border border-border/50 flex-1 min-h-0">
-      <h2 className="font-game text-xs text-primary mb-3 tracking-wide">DEFENDERS</h2>
+      <h2 className="md:block hidden font-game text-xs text-primary mb-3 tracking-wide">DEFENDERS</h2>
       
       <div className="space-y-1.5 max-h-48 lg:max-h-64 overflow-y-auto pr-1 scrollbar-thin">
         {defenders.map(defender => {
@@ -73,19 +73,19 @@ export const DefendersList = memo(({ defenders, coins, onUpgrade, onSell }: Defe
                     variant="ghost"
                     disabled={!canUpgrade}
                     onClick={() => onUpgrade(defender.id)}
-                    className="h-6 w-6 p-0 hover:bg-primary/20 hover:text-primary disabled:opacity-40"
+                    className="h-10 w-10 lg:h-6 lg:w-6 p-0 hover:bg-primary/20 hover:text-primary disabled:opacity-40"
                     title={`Upgrade for ${upgradeCost} coins`}
                   >
-                    <ArrowUp className="w-3 h-3" />
+                    <ArrowUp className="w-5 h-5 lg:w-3 lg:h-3" />
                   </Button>
                   <Button
                     size="sm"
                     variant="ghost"
                     onClick={() => onSell(defender.id)}
-                    className="h-6 w-6 p-0 hover:bg-destructive/20 hover:text-destructive"
+                    className="h-10 w-10 lg:h-6 lg:w-6 p-0 hover:bg-destructive/20 hover:text-destructive"
                     title={`Sell for ${sellValue} coins`}
                   >
-                    <Trash2 className="w-3 h-3" />
+                    <Trash2 className="w-5 h-5 lg:w-3 lg:h-3" />
                   </Button>
                 </div>
               </div>

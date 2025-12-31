@@ -36,21 +36,15 @@ export const MobileBottomBar = memo(({
 
   return (
     <>
-      {/* Backdrop */}
-      {activePanel && (
-        <div 
-          className="fixed inset-0 bg-background/60 backdrop-blur-sm z-40 lg:hidden"
-          onClick={() => setActivePanel(null)}
-        />
-      )}
+      {/* Backdrop removed for Tab Pane behavior */}
 
       {/* Slide-up Panel */}
       <div 
         className={cn(
-          "fixed bottom-16 left-0 right-0 bg-card border-t border-border z-50 lg:hidden transition-transform duration-300 ease-out",
+          "fixed bottom-16 left-0 right-0 bg-card border-t border-border z-30 lg:hidden transition-transform duration-300 ease-out shadow-xl",
           activePanel ? "translate-y-0" : "translate-y-full"
         )}
-        style={{ maxHeight: '60vh' }}
+        style={{ height: '35vh' }}
       >
         <div className="flex items-center justify-between p-3 border-b border-border/50">
           <h3 className="font-game text-sm text-primary">
@@ -63,7 +57,7 @@ export const MobileBottomBar = memo(({
             <X className="w-4 h-4 text-muted-foreground" />
           </button>
         </div>
-        <div className="overflow-y-auto p-3" style={{ maxHeight: 'calc(60vh - 48px)' }}>
+        <div className="overflow-y-auto p-3 h-[calc(35vh-48px)]">
           {activePanel === 'shop' && (
             <ShopPanel
               coins={coins}
