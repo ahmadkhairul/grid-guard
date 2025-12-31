@@ -1,4 +1,5 @@
 import { useRef, useCallback, useEffect, useState } from 'react';
+import { DefenderType } from '@/types/game';
 
 // Simple synthesized sounds using Web Audio API
 export const useAudio = () => {
@@ -14,7 +15,7 @@ export const useAudio = () => {
     return audioContextRef.current;
   }, []);
 
-  const playAttackSound = useCallback((defenderType: 'warrior' | 'archer' | 'mage') => {
+  const playAttackSound = useCallback((defenderType: DefenderType) => {
     if (isMuted) return;
     
     const ctx = getAudioContext();
@@ -36,11 +37,11 @@ export const useAudio = () => {
         oscillator.frequency.exponentialRampToValueAtTime(400, ctx.currentTime + 0.15);
         oscillator.type = 'sine';
         break;
-      case 'mage':
-        oscillator.frequency.setValueAtTime(400, ctx.currentTime);
-        oscillator.frequency.exponentialRampToValueAtTime(600, ctx.currentTime + 0.1);
-        oscillator.frequency.exponentialRampToValueAtTime(300, ctx.currentTime + 0.2);
-        oscillator.type = 'triangle';
+      case 'miner':
+        oscillator.frequency.setValueAtTime(200, ctx.currentTime);
+        oscillator.frequency.exponentialRampToValueAtTime(300, ctx.currentTime + 0.1);
+        oscillator.frequency.exponentialRampToValueAtTime(150, ctx.currentTime + 0.2);
+        oscillator.type = 'square';
         break;
     }
     
