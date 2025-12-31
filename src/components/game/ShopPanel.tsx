@@ -33,22 +33,21 @@ export const ShopPanel = memo(({
     // Create custom drag image with only the emoji icon
     const config = DEFENDER_CONFIGS[type];
     const dragImage = document.createElement('div');
-    dragImage.style.width = '64px';
-    dragImage.style.height = '64px';
-    dragImage.style.fontSize = '48px';
+    dragImage.style.width = '48px';
+    dragImage.style.height = '48px';
+    dragImage.style.fontSize = '32px';
     dragImage.style.display = 'flex';
     dragImage.style.alignItems = 'center';
     dragImage.style.justifyContent = 'center';
-    dragImage.style.background = 'rgba(0, 0, 0, 0.8)';
-    dragImage.style.borderRadius = '12px';
+    dragImage.style.background = 'rgba(0, 0, 0, 0.9)';
+    dragImage.style.borderRadius = '8px';
     dragImage.style.border = '2px solid hsl(var(--primary))';
-    dragImage.style.boxShadow = '0 4px 12px rgba(0, 0, 0, 0.3)';
     dragImage.textContent = config.emoji;
     dragImage.style.position = 'absolute';
     dragImage.style.top = '-1000px';
     document.body.appendChild(dragImage);
     
-    e.dataTransfer.setDragImage(dragImage, 32, 32);
+    e.dataTransfer.setDragImage(dragImage, 24, 24);
     
     // Clean up drag image after a short delay
     setTimeout(() => {
@@ -63,8 +62,8 @@ export const ShopPanel = memo(({
   };
 
   return (
-    <div className="bg-card rounded-xl p-4 border border-border">
-      <h2 className="font-game text-sm text-primary mb-4">SHOP</h2>
+    <div className="bg-card rounded-lg p-3 border border-border/50">
+      <h2 className="font-game text-xs text-primary mb-3 tracking-wide">SHOP</h2>
       
       <div className="space-y-2">
         {Object.values(DEFENDER_CONFIGS).map(config => {
@@ -83,39 +82,43 @@ export const ShopPanel = memo(({
               onDragEnd={handleDragEnd}
               disabled={isDisabled}
               className={cn(
-                'w-full p-2.5 rounded-lg border-2 transition-all duration-200',
-                'flex items-center gap-2.5 text-left',
+                'w-full p-2 rounded-md border transition-all duration-150',
+                'flex items-center gap-2 text-left',
                 isSelected 
-                  ? 'border-primary bg-primary/20 shadow-[0_0_15px_hsl(var(--primary)/0.3)]'
+                  ? 'border-primary bg-primary/15 shadow-[0_0_12px_hsl(var(--primary)/0.25)]'
                   : !isDisabled 
-                    ? 'border-border hover:border-primary/50 hover:bg-muted cursor-grab active:cursor-grabbing'
-                    : 'border-border/50 opacity-50 cursor-not-allowed'
+                    ? 'border-border/50 hover:border-primary/40 hover:bg-muted/50 cursor-grab active:cursor-grabbing'
+                    : 'border-border/30 opacity-40 cursor-not-allowed'
               )}
             >
+              {/* Drag Handle */}
               {!isDisabled && (
-                <GripVertical className="w-3.5 h-3.5 text-muted-foreground flex-shrink-0" />
+                <GripVertical className="w-3 h-3 text-muted-foreground/50 flex-shrink-0" />
               )}
-              <div className="w-10 h-10 rounded-lg bg-muted flex items-center justify-center text-xl flex-shrink-0">
+              
+              {/* Icon */}
+              <div className="w-9 h-9 rounded-md bg-muted/80 flex items-center justify-center text-lg flex-shrink-0 border border-border/30">
                 {config.emoji}
               </div>
+              
+              {/* Info */}
               <div className="flex-1 min-w-0">
-                <div className="flex items-center justify-between gap-2 mb-0.5">
-                  <p className="font-semibold text-sm text-foreground truncate">{config.name}</p>
+                <div className="flex items-center justify-between gap-1 mb-0.5">
+                  <span className="font-semibold text-xs text-foreground">{config.name}</span>
                   <span className={cn(
-                    "text-xs px-1.5 py-0.5 rounded flex-shrink-0 font-medium",
+                    "text-[10px] px-1 py-0.5 rounded font-medium",
                     atMaxCapacity ? "bg-destructive/20 text-destructive" : "bg-muted text-muted-foreground"
                   )}>
                     {currentCount}/{MAX_DEFENDERS_PER_TYPE}
                   </span>
                 </div>
-                <div className="flex items-center justify-between gap-2">
-                  <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                    <span className="font-medium">DMG: <span className="text-foreground">{config.damage}</span></span>
-                    <span className="text-border">•</span>
-                    <span className="font-medium">RNG: <span className="text-foreground">{config.range}</span></span>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2 text-[10px] text-muted-foreground">
+                    <span>DMG: <span className="text-primary font-medium">{config.damage}</span></span>
+                    <span>RNG: <span className="text-foreground">{config.range}</span></span>
                   </div>
-                  <div className="flex items-center gap-1 text-accent font-bold text-sm flex-shrink-0">
-                    <Coins className="w-3.5 h-3.5" />
+                  <div className="flex items-center gap-0.5 text-accent font-bold text-xs">
+                    <Coins className="w-3 h-3" />
                     {config.cost}
                   </div>
                 </div>
@@ -126,8 +129,8 @@ export const ShopPanel = memo(({
       </div>
       
       {selectedDefender && (
-        <p className="mt-3 text-xs text-primary text-center animate-pulse">
-          Click on a cell to place
+        <p className="mt-2 text-[10px] text-primary text-center animate-pulse">
+          Click on grid to place
         </p>
       )}
     </div>
