@@ -3,7 +3,7 @@ export interface Position {
   y: number;
 }
 
-export type EnemyType = 'normal' | 'boss' | 'fast' | 'tank' | 'flying';
+export type EnemyType = 'normal' | 'boss' | 'fast' | 'tank' | 'flying' | 'boss_warrior' | 'boss_archer';
 
 export interface Enemy {
   id: string;

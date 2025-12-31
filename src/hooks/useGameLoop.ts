@@ -1,6 +1,6 @@
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { GameState, Enemy, Defender, DefenderType, EnemyType } from '@/types/game';
-import { ENEMY_PATH, DEFENDER_CONFIGS, isPathCell, MAX_WAVE, MAX_DEFENDERS_PER_TYPE, getBossImmunity, ENEMY_CONFIGS, getRandomEnemyType, GRID_WIDTH } from '@/config/gameConfig';
+import { ENEMY_PATH, DEFENDER_CONFIGS, isPathCell, MAX_WAVE, MAX_MINERS, getBossImmunity, ENEMY_CONFIGS, getRandomEnemyType, GRID_WIDTH } from '@/config/gameConfig';
 
 const generateEnemyId = () => `enemy-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 const generateDefenderId = () => `defender-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
@@ -85,8 +85,12 @@ export const useGameLoop = (onAttack?: (defenderType: DefenderType) => void) => 
       const config = DEFENDER_CONFIGS[prev.selectedDefender];
       if (prev.coins < config.cost) return prev;
 
-      const currentCount = getDefenderCount(prev.selectedDefender, prev.defenders);
-      if (currentCount >= MAX_DEFENDERS_PER_TYPE) return prev;
+
+      // Check limits: Miners capped, others unlimited
+      if (prev.selectedDefender === 'miner') {
+        const currentCount = getDefenderCount('miner', prev.defenders);
+        if (currentCount >= MAX_MINERS) return prev;
+      }
 
       const hasDefender = prev.defenders.some(
         d => d.position.x === x && d.position.y === y
@@ -148,7 +152,8 @@ export const useGameLoop = (onAttack?: (defenderType: DefenderType) => void) => 
               ...d,
               level: d.level + 1,
               damage: d.damage + config.damage * 0.5,
-              range: d.range + 0.2,
+              range: d.type === 'archer' ? d.range + 0.5 : d.range,
+              attackSpeed: d.type === 'miner' ? d.attackSpeed : d.attackSpeed * 0.9,
             }
             : d
         ),
@@ -174,7 +179,9 @@ export const useGameLoop = (onAttack?: (defenderType: DefenderType) => void) => 
       speed: baseSpeed * config.speedMultiplier,
       reward: Math.floor(baseReward * config.rewardMultiplier),
       type,
-      immuneTo: type === 'boss' ? getBossImmunity(100) : undefined,
+      immuneTo: type === 'boss' ? getBossImmunity(100) :
+        type === 'boss_warrior' ? 'warrior' :
+          type === 'boss_archer' ? 'archer' : undefined,
       isFlying: config.isFlying,
     };
   };
@@ -195,7 +202,9 @@ export const useGameLoop = (onAttack?: (defenderType: DefenderType) => void) => 
 
         // Spawn enemies
         const isBossWave = prev.wave === MAX_WAVE;
-        const enemiesPerWave = isBossWave ? 1 : 5 + prev.wave * 2;
+        const isMiniBossWave = prev.wave === 7;
+        // Twin Bosses (W10): 2, Mini-Boss (W7): 1, Others: Normal scaling
+        const enemiesPerWave = isBossWave ? 2 : isMiniBossWave ? 1 : 5 + prev.wave * 2;
         enemySpawnTimerRef.current += deltaTime;
 
         // Dynamic spawn rate: faster spawns in later waves (min 500ms)
@@ -205,7 +214,14 @@ export const useGameLoop = (onAttack?: (defenderType: DefenderType) => void) => 
           enemySpawnTimerRef.current = 0;
           enemiesSpawnedRef.current++;
 
-          const enemyType: EnemyType = isBossWave ? 'boss' : getRandomEnemyType(prev.wave);
+          let enemyType: EnemyType;
+          if (isBossWave) {
+            // Twin Boss Logic: Spawn Warrior-Immune first, then Archer-Immune
+            enemyType = enemiesSpawnedRef.current === 1 ? 'boss_warrior' : 'boss_archer';
+          } else {
+            enemyType = getRandomEnemyType(prev.wave);
+          }
+
           const newEnemy = createEnemy(enemyType, prev.wave);
           newEnemies.push(newEnemy);
         }
@@ -246,11 +262,9 @@ export const useGameLoop = (onAttack?: (defenderType: DefenderType) => void) => 
           if (now - defender.lastAttack < defender.attackSpeed / speedMultiplier) return defender;
 
           if (defender.type === 'miner') {
-            onAttack?.(defender.type); // Trigger mining animation/sound
+            onAttack?.(defender.type);
 
-            // Visual feedback for mining could be handled here or in the component via onAttack
-            // For now, we just add coins directly
-            newCoins += 15;
+            newCoins += 15 + (defender.level - 1) * 10;
 
             return { ...defender, lastAttack: now };
           }

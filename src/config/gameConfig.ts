@@ -4,7 +4,7 @@ export const GRID_WIDTH = 10;
 export const GRID_HEIGHT = 7;
 export const CELL_SIZE = 64;
 export const MAX_WAVE = 10;
-export const MAX_DEFENDERS_PER_TYPE = 3;
+export const MAX_MINERS = 5;
 
 export const ENEMY_PATH: Position[] = [
   { x: 0, y: 5 },
@@ -53,7 +53,7 @@ export const DEFENDER_CONFIGS: Record<DefenderType, DefenderConfig> = {
     name: 'Archer',
     cost: 90,
     damage: 12,
-    range: 3.5,
+    range: 2.5,
     attackSpeed: 800,
     emoji: '🏹',
     upgradeCost: 40,
@@ -86,7 +86,9 @@ export const ENEMY_CONFIGS: Record<EnemyType, EnemyConfig> = {
   fast: { emoji: '🏃', hpMultiplier: 0.5, speedMultiplier: 2.2, rewardMultiplier: 1.5 },
   tank: { emoji: '🛡️', hpMultiplier: 4, speedMultiplier: 0.5, rewardMultiplier: 2 },
   flying: { emoji: '🦅', hpMultiplier: 0.8, speedMultiplier: 1.2, rewardMultiplier: 1.8, isFlying: true },
-  boss: { emoji: '👹', hpMultiplier: 15, speedMultiplier: 0.3, rewardMultiplier: 20 },
+  boss: { emoji: '👹', hpMultiplier: 8, speedMultiplier: 0.8, rewardMultiplier: 50 },
+  boss_warrior: { emoji: '🤖', hpMultiplier: 25, speedMultiplier: 1.0, rewardMultiplier: 20 },
+  boss_archer: { emoji: '👻', hpMultiplier: 25, speedMultiplier: 1.8, rewardMultiplier: 20 },
 };
 
 export const isPathCell = (x: number, y: number): boolean => {
@@ -107,8 +109,23 @@ export const getBossImmunity = (hpPercentage: number): DefenderType | undefined 
 // Get random enemy type based on wave (higher waves = more variety)
 export const getRandomEnemyType = (wave: number): EnemyType => {
   const rand = Math.random();
-  if (wave >= 3 && rand < 0.15) return 'fast';
-  if (wave >= 5 && rand < 0.25) return 'tank';
-  if (wave >= 7 && rand < 0.35) return 'flying';
+
+  // Wave 8-10: HARD MODE - No Normals!
+  if (wave >= 8) {
+    if (rand < 0.33) return 'tank';   // 33% Tank
+    if (rand < 0.66) return 'fast';   // 33% Fast
+    return 'flying';                  // 34% Flying
+  }
+
+  // Mid Game
+  if (wave >= 5) {
+    if (rand < 0.20) return 'tank';
+    if (rand < 0.40) return 'fast';
+    if (rand < 0.50) return 'flying';
+    return 'normal';
+  }
+
+  // Early Game
+  if (wave >= 3 && rand < 0.2) return 'fast';
   return 'normal';
 };

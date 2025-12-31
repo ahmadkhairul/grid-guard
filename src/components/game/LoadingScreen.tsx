@@ -58,7 +58,7 @@ export const LoadingScreen = memo(({ onComplete }: LoadingScreenProps) => {
       <div className="mt-12 flex gap-4 text-4xl animate-bounce">
         <span>⚔️</span>
         <span>🏹</span>
-        <span>🔮</span>
+        <span>⛏️</span>
       </div>
     </div>
   );
