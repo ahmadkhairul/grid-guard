@@ -5,9 +5,10 @@ import { cn } from '@/lib/utils';
 
 interface EnemyUnitProps {
   enemy: Enemy;
+  cellSize: number;
 }
 
-export const EnemyUnit = memo(({ enemy }: EnemyUnitProps) => {
+export const EnemyUnit = memo(({ enemy, cellSize }: EnemyUnitProps) => {
   const hpPercentage = (enemy.hp / enemy.maxHp) * 100;
   const isBoss = enemy.type === 'boss';
   const isHit = enemy.isHit;
@@ -36,13 +37,15 @@ export const EnemyUnit = memo(({ enemy }: EnemyUnitProps) => {
     <div
       className={cn(
         "enemy-unit animate-spawn",
-        isBoss ? "w-14 h-14 text-2xl" : enemy.type === 'tank' ? "w-12 h-12 text-xl" : "w-10 h-10 text-lg",
+        isBoss ? "text-2xl" : enemy.type === 'tank' ? "text-xl" : "text-lg",
         isHit && "animate-hit",
         enemy.isFlying && "animate-float"
       )}
       style={{
-        left: enemy.position.x * (CELL_SIZE + GAP_SIZE) + CELL_SIZE / 2 - (size * 2),
-        top: enemy.position.y * (CELL_SIZE + GAP_SIZE) + CELL_SIZE / 2 - (size * 2),
+        width: size * 4,
+        height: size * 4,
+        left: enemy.position.x * (cellSize + GAP_SIZE) + cellSize / 2 - (size * 2),
+        top: enemy.position.y * (cellSize + GAP_SIZE) + cellSize / 2 - (size * 2),
         transition: 'left 0.05s linear, top 0.05s linear',
       }}
     >

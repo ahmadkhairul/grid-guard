@@ -15,6 +15,7 @@ interface GameCellProps {
   showAoePreview: boolean;
   onDragEnter: () => void;
   onDragLeave: () => void;
+  cellSize: number;
 }
 
 export const GameCell = memo(({ 
@@ -29,6 +30,7 @@ export const GameCell = memo(({
   showAoePreview,
   onDragEnter,
   onDragLeave,
+  cellSize,
 }: GameCellProps) => {
   const isPath = isPathCell(x, y);
   const canPlace = (selectedDefender || draggedDefender) && !isPath && !defender;
@@ -61,16 +63,17 @@ export const GameCell = memo(({
   };
 
   const aoeRange = getAoeRange();
-  const aoeSize = aoeRange * CELL_SIZE * 2;
+  const aoeSize = aoeRange * cellSize * 2;
 
   return (
     <div
       className={cn(
-        'game-cell w-16 h-16 relative',
+        'game-cell relative',
         isPath && 'game-cell-path',
         canPlace && 'game-cell-placeable',
         showAoePreview && 'game-cell-dragover',
       )}
+      style={{ width: cellSize, height: cellSize }}
       onClick={() => canPlace && onCellClick(x, y)}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
@@ -99,9 +102,10 @@ export const GameCell = memo(({
       {defender && (
         <div 
           className={cn(
-            'defender-unit w-12 h-12 text-2xl',
+            'defender-unit text-2xl',
             isAttacking && 'animate-defender-attack'
           )}
+          style={{ width: cellSize * 0.75, height: cellSize * 0.75 }}
         >
           {DEFENDER_CONFIGS[defender.type].emoji}
           {defender.level > 1 && (
