@@ -7,6 +7,7 @@ import { ShopPanel } from './ShopPanel';
 import { DefendersList } from './DefendersList';
 import { TutorialModal } from './TutorialModal';
 import { LoadingScreen } from './LoadingScreen';
+import { MobileBottomBar } from './MobileBottomBar';
 import { DefenderType } from '@/types/game';
 import { MAX_WAVE } from '@/config/gameConfig';
 import { Volume2, VolumeX, Pause } from 'lucide-react';
@@ -62,67 +63,71 @@ export const Game = () => {
   }
 
   return (
-    <div className="min-h-screen bg-background flex flex-col">
-      {/* Compact Title Bar */}
-      <header className="flex items-center justify-center gap-3 py-3 border-b border-border/50">
-        <h1 className="font-game text-lg md:text-xl text-primary tracking-wider">
-          GRID DEFENDER
-        </h1>
-        <button
-          onClick={toggleMute}
-          className="p-1.5 rounded-md bg-primary/20 hover:bg-primary/30 transition-colors border border-primary/30"
-          title={isMuted ? 'Unmute' : 'Mute'}
-        >
-          {isMuted ? (
-            <VolumeX className="w-4 h-4 text-muted-foreground" />
-          ) : (
-            <Volume2 className="w-4 h-4 text-primary" />
-          )}
-        </button>
-      </header>
-
-      {/* Wave Progress */}
-      <div className="text-center py-1.5 text-xs text-muted-foreground border-b border-border/30">
-        Wave {gameState.wave} / {MAX_WAVE}
-        {gameState.wave === MAX_WAVE && <span className="text-destructive ml-2 font-bold">⚠️ BOSS</span>}
-      </div>
-      
+    <div className="min-h-screen bg-background flex flex-col pb-16 lg:pb-0">
       {/* Main Content */}
       <div className="flex-1 flex flex-col lg:flex-row">
-        {/* Left Section - Stats Bar + Game Board */}
+        {/* Left Section - Game Area */}
         <div className="flex-1 flex flex-col min-w-0">
-          {/* Stats Header */}
-          <div className="p-3 md:p-4">
-            <GameHeader
-              coins={gameState.coins}
-              lives={gameState.lives}
-              wave={gameState.wave}
-              isPlaying={gameState.isPlaying}
-              isSpeedUp={isSpeedUp}
-              onStart={startGame}
-              onPause={pauseGame}
-              onReset={resetGame}
-              onOpenTutorial={() => setShowTutorial(true)}
-              onToggleSpeed={toggleSpeed}
-            />
-          </div>
-          
-          {/* Game Board - Centered with padding */}
-          <div className="flex-1 flex items-start justify-center px-3 pb-3 md:px-6 md:pb-6 overflow-auto">
-            <GameBoard
-              defenders={gameState.defenders}
-              enemies={gameState.enemies}
-              selectedDefender={gameState.selectedDefender}
-              onCellClick={placeDefender}
-              onDrop={handleDrop}
-              attackAnimations={attackAnimations}
-              draggedDefender={draggedDefender}
-            />
+          {/* Game Container - Centers header + board together */}
+          <div className="flex-1 flex flex-col items-center px-3 py-3 md:px-6 md:py-4">
+            {/* Header Container - Same width as game board */}
+            <div className="w-full max-w-[min(calc(100vw-1.5rem),calc((100vh-8rem)*1.25))] lg:max-w-[min(calc(100vw-22rem),calc((100vh-6rem)*1.25))]">
+              {/* Title Bar */}
+              <div className="flex items-center justify-between mb-2 px-1">
+                <div className="flex items-center gap-2">
+                  <h1 className="font-game text-sm md:text-base text-primary tracking-wider">
+                    GRID DEFENDER
+                  </h1>
+                  <span className="text-[10px] text-muted-foreground">
+                    Wave {gameState.wave}/{MAX_WAVE}
+                    {gameState.wave === MAX_WAVE && <span className="text-destructive ml-1 font-bold">BOSS</span>}
+                  </span>
+                </div>
+                <button
+                  onClick={toggleMute}
+                  className="p-1.5 rounded-md bg-primary/20 hover:bg-primary/30 transition-colors border border-primary/30"
+                  title={isMuted ? 'Unmute' : 'Mute'}
+                >
+                  {isMuted ? (
+                    <VolumeX className="w-3.5 h-3.5 text-muted-foreground" />
+                  ) : (
+                    <Volume2 className="w-3.5 h-3.5 text-primary" />
+                  )}
+                </button>
+              </div>
+              
+              {/* Stats Header - Same width as board */}
+              <GameHeader
+                coins={gameState.coins}
+                lives={gameState.lives}
+                wave={gameState.wave}
+                isPlaying={gameState.isPlaying}
+                isSpeedUp={isSpeedUp}
+                onStart={startGame}
+                onPause={pauseGame}
+                onReset={resetGame}
+                onOpenTutorial={() => setShowTutorial(true)}
+                onToggleSpeed={toggleSpeed}
+              />
+            </div>
+            
+            {/* Game Board */}
+            <div className="mt-3 w-full max-w-[min(calc(100vw-1.5rem),calc((100vh-8rem)*1.25))] lg:max-w-[min(calc(100vw-22rem),calc((100vh-6rem)*1.25))]">
+              <GameBoard
+                defenders={gameState.defenders}
+                enemies={gameState.enemies}
+                selectedDefender={gameState.selectedDefender}
+                onCellClick={placeDefender}
+                onDrop={handleDrop}
+                attackAnimations={attackAnimations}
+                draggedDefender={draggedDefender}
+              />
+            </div>
           </div>
         </div>
 
-        {/* Right Sidebar - Shop & Defenders */}
-        <aside className="w-full lg:w-72 xl:w-80 border-t lg:border-t-0 lg:border-l border-border/50 bg-card/30 p-3 md:p-4 flex flex-col gap-3">
+        {/* Right Sidebar - Shop & Defenders (Desktop only) */}
+        <aside className="hidden lg:flex w-72 xl:w-80 border-l border-border/50 bg-card/30 p-4 flex-col gap-3">
           <ShopPanel
             coins={gameState.coins}
             selectedDefender={gameState.selectedDefender}
@@ -139,6 +144,18 @@ export const Game = () => {
           />
         </aside>
       </div>
+
+      {/* Mobile Bottom Bar */}
+      <MobileBottomBar
+        coins={gameState.coins}
+        selectedDefender={gameState.selectedDefender}
+        onSelectDefender={selectDefender}
+        onDragStart={handleDragStart}
+        onDragEnd={handleDragEnd}
+        defenders={gameState.defenders}
+        onUpgrade={upgradeDefender}
+        onSell={sellDefender}
+      />
 
       {/* Pause Modal */}
       {gameState.isPaused && (

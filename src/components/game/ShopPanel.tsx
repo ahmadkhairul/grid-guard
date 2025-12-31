@@ -63,7 +63,7 @@ export const ShopPanel = memo(({
 
   return (
     <div className="bg-card rounded-lg p-3 border border-border/50">
-      <h2 className="font-game text-xs text-primary mb-3 tracking-wide">SHOP</h2>
+      <h2 className="font-game text-xs text-primary mb-3 tracking-wide hidden lg:block">SHOP</h2>
       
       <div className="space-y-2">
         {Object.values(DEFENDER_CONFIGS).map(config => {
