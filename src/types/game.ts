@@ -52,8 +52,8 @@ export interface Achievement {
 }
 
 export const ACHIEVEMENTS: Achievement[] = [
-  { id: 'solo_leveling', title: 'SOLO LEVELING', description: 'Win with exactly 1 Warrior and 1 Archer', icon: '🗡️' },
-  { id: 'rich_man', title: 'RICH MAN', description: 'Mine 1000 gold in a single game', icon: '💰' },
+  { id: 'duo_leveling', title: 'SOLO LEVELING', description: 'Win with exactly 1 Warrior and 1 Archer', icon: '🗡️' },
+  { id: 'rich_man', title: 'RICH MAN', description: 'Mine 100000 gold in a single game', icon: '💰' },
   { id: 'man_of_steel', title: 'MAN OF STEEL', description: 'Win with full health (10 Lives)', icon: '🛡️' },
 ];
 

@@ -116,7 +116,7 @@ export const GameCell = memo(({
             </span>
           )}
           {defenderIndex !== undefined && (
-             <span className="absolute -bottom-1 -left-1 bg-primary text-primary-foreground text-[9px] rounded-md px-1 font-bold z-10 border border-background">
+             <span className="absolute h-4 flex items-center m-0 -bottom-1 -left-1 bg-primary text-primary-foreground text-[9px] rounded-md px-1 font-bold z-10 border border-background">
                #{defenderIndex + 1}
              </span>
           )}

@@ -7,7 +7,7 @@ interface GameHeaderProps {
   lives: number;
   wave: number;
   isPlaying: boolean;
-  isSpeedUp: boolean;
+  speedMultiplier: number;
   onStart: () => void;
   onPause: () => void;
   onReset: () => void;
@@ -20,7 +20,7 @@ export const GameHeader = memo(({
   lives, 
   wave, 
   isPlaying,
-  isSpeedUp,
+  speedMultiplier,
   onStart, 
   onPause, 
   onReset,
@@ -78,10 +78,10 @@ export const GameHeader = memo(({
           variant="outline"
           size="icon"
           onClick={onToggleSpeed}
-          className={`h-8 w-8 ${isSpeedUp ? "border-accent bg-accent/20 text-accent hover:bg-accent/30" : "border-muted-foreground/50 text-muted-foreground hover:bg-muted"}`}
-          title={isSpeedUp ? "Normal Speed" : "Fast Forward (2x)"}
+          className={`h-8 w-8 ${speedMultiplier > 1 ? "border-accent bg-accent/20 text-accent hover:bg-accent/30" : "border-muted-foreground/50 text-muted-foreground hover:bg-muted"}`}
+          title={`Speed: ${speedMultiplier}x`}
         >
-          <FastForward className="w-4 h-4" />
+          <span className="font-bold text-xs">{speedMultiplier}x</span>
         </Button>
         <Button
           variant="outline"

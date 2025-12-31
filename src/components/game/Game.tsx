@@ -5,6 +5,7 @@ import { GameBoard } from './GameBoard';
 import { GameHeader } from './GameHeader';
 import { ShopPanel } from './ShopPanel';
 import { DefendersList } from './DefendersList';
+import { Button } from '@/components/ui/button';
 import { TutorialModal } from './TutorialModal';
 import { LoadingScreen } from './LoadingScreen';
 import { MobileBottomBar } from './MobileBottomBar';
@@ -27,7 +28,7 @@ export const Game = () => {
     sellDefender,
     finishLoading,
     attackAnimations,
-    isSpeedUp,
+    speedMultiplier,
     toggleSpeed,
     resumeGame,
     dismissAchievement,
@@ -85,17 +86,29 @@ export const Game = () => {
                     {gameState.wave === MAX_WAVE && <span className="text-destructive ml-1 font-bold">BOSS</span>}
                   </span>
                 </div>
-                <button
-                  onClick={toggleMute}
-                  className="p-1.5 rounded-md bg-primary/20 hover:bg-primary/30 transition-colors border border-primary/30"
-                  title={isMuted ? 'Unmute' : 'Mute'}
-                >
-                  {isMuted ? (
-                    <VolumeX className="w-3.5 h-3.5 text-muted-foreground" />
-                  ) : (
-                    <Volume2 className="w-3.5 h-3.5 text-primary" />
-                  )}
-                </button>
+                <div className="flex items-center gap-2">
+                  <button
+                    onClick={toggleMute}
+                    className="p-1.5 rounded-md bg-primary/20 hover:bg-primary/30 transition-colors border border-primary/30"
+                    title={isMuted ? 'Unmute' : 'Mute'}
+                  >
+                    {isMuted ? (
+                      <VolumeX className="w-3.5 h-3.5 text-muted-foreground" />
+                    ) : (
+                      <Volume2 className="w-3.5 h-3.5 text-primary" />
+                    )}
+                  </button>
+                  {/* Speed Button */}
+                  <Button
+                    size="icon"
+                    variant={speedMultiplier > 1 ? "secondary" : "outline"}
+                    onClick={toggleSpeed}
+                    className="h-8 w-8"
+                    title="Toggle Speed"
+                  >
+                    <span className="font-bold text-xs">{speedMultiplier}x</span>
+                  </Button>
+                </div>
               </div>
               
               {/* Stats Header - Same width as board */}
@@ -104,7 +117,7 @@ export const Game = () => {
                 lives={gameState.lives}
                 wave={gameState.wave}
                 isPlaying={gameState.isPlaying}
-                isSpeedUp={isSpeedUp}
+                speedMultiplier={speedMultiplier} // Changed from isSpeedUp
                 onStart={startGame}
                 onPause={pauseGame}
                 onReset={resetGame}
@@ -197,16 +210,28 @@ export const Game = () => {
       {/* Victory Overlay */}
       {gameState.gameWon && (
         <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-card border border-primary rounded-2xl p-8 text-center max-w-md mx-4 shadow-[0_0_50px_hsl(var(--primary)/0.5)]">
-            <h2 className="font-game text-2xl text-primary mb-4">🎉 VICTORY!</h2>
-            <p className="text-muted-foreground mb-2">You completed</p>
-            <p className="font-game text-3xl text-accent mb-6">All {MAX_WAVE} Waves!</p>
-            <button
-              onClick={resetGame}
-              className="bg-primary text-primary-foreground font-semibold px-8 py-3 rounded-lg hover:bg-primary/90 transition-colors"
-            >
-              Play Again
-            </button>
+          <div className="bg-card p-8 rounded-xl shadow-2xl border-2 border-primary text-center max-w-sm w-full animate-in zoom-in-50 duration-300">
+            <h2 className="text-4xl font-game text-primary mb-2">VICTORY!</h2>
+            <p className="text-muted-foreground mb-6">The grid is safe... for now.</p>
+            
+            {gameState.unlockedAchievements.length > 0 && (
+              <div className="mb-6 bg-secondary/20 p-4 rounded-lg">
+                <h3 className="text-sm font-bold text-secondary-foreground mb-2 uppercase tracking-wide">Achievements Unlocked</h3>
+                <div className="flex flex-wrap gap-2 justify-center">
+                   {gameState.unlockedAchievements.map(id => {
+                     return (
+                       <span key={id} className="badge bg-yellow-500/20 text-yellow-500 border border-yellow-500/50 px-2 py-1 rounded text-xs">
+                         {id.replace('_', ' ').toUpperCase()}
+                       </span>
+                     )
+                   })}
+                </div>
+              </div>
+            )}
+
+            <Button size="lg" onClick={resetGame} className="w-full font-bold text-lg">
+              PLAY AGAIN
+            </Button>
           </div>
         </div>
       )}

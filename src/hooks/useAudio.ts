@@ -10,21 +10,22 @@ export const useAudio = () => {
 
   const getAudioContext = useCallback(() => {
     if (!audioContextRef.current) {
-      audioContextRef.current = new (window.AudioContext || (window as any).webkitAudioContext)();
+      const AudioContextClass = window.AudioContext || (window as unknown as { webkitAudioContext: typeof AudioContext }).webkitAudioContext;
+      audioContextRef.current = new AudioContextClass();
     }
     return audioContextRef.current;
   }, []);
 
   const playAttackSound = useCallback((defenderType: DefenderType) => {
     if (isMuted) return;
-    
+
     const ctx = getAudioContext();
     const oscillator = ctx.createOscillator();
     const gainNode = ctx.createGain();
-    
+
     oscillator.connect(gainNode);
     gainNode.connect(ctx.destination);
-    
+
     // Different sounds for different defenders
     switch (defenderType) {
       case 'warrior':
@@ -44,45 +45,45 @@ export const useAudio = () => {
         oscillator.type = 'square';
         break;
     }
-    
+
     gainNode.gain.setValueAtTime(0.15, ctx.currentTime);
     gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.2);
-    
+
     oscillator.start(ctx.currentTime);
     oscillator.stop(ctx.currentTime + 0.2);
   }, [isMuted, getAudioContext]);
 
   const playBgMusic = useCallback(() => {
     if (musicPlaying) return;
-    
+
     const ctx = getAudioContext();
     setMusicPlaying(true);
-    
-    // Simple looping melody
-    const notes = [262, 294, 330, 349, 392, 349, 330, 294]; // C4 scale pattern
+
+    // Upbeat Arcade Melody
+    const notes = [261.63, 329.63, 392.00, 523.25, 392.00, 329.63, 261.63, 293.66, 349.23, 440.00, 587.33, 440.00, 349.23, 293.66]; // C-Major Arpeggio -> D-Minor
     let noteIndex = 0;
-    
+
     const playNote = () => {
       if (isMuted) return;
-      
+
       const osc = ctx.createOscillator();
       const gain = ctx.createGain();
-      
+
       osc.connect(gain);
       gain.connect(ctx.destination);
-      
+
       osc.frequency.setValueAtTime(notes[noteIndex], ctx.currentTime);
       osc.type = 'sine';
-      
-      gain.gain.setValueAtTime(0.05, ctx.currentTime);
+
+      gain.gain.setValueAtTime(0.1, ctx.currentTime);
       gain.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.3);
-      
+
       osc.start(ctx.currentTime);
       osc.stop(ctx.currentTime + 0.3);
-      
+
       noteIndex = (noteIndex + 1) % notes.length;
     };
-    
+
     playNote();
     bgMusicIntervalRef.current = window.setInterval(playNote, 400);
   }, [isMuted, musicPlaying, getAudioContext]);

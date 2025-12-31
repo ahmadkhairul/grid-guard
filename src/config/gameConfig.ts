@@ -37,7 +37,6 @@ export const ENEMY_PATH: Position[] = [
   { x: 0, y: 3 },
 ];
 
-// Flies Left -> Right (y=1), then Right -> Left (y=3) into exit
 export const FLYING_PATH: Position[] = [
   ...Array.from({ length: 9 }, (_, i) => ({ x: i, y: 1 })), // 0,1 -> 8,1
   { x: 9, y: 1 },
@@ -94,9 +93,9 @@ export interface EnemyConfig {
 export const ENEMY_CONFIGS: Record<EnemyType, EnemyConfig> = {
   normal: { emoji: '👾', hpMultiplier: 1, speedMultiplier: 1, rewardMultiplier: 1 },
   fast: { emoji: '🏃', hpMultiplier: 0.5, speedMultiplier: 2.2, rewardMultiplier: 1.5 },
-  tank: { emoji: '🛡️', hpMultiplier: 4, speedMultiplier: 0.5, rewardMultiplier: 2 },
+  tank: { emoji: '🛡️', hpMultiplier: 12, speedMultiplier: 0.5, rewardMultiplier: 2 },
   flying: { emoji: '🦅', hpMultiplier: 0.8, speedMultiplier: 1.2, rewardMultiplier: 1.8, isFlying: true },
-  boss: { emoji: '👹', hpMultiplier: 8, speedMultiplier: 0.8, rewardMultiplier: 50 },
+  boss: { emoji: '👹', hpMultiplier: 25, speedMultiplier: 0.8, rewardMultiplier: 20 },
   boss_warrior: { emoji: '🤖', hpMultiplier: 25, speedMultiplier: 1.0, rewardMultiplier: 20 },
   boss_archer: { emoji: '👻', hpMultiplier: 25, speedMultiplier: 1.8, rewardMultiplier: 20 },
 };
@@ -122,9 +121,9 @@ export const getRandomEnemyType = (wave: number): EnemyType => {
 
   // Wave 8-10: HARD MODE - No Normals!
   if (wave >= 8) {
-    if (rand < 0.33) return 'tank';   // 33% Tank
-    if (rand < 0.66) return 'fast';   // 33% Fast
-    return 'flying';                  // 34% Flying
+    if (rand < 0.33) return 'tank';
+    if (rand < 0.66) return 'fast';
+    return 'flying';
   }
 
   // Mid Game

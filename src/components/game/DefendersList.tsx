@@ -1,7 +1,7 @@
 import { memo } from 'react';
 import { Defender } from '@/types/game';
 import { DEFENDER_CONFIGS } from '@/config/gameConfig';
-import { ArrowUp, Trash2 } from 'lucide-react';
+import { ArrowUp } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface DefendersListProps {
@@ -32,8 +32,7 @@ export const DefendersList = memo(({ defenders, coins, onUpgrade, onSell }: Defe
           const config = DEFENDER_CONFIGS[defender.type];
           const upgradeCost = config.upgradeCost * defender.level;
           const canUpgrade = coins >= upgradeCost;
-          const sellValue = Math.floor(config.sellValue * defender.level);
-          
+
           return (
             <div 
               key={defender.id}

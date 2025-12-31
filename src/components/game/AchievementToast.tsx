@@ -11,7 +11,7 @@ interface AchievementToastProps {
 export const AchievementToast = memo(({ achievement, onClose }: AchievementToastProps) => {
   useEffect(() => {
     if (achievement) {
-      const timer = setTimeout(onClose, 4000);
+      const timer = setTimeout(onClose, 500);
       return () => clearTimeout(timer);
     }
   }, [achievement, onClose]);
