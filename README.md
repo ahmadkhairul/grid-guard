@@ -71,7 +71,6 @@ npm run dev
 ```
 
 The game will be available at `http://localhost:8080`
-The game also availabel at `https://grid-guard-game.netlify.app`
 
 ### Building for Production
 
@@ -180,7 +179,7 @@ This project is open source and available under the MIT License.
 
 ## 🎮 Play Now!
 
-[Play Grid Defender](https://your-deployment-url.com)
+[Play Grid Defender](https://grid-guard-game.netlify.app)
 
 ---
 

@@ -59,7 +59,6 @@ export const DEFENDER_CONFIGS: Record<DefenderType, DefenderConfig> = {
     attackSpeed: 800,
     emoji: '⚔️',
     upgradeCost: 30,
-    sellValue: 25,
   },
   archer: {
     type: 'archer',
@@ -70,7 +69,6 @@ export const DEFENDER_CONFIGS: Record<DefenderType, DefenderConfig> = {
     attackSpeed: 800,
     emoji: '🏹',
     upgradeCost: 40,
-    sellValue: 40,
   },
   miner: {
     type: 'miner',
@@ -81,7 +79,6 @@ export const DEFENDER_CONFIGS: Record<DefenderType, DefenderConfig> = {
     attackSpeed: 5000,
     emoji: '⛏️',
     upgradeCost: 50,
-    sellValue: 50,
   },
   stone: {
     type: 'stone',
@@ -92,7 +89,6 @@ export const DEFENDER_CONFIGS: Record<DefenderType, DefenderConfig> = {
     attackSpeed: 2000,
     emoji: '🗿',
     upgradeCost: 150,
-    sellValue: 150,
   },
 };
 
