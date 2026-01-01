@@ -11,6 +11,7 @@ export const useGameState = () => {
         gameWon: false, isPaused: false, totalMined: 0,
         unlockedAchievements: [], lastUnlockedAchievement: null, floatingTexts: [],
         notification: null, unlockedDefenders: ['warrior', 'archer', 'miner'], screenFlash: null,
+        lastCheckpoint: 0, checkpointCoins: 100,
     });
 
     const [speedMultiplier, setSpeedMultiplier] = useState(1);
@@ -25,6 +26,7 @@ export const useGameState = () => {
             gameWon: false, isPaused: false, totalMined: 0,
             unlockedAchievements: [], lastUnlockedAchievement: null, floatingTexts: [],
             notification: null, unlockedDefenders: ['warrior', 'archer', 'miner'], screenFlash: null,
+            lastCheckpoint: 0, checkpointCoins: 100,
         });
         enemiesSpawnedRef.current = 0;
     }, []);
@@ -76,10 +78,36 @@ export const useGameState = () => {
     const dismissNotification = useCallback(() => setGameState(prev => ({ ...prev, notification: null })), []);
     const clearScreenFlash = useCallback(() => setGameState(prev => ({ ...prev, screenFlash: null })), []);
 
+    const restoreCheckpoint = useCallback(() => {
+        setGameState(prev => ({
+            coins: prev.checkpointCoins,
+            wave: prev.lastCheckpoint,
+            enemies: [],
+            defenders: [],
+            lives: 10,
+            isPlaying: false,
+            selectedDefender: null,
+            isLoading: false,
+            gameWon: false,
+            isPaused: false,
+            totalMined: 0,
+            unlockedAchievements: prev.unlockedAchievements,
+            lastUnlockedAchievement: null,
+            floatingTexts: [],
+            notification: null,
+            unlockedDefenders: prev.lastCheckpoint >= 15 ? ['warrior', 'archer', 'miner', 'stone'] : ['warrior', 'archer', 'miner'],
+            screenFlash: null,
+            lastCheckpoint: prev.lastCheckpoint,
+            checkpointCoins: prev.checkpointCoins,
+        }));
+        enemiesSpawnedRef.current = 0;
+    }, []);
+
     return {
         gameState, setGameState, speedMultiplier, toggleSpeed,
         enemiesSpawnedRef, resetGame, placeDefender, upgradeDefender,
         dismissNotification,
         clearScreenFlash,
+        restoreCheckpoint,
     };
 };

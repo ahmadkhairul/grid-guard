@@ -36,11 +36,11 @@ export const updateGameTick = (
 
         // HEALER LOGIC: Global Heal on Spawn
         if (newEnemyType === 'healer') {
-            screenFlash = 'heal';
             newEnemies.forEach(e => {
                 const healAmount = 200;
                 if (e.hp < e.maxHp) {
                     e.hp = Math.min(e.maxHp, e.hp + healAmount);
+                    e.healGlow = true; // Add glow effect
                     addText(e.position.x, e.position.y, '+200', 'text-green-500');
                 }
             });
@@ -78,6 +78,7 @@ export const updateGameTick = (
             ...enemy, pathIndex: nextPathIndex,
             position: { x: currentPos.x + (nextPos.x - currentPos.x) * progress, y: currentPos.y + (nextPos.y - currentPos.y) * progress },
             immuneTo: enemy.type === 'boss' ? getBossImmunity((enemy.hp / enemy.maxHp) * 100) : undefined,
+            healGlow: false, // Clear glow after movement
         } as Enemy;
     }).filter((e): e is Enemy => e !== null);
 
@@ -189,8 +190,16 @@ export const updateGameTick = (
             enemiesSpawnedRef.current = 0;
             newCoins += 25 * prev.wave;
 
+            // CHECKPOINT LOGIC: Save checkpoint at waves 5, 10, 15, 20
+            let newCheckpoint = prev.lastCheckpoint;
+            let newCheckpointCoins = prev.checkpointCoins;
+            if ([5, 10, 15, 20].includes(newWave)) {
+                newCheckpoint = newWave;
+                newCheckpointCoins = newCoins;
+                notification = { id: `checkpoint-${newWave}`, title: 'CHECKPOINT SAVED!', description: `You can restart from Wave ${newWave}!`, icon: '💾', color: 'text-blue-500' };
+            }
             // UNLOCK LOGIC: Beat Wave 15 -> Unlock Stone Cannon (Wave 16 Start)
-            if (newWave === 16 && !newUnlockedDefenders.includes('stone')) {
+            else if (newWave === 16 && !newUnlockedDefenders.includes('stone')) {
                 newUnlockedDefenders.push('stone');
                 notification = { id: `unlock-stone`, title: 'NEW TOWER UNLOCKED!', description: 'Stone Cannon is available in Shop!', icon: '🗿', color: 'text-amber-500' };
             } else {
@@ -199,15 +208,17 @@ export const updateGameTick = (
         }
     }
 
-    if (newLives <= 0) return { ...prev, lives: 0, isPlaying: false, enemies: [] };
+    if (newLives <= 0) return { ...prev, lives: 0, isPlaying: false, enemies: [], lastCheckpoint: prev.lastCheckpoint, checkpointCoins: prev.checkpointCoins };
 
     return {
         ...prev, enemies: newEnemies, defenders: updatedDefenders, coins: newCoins, lives: newLives,
         wave: newWave, gameWon, unlockedAchievements: newUnlockedIds, floatingTexts: newFloatingTexts,
         lastUnlockedAchievement: achievementUnlocked || prev.lastUnlockedAchievement,
         totalMined: (prev.totalMined || 0) + (newCoins - prev.coins),
-        notification, // Updated notification
+        notification,
         unlockedDefenders: newUnlockedDefenders,
-        screenFlash
+        screenFlash,
+        lastCheckpoint: prev.lastCheckpoint,
+        checkpointCoins: prev.checkpointCoins,
     };
 };

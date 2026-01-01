@@ -31,8 +31,9 @@ export const Game = () => {
     speedMultiplier,
     toggleSpeed,
     resumeGame,
-    dismissNotification, // New
-    clearScreenFlash, // New
+    dismissNotification,
+    clearScreenFlash,
+    restoreCheckpoint,
   } = useGameLoop(playAttackSound);
 
   const [showTutorial, setShowTutorial] = useState(false);
@@ -214,12 +215,24 @@ export const Game = () => {
             <h2 className="font-game text-2xl text-destructive mb-4">GAME OVER</h2>
             <p className="text-muted-foreground mb-2">You reached</p>
             <p className="font-game text-3xl text-primary mb-6">Wave {gameState.wave}</p>
-            <button
-              onClick={resetGame}
-              className="bg-primary text-primary-foreground font-semibold px-8 py-3 rounded-lg hover:bg-primary/90 transition-colors"
-            >
-              Play Again
-            </button>
+            
+            <div className="flex flex-col gap-3">
+              {gameState.lastCheckpoint > 0 && (
+                <button
+                  onClick={restoreCheckpoint}
+                  className="bg-blue-600 text-white font-semibold px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
+                >
+                  <span>💾</span>
+                  <span>Continue from Wave {gameState.lastCheckpoint}</span>
+                </button>
+              )}
+              <button
+                onClick={resetGame}
+                className="bg-primary text-primary-foreground font-semibold px-8 py-3 rounded-lg hover:bg-primary/90 transition-colors"
+              >
+                Restart from Wave 1
+              </button>
+            </div>
           </div>
         </div>
       )}

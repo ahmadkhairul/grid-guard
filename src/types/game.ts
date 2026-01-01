@@ -18,6 +18,7 @@ export interface Enemy {
   isHit?: boolean;
   isFlying?: boolean;
   path?: Position[]; // Custom path for flying enemies
+  healGlow?: boolean; // Glow effect when healed
 }
 
 export interface Defender {
@@ -95,4 +96,7 @@ export interface GameState {
   notification: GameNotification | null;
   unlockedDefenders: DefenderType[];
   screenFlash: 'heal' | 'damage' | null;
+  // Checkpoint System
+  lastCheckpoint: number; // Last checkpoint wave (5, 10, 15, 20)
+  checkpointCoins: number; // Coins at checkpoint
 }

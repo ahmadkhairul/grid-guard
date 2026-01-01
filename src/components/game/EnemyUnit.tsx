@@ -38,7 +38,8 @@ export const EnemyUnit = memo(({ enemy, cellSize }: EnemyUnitProps) => {
         "enemy-unit animate-spawn",
         isBoss ? "text-2xl" : enemy.type === 'tank' ? "text-xl" : "text-lg",
         isHit && "animate-hit",
-        enemy.isFlying && "animate-float"
+        enemy.isFlying && "animate-float",
+        enemy.healGlow && "animate-pulse"
       )}
       style={{
         width: size * 4,
@@ -46,6 +47,7 @@ export const EnemyUnit = memo(({ enemy, cellSize }: EnemyUnitProps) => {
         left: enemy.position.x * (cellSize + GAP_SIZE) + cellSize / 2 - (size * 2),
         top: enemy.position.y * (cellSize + GAP_SIZE) + cellSize / 2 - (size * 2),
         transition: 'left 0.05s linear, top 0.05s linear',
+        filter: enemy.healGlow ? 'drop-shadow(0 0 12px rgb(34 197 94))' : undefined,
       }}
     >
       <span className="z-10">{config.emoji}</span>

@@ -7,7 +7,7 @@ export const useGameLoop = (onAttack?: (defenderType: DefenderType) => void) => 
   const {
     gameState, setGameState, speedMultiplier, toggleSpeed,
     enemiesSpawnedRef, resetGame, placeDefender, upgradeDefender,
-    dismissNotification, clearScreenFlash
+    dismissNotification, clearScreenFlash, restoreCheckpoint
   } = useGameState();
 
   const lastUpdateRef = useRef<number>(Date.now());
@@ -52,6 +52,6 @@ export const useGameLoop = (onAttack?: (defenderType: DefenderType) => void) => 
     finishLoading, attackAnimations: attackAnimationsRef.current,
     getDefenderCount, speedMultiplier, toggleSpeed,
     dismissAchievement: () => setGameState(p => ({ ...p, lastUnlockedAchievement: null })),
-    dismissNotification, clearScreenFlash, // Export new actions
+    dismissNotification, clearScreenFlash, restoreCheckpoint,
   };
 };
