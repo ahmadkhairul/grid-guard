@@ -9,7 +9,6 @@ import { Button } from '@/components/ui/button';
 import { TutorialModal } from './TutorialModal';
 import { LoadingScreen } from './LoadingScreen';
 import { MobileBottomBar } from './MobileBottomBar';
-import { AchievementToast } from './AchievementToast';
 import { NotificationToast } from './NotificationToast'; // New Component
 import { DefenderType } from '@/types/game';
 import { MAX_WAVE } from '@/config/gameConfig';
@@ -27,13 +26,11 @@ export const Game = () => {
     selectDefender,
     placeDefender,
     upgradeDefender,
-    sellDefender,
     finishLoading,
     attackAnimations,
     speedMultiplier,
     toggleSpeed,
     resumeGame,
-    dismissAchievement,
     dismissNotification, // New
     clearScreenFlash, // New
   } = useGameLoop(playAttackSound);
@@ -177,7 +174,6 @@ export const Game = () => {
             defenders={gameState.defenders}
             coins={gameState.coins}
             onUpgrade={upgradeDefender}
-            onSell={sellDefender}
           />
         </aside>
       </div>
@@ -191,7 +187,6 @@ export const Game = () => {
         onDragEnd={handleDragEnd}
         defenders={gameState.defenders}
         onUpgrade={upgradeDefender}
-        onSell={sellDefender}
         unlockedDefenders={gameState.unlockedDefenders}
       />
 
@@ -261,29 +256,9 @@ export const Game = () => {
       {/* Tutorial Modal */}
       <TutorialModal open={showTutorial} onOpenChange={setShowTutorial} />
 
-      {/* Notification Toast (Replaces AchievementToast) */}
       <NotificationToast 
         notification={gameState.notification} 
         onClose={dismissNotification} 
-      />
-      
-      {/* Keep AchievementToast for backward compat if needed, or remove? 
-          Code above uses notification state. Achievement logic in updateLogic sets notification?
-          No, updateLogic sets 'achievementUnlocked' field.
-          I should display 'achievementUnlocked' as a Notification?
-          Wait, updateLogic sets 'lastUnlockedAchievement' in GameState.
-          So I still need AchievementToast OR I convert Achievement to Notification.
-          Step 677 line 116 sets: lastUnlockedAchievement: achievementUnlocked
-          The user wanted "use achievementToast as global toast".
-          I implemented NotificationToast.
-          I should show NotificationToast if notification exists.
-          Should I show AchievementToast if lastUnlockedAchievement exists?
-          Yes, unless I refactor logic to convert achievement to notification.
-          I'll keep both for now to be safe, they stack z-index.
-      */}
-      <AchievementToast 
-        achievement={gameState.lastUnlockedAchievement} 
-        onClose={dismissAchievement} 
       />
     </div>
   );

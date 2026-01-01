@@ -1,5 +1,5 @@
 import { useState, useCallback, useRef } from 'react';
-import { GameState, Defender, DefenderType } from '@/types/game';
+import { GameState } from '@/types/game';
 import { DEFENDER_CONFIGS, isPathCell, MAX_PER_TYPE, MAX_LEVEL } from '@/config/gameConfig';
 
 const generateDefenderId = () => `defender-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;

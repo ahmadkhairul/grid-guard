@@ -37,13 +37,17 @@ export const ENEMY_PATH: Position[] = [
   { x: 0, y: 3 },
 ];
 
-export const FLYING_PATH: Position[] = [
-  ...Array.from({ length: 9 }, (_, i) => ({ x: i, y: 1 })), // 0,1 -> 8,1
-  { x: 9, y: 1 },
-  { x: 9, y: 2 },
-  { x: 9, y: 3 },
-  ...Array.from({ length: 10 }, (_, i) => ({ x: 9 - i, y: 3 })), // 9,3 -> 0,3 (Exit)
-];
+export const generateFlyingPath = (): Position[] => {
+  const yPositions = [0, 2, 4, 6];
+  const randomY = yPositions[Math.floor(Math.random() * yPositions.length)];
+
+  return [
+    ...Array.from({ length: 9 }, (_, i) => ({ x: i, y: randomY })), // 0,y -> 8,y
+    { x: 9, y: randomY },
+    { x: 9, y: randomY + 1 },
+    ...Array.from({ length: 10 }, (_, i) => ({ x: 9 - i, y: randomY + 1 })), // 9,y+1 -> 0,y+1 (Exit)
+  ];
+};
 
 export const DEFENDER_CONFIGS: Record<DefenderType, DefenderConfig> = {
   warrior: {
@@ -86,7 +90,7 @@ export const DEFENDER_CONFIGS: Record<DefenderType, DefenderConfig> = {
     damage: 50,
     range: 2.0,
     attackSpeed: 2000,
-    emoji: '🗿', // or 🌋 or 🏰
+    emoji: '🗿',
     upgradeCost: 150,
     sellValue: 150,
   },
@@ -132,28 +136,4 @@ export const getBossImmunity = (hpPercentage: number): DefenderType | undefined 
   if (hpPercentage > 66) return 'warrior';
   if (hpPercentage > 33) return 'archer';
   return 'warrior';
-};
-
-// Get random enemy type based on wave (higher waves = more variety)
-export const getRandomEnemyType = (wave: number): EnemyType => {
-  const rand = Math.random();
-
-  // Wave 8-10: HARD MODE - No Normals!
-  if (wave >= 8) {
-    if (rand < 0.33) return 'tank';
-    if (rand < 0.66) return 'fast';
-    return 'flying';
-  }
-
-  // Mid Game
-  if (wave >= 5) {
-    if (rand < 0.20) return 'tank';
-    if (rand < 0.40) return 'fast';
-    if (rand < 0.50) return 'flying';
-    return 'normal';
-  }
-
-  // Early Game
-  if (wave >= 3 && rand < 0.2) return 'fast';
-  return 'normal';
 };

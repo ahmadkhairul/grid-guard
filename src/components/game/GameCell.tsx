@@ -1,5 +1,5 @@
-import { memo, DragEvent, useState } from 'react';
-import { isPathCell, DEFENDER_CONFIGS, CELL_SIZE } from '@/config/gameConfig';
+import { memo, DragEvent } from 'react';
+import { isPathCell, DEFENDER_CONFIGS } from '@/config/gameConfig';
 import { Defender, DefenderType } from '@/types/game';
 import { cn } from '@/lib/utils';
 

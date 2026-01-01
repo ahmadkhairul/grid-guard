@@ -1,5 +1,5 @@
-import { GameState, Enemy, Defender, Achievement, DefenderType, ACHIEVEMENTS } from '@/types/game';
-import { MAX_WAVE, ENEMY_PATH, FLYING_PATH, getBossImmunity, GRID_WIDTH } from '@/config/gameConfig';
+import { GameState, Enemy, Achievement, DefenderType, ACHIEVEMENTS } from '@/types/game';
+import { MAX_WAVE, ENEMY_PATH, getBossImmunity } from '@/config/gameConfig';
 import { getEnemiesPerWave, getNextEnemyType, createEnemy } from '@/logic/waveLogic';
 
 export const updateGameTick = (
@@ -52,7 +52,7 @@ export const updateGameTick = (
 
     // 2. Move Enemies
     newEnemies = newEnemies.map(enemy => {
-        const path = enemy.isFlying ? FLYING_PATH : ENEMY_PATH;
+        const path = enemy.path || ENEMY_PATH;
         const nextPathIndex = enemy.pathIndex + enemy.speed * speedMultiplier * (deltaTime / 1000);
 
         if (nextPathIndex >= path.length - 1) {
@@ -123,7 +123,7 @@ export const updateGameTick = (
                 // Push Back 2 tiles (approx)
                 newEnemies = newEnemies.map(e => {
                     if (e.id !== target.id) return e;
-                    const path = e.isFlying ? FLYING_PATH : ENEMY_PATH;
+                    const path = e.path || ENEMY_PATH;
                     const pushedIndex = Math.max(0, e.pathIndex - 2.0);
                     // Re-calc Position immediately for visual snap
                     const idx = Math.floor(pushedIndex);

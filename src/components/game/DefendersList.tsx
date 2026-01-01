@@ -8,10 +8,9 @@ interface DefendersListProps {
   defenders: Defender[];
   coins: number;
   onUpgrade: (defenderId: string) => void;
-  onSell: (defenderId: string) => void;
 }
 
-export const DefendersList = memo(({ defenders, coins, onUpgrade, onSell }: DefendersListProps) => {
+export const DefendersList = memo(({ defenders, coins, onUpgrade }: DefendersListProps) => {
   if (defenders.length === 0) {
     return (
       <div className="bg-card rounded-lg p-3 border border-border/50">

@@ -27,7 +27,7 @@ export const useGameLoop = (onAttack?: (defenderType: DefenderType) => void) => 
     setGameState(p => ({ ...p, isPlaying: true, isPaused: false }));
   }, [setGameState]);
   const selectDefender = useCallback((type: DefenderType | null) => setGameState(p => ({ ...p, selectedDefender: type })), [setGameState]);
-  const sellDefender = useCallback((id: string) => { /* Sell Removed per design but keeping signature if needed or can remove */ }, []);
+
   const getDefenderCount = useCallback((type: DefenderType, defenders: Defender[]) => defenders.filter(d => d.type === type).length, []);
 
   // Main Loop
@@ -48,7 +48,7 @@ export const useGameLoop = (onAttack?: (defenderType: DefenderType) => void) => 
 
   return {
     gameState, startGame, pauseGame, resetGame, resumeGame,
-    selectDefender, placeDefender, upgradeDefender, sellDefender,
+    selectDefender, placeDefender, upgradeDefender,
     finishLoading, attackAnimations: attackAnimationsRef.current,
     getDefenderCount, speedMultiplier, toggleSpeed,
     dismissAchievement: () => setGameState(p => ({ ...p, lastUnlockedAchievement: null })),

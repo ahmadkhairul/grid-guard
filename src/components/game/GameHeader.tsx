@@ -1,5 +1,5 @@
 import { memo } from 'react';
-import { Coins, Heart, Waves, Play, Pause, RotateCcw, HelpCircle, FastForward } from 'lucide-react';
+import { Coins, Heart, Waves, Play, Pause, RotateCcw, HelpCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface GameHeaderProps {

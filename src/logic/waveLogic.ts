@@ -1,5 +1,5 @@
 import { Enemy, EnemyType } from '@/types/game';
-import { MAX_WAVE, ENEMY_CONFIGS, ENEMY_PATH, FLYING_PATH, getBossImmunity, getRandomEnemyType } from '@/config/gameConfig';
+import { ENEMY_CONFIGS, ENEMY_PATH, generateFlyingPath, getBossImmunity } from '@/config/gameConfig';
 
 const generateEnemyId = () => `enemy-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
@@ -52,10 +52,8 @@ export const getNextEnemyType = (wave: number, enemiesSpawned: number): EnemyTyp
         return 'flying';
     }
 
-    // Regular Waves Distribution
     const rand = Math.random();
 
-    // Late Game (16-24): Everything
     if (wave > 15) {
         if (rand < 0.15) return 'healer';
         if (rand < 0.30) return 'stunner';
@@ -65,16 +63,19 @@ export const getNextEnemyType = (wave: number, enemiesSpawned: number): EnemyTyp
         return 'fast';
     }
 
-    // Mid Game (8-14): Introduce Stunner/Healer
-    if (wave > 7) {
+    if (wave > 10) {
         if (rand < 0.15) return 'healer';
-        if (rand < 0.25) return 'stunner';
         if (rand < 0.50) return 'tank';
         if (rand < 0.75) return 'flying';
         return 'fast';
     }
 
-    // Early Game
+    if (wave > 7) {
+        if (rand < 0.50) return 'tank';
+        if (rand < 0.75) return 'flying';
+        return 'fast';
+    }
+
     if (wave >= 3) {
         if (rand < 0.2) return 'tank';
         if (rand < 0.4) return 'fast';
@@ -90,7 +91,9 @@ export const createEnemy = (type: EnemyType, wave: number): Enemy => {
     const baseSpeed = 0.5 + wave * 0.1;
     const baseReward = 8 + wave * 1;
 
-    const startPath = config.isFlying ? FLYING_PATH[0] : ENEMY_PATH[0];
+    // Generate unique path for flying enemies
+    const flyingPath = config.isFlying ? generateFlyingPath() : undefined;
+    const startPath = flyingPath ? flyingPath[0] : ENEMY_PATH[0];
 
     return {
         id: generateEnemyId(),
@@ -105,5 +108,6 @@ export const createEnemy = (type: EnemyType, wave: number): Enemy => {
             type === 'boss_warrior' ? 'warrior' :
                 type === 'boss_archer' ? 'archer' : undefined,
         isFlying: config.isFlying,
+        path: flyingPath, // Store the unique path
     };
 };

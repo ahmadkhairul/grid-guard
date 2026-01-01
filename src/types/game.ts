@@ -17,6 +17,7 @@ export interface Enemy {
   immuneTo?: DefenderType;
   isHit?: boolean;
   isFlying?: boolean;
+  path?: Position[]; // Custom path for flying enemies
 }
 
 export interface Defender {
@@ -42,7 +43,6 @@ export interface DefenderConfig {
   attackSpeed: number;
   emoji: string;
   upgradeCost: number;
-  sellValue: number;
 }
 
 export interface Achievement {

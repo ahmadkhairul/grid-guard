@@ -1,6 +1,5 @@
 import { memo, useEffect } from 'react';
 import { GameNotification } from '@/types/game';
-import { Trophy, AlertTriangle, Info, Bell } from 'lucide-react';
 
 interface NotificationToastProps {
   notification: GameNotification | null;

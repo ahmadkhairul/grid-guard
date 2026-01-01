@@ -13,7 +13,6 @@ interface MobileBottomBarProps {
   onDragEnd: () => void;
   defenders: Defender[];
   onUpgrade: (id: string) => void;
-  onSell: (id: string) => void;
   unlockedDefenders: DefenderType[];
 }
 
@@ -27,7 +26,6 @@ export const MobileBottomBar = memo(({
   onDragEnd,
   defenders,
   onUpgrade,
-  onSell,
   unlockedDefenders,
 }: MobileBottomBarProps) => {
   const [activePanel, setActivePanel] = useState<PanelType>(null);
@@ -76,7 +74,6 @@ export const MobileBottomBar = memo(({
               defenders={defenders}
               coins={coins}
               onUpgrade={onUpgrade}
-              onSell={onSell}
             />
           )}
         </div>
