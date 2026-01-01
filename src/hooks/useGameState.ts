@@ -73,10 +73,13 @@ export const useGameState = () => {
         });
     }, []);
 
+    const dismissNotification = useCallback(() => setGameState(prev => ({ ...prev, notification: null })), []);
+    const clearScreenFlash = useCallback(() => setGameState(prev => ({ ...prev, screenFlash: null })), []);
+
     return {
         gameState, setGameState, speedMultiplier, toggleSpeed,
         enemiesSpawnedRef, resetGame, placeDefender, upgradeDefender,
-        dismissNotification: () => setGameState(prev => ({ ...prev, notification: null })),
-        clearScreenFlash: () => setGameState(prev => ({ ...prev, screenFlash: null })),
+        dismissNotification,
+        clearScreenFlash,
     };
 };

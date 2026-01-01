@@ -4,7 +4,7 @@ export const GRID_WIDTH = 10;
 export const GRID_HEIGHT = 7;
 export const CELL_SIZE = 64;
 export const MAX_WAVE = 25;
-export const MAX_PER_TYPE = 5; // Hard limit for ALL towers
+export const MAX_PER_TYPE = 10;
 export const MAX_LEVEL = 20;
 
 export const ENEMY_PATH: Position[] = [
