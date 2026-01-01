@@ -104,12 +104,20 @@ export const GameCell = memo(({
       {defender && (
         <div 
           className={cn(
-            'defender-unit text-2xl',
-            isAttacking && 'animate-defender-attack'
+            'defender-unit text-2xl relative',
+            isAttacking && 'animate-defender-attack',
+            defender.stunnedUntil && 'opacity-70 grayscale'
           )}
           style={{ width: cellSize * 0.75, height: cellSize * 0.75 }}
         >
           {DEFENDER_CONFIGS[defender.type].emoji}
+          
+          {defender.stunnedUntil && (
+            <div className="absolute -top-4 left-1/2 -translate-x-1/2 animate-bounce z-20">
+               <span className="text-xl drop-shadow-md">⚡</span>
+            </div>
+          )}
+
           {defender.level > 1 && (
             <span className="absolute -top-1 -right-1 bg-accent text-accent-foreground text-[10px] rounded-full w-4 h-4 flex items-center justify-center font-bold z-10">
               {defender.level}

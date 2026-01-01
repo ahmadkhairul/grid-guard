@@ -11,6 +11,7 @@ interface ShopPanelProps {
   onDragStart: (type: DefenderType) => void;
   onDragEnd: () => void;
   defenders: Defender[];
+  unlockedDefenders: DefenderType[];
 }
 
 export const ShopPanel = memo(({ 
@@ -20,6 +21,7 @@ export const ShopPanel = memo(({
   onDragStart,
   onDragEnd,
   defenders,
+  unlockedDefenders,
 }: ShopPanelProps) => {
   
   const getDefenderCount = (type: DefenderType) => {
@@ -66,7 +68,9 @@ export const ShopPanel = memo(({
       <h2 className="font-game text-xs text-primary mb-3 tracking-wide hidden lg:block">SHOP</h2>
       
       <div className="space-y-2">
-        {Object.values(DEFENDER_CONFIGS).map(config => {
+        {Object.values(DEFENDER_CONFIGS)
+          .filter(config => unlockedDefenders.includes(config.type))
+          .map(config => {
           const canAfford = coins >= config.cost;
           const isSelected = selectedDefender === config.type;
           const currentCount = getDefenderCount(config.type);

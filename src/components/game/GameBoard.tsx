@@ -42,7 +42,7 @@ export const GameBoard = memo(({
       const totalGaps = (GRID_WIDTH - 1) * gap;
       const availableWidth = containerWidth - padding - totalGaps;
       const newCellSize = Math.floor(availableWidth / GRID_WIDTH);
-      setCellSize(Math.max(32, Math.min(newCellSize, 80))); // Min 32px, max 80px
+      setCellSize(Math.max(24, Math.min(newCellSize, 80))); // Min 24px, max 80px
     };
     
     updateCellSize();

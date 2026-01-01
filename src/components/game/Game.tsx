@@ -10,9 +10,11 @@ import { TutorialModal } from './TutorialModal';
 import { LoadingScreen } from './LoadingScreen';
 import { MobileBottomBar } from './MobileBottomBar';
 import { AchievementToast } from './AchievementToast';
+import { NotificationToast } from './NotificationToast'; // New Component
 import { DefenderType } from '@/types/game';
 import { MAX_WAVE } from '@/config/gameConfig';
 import { Volume2, VolumeX, Pause } from 'lucide-react';
+import { cn } from '@/lib/utils';
 
 export const Game = () => {
   const { playAttackSound, playBgMusic, stopBgMusic, toggleMute, isMuted } = useAudio();
@@ -32,6 +34,8 @@ export const Game = () => {
     toggleSpeed,
     resumeGame,
     dismissAchievement,
+    dismissNotification, // New
+    clearScreenFlash, // New
   } = useGameLoop(playAttackSound);
 
   const [showTutorial, setShowTutorial] = useState(false);
@@ -45,6 +49,14 @@ export const Game = () => {
       stopBgMusic();
     }
   }, [gameState.isPlaying, isMuted, playBgMusic, stopBgMusic]);
+
+  // Handle Screen Flash
+  useEffect(() => {
+      if (gameState.screenFlash) {
+          const timer = setTimeout(clearScreenFlash, 500); // Clear after 0.5s
+          return () => clearTimeout(timer);
+      }
+  }, [gameState.screenFlash, clearScreenFlash]);
 
   const handleDragStart = useCallback((type: DefenderType) => {
     setDraggedDefender(type);
@@ -66,7 +78,15 @@ export const Game = () => {
   }
 
   return (
-    <div className="h-[100dvh] bg-background flex flex-col overflow-hidden">
+    <div className="h-[100dvh] bg-background flex flex-col overflow-hidden relative">
+      {/* Screen Flash Overlay */}
+      {gameState.screenFlash && (
+        <div className={cn(
+            "fixed inset-0 pointer-events-none z-[60] transition-opacity duration-500",
+            gameState.screenFlash === 'heal' ? 'bg-green-500/20' : 'bg-red-500/20'
+        )} />
+      )}
+
       {/* Main Content */}
       <div className="flex-1 flex flex-col lg:flex-row min-h-0">
         {/* Left Section - Game Area */}
@@ -151,6 +171,7 @@ export const Game = () => {
             onDragStart={handleDragStart}
             onDragEnd={handleDragEnd}
             defenders={gameState.defenders}
+            unlockedDefenders={gameState.unlockedDefenders}
           />
           <DefendersList
             defenders={gameState.defenders}
@@ -171,6 +192,7 @@ export const Game = () => {
         defenders={gameState.defenders}
         onUpgrade={upgradeDefender}
         onSell={sellDefender}
+        unlockedDefenders={gameState.unlockedDefenders}
       />
 
       {/* Pause Modal */}
@@ -239,7 +261,26 @@ export const Game = () => {
       {/* Tutorial Modal */}
       <TutorialModal open={showTutorial} onOpenChange={setShowTutorial} />
 
-      {/* Achievement Toast */}
+      {/* Notification Toast (Replaces AchievementToast) */}
+      <NotificationToast 
+        notification={gameState.notification} 
+        onClose={dismissNotification} 
+      />
+      
+      {/* Keep AchievementToast for backward compat if needed, or remove? 
+          Code above uses notification state. Achievement logic in updateLogic sets notification?
+          No, updateLogic sets 'achievementUnlocked' field.
+          I should display 'achievementUnlocked' as a Notification?
+          Wait, updateLogic sets 'lastUnlockedAchievement' in GameState.
+          So I still need AchievementToast OR I convert Achievement to Notification.
+          Step 677 line 116 sets: lastUnlockedAchievement: achievementUnlocked
+          The user wanted "use achievementToast as global toast".
+          I implemented NotificationToast.
+          I should show NotificationToast if notification exists.
+          Should I show AchievementToast if lastUnlockedAchievement exists?
+          Yes, unless I refactor logic to convert achievement to notification.
+          I'll keep both for now to be safe, they stack z-index.
+      */}
       <AchievementToast 
         achievement={gameState.lastUnlockedAchievement} 
         onClose={dismissAchievement} 

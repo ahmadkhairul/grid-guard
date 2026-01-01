@@ -4,37 +4,84 @@ import { MAX_WAVE, ENEMY_CONFIGS, ENEMY_PATH, FLYING_PATH, getBossImmunity, getR
 const generateEnemyId = () => `enemy-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
 export const getEnemiesPerWave = (wave: number): number => {
-    const isBossWave = wave === MAX_WAVE;
-    const isMiniBossWave = wave === 7;
-
-    if (isBossWave) {
-        return 2 + 15; // 2 Bosses + 15 Tanks
-    } else if (isMiniBossWave) {
-        return 1 + 10; // 1 Boss + 4 Tank + 4 Fast + 2 Flying = 11
-    } else {
-        return 8 + wave * 3;
-    }
+    if (wave === 25) return 35; // Demon + Mix
+    if (wave === 20) return 25; // Assassins + Thieves
+    if (wave === 15) return 20; // Golem + Healers
+    if (wave === 10) return 17; // Twin Bosses
+    if (wave === 7) return 11;  // Mini Boss
+    // Scaling: 8, 11, 14, 17, 20...
+    return 8 + wave * 3;
 };
 
 export const getNextEnemyType = (wave: number, enemiesSpawned: number): EnemyType => {
-    const isBossWave = wave === MAX_WAVE;
-    const isMiniBossWave = wave === 7;
-
-    if (isBossWave) {
-        if (enemiesSpawned === 1) return 'boss_warrior';
-        if (enemiesSpawned === 2) return 'boss_archer';
-        return 'tank'; // The 15 minions
+    // Wave 25: Demon Lord
+    if (wave === 25) {
+        if (enemiesSpawned === 1) return 'boss_demon';
+        if (enemiesSpawned <= 3) return 'boss_golem'; // 2 Golems
+        if (enemiesSpawned <= 5) return 'boss_assassin'; // 2 Assassins
+        const remainder = enemiesSpawned % 3;
+        return remainder === 0 ? 'stunner' : remainder === 1 ? 'healer' : 'tank';
     }
 
-    if (isMiniBossWave) {
-        // 1 Boss -> 4 Tank -> 4 Fast -> 2 Flying
+    // Wave 20: Assassins
+    if (wave === 20) {
+        if (enemiesSpawned <= 2) return 'boss_assassin'; // 2 Assassins
+        if (enemiesSpawned <= 12) return 'thief'; // 10 Thieves
+        return 'fast'; // Rest Fast
+    }
+
+    // Wave 15: Iron Golem
+    if (wave === 15) {
+        if (enemiesSpawned === 1) return 'boss_golem';
+        if (enemiesSpawned <= 6) return 'healer'; // 5 Healers
+        return 'tank'; // Rest Tanks
+    }
+
+    // Wave 10: Twin Bosses (Warrior/Archer)
+    if (wave === 10) {
+        if (enemiesSpawned === 1) return 'boss_warrior';
+        if (enemiesSpawned === 2) return 'boss_archer';
+        return 'tank';
+    }
+
+    // Wave 7: Mini Boss
+    if (wave === 7) {
         if (enemiesSpawned === 1) return 'boss';
         if (enemiesSpawned <= 5) return 'tank';
         if (enemiesSpawned <= 9) return 'fast';
         return 'flying';
     }
 
-    return getRandomEnemyType(wave);
+    // Regular Waves Distribution
+    const rand = Math.random();
+
+    // Late Game (16-24): Everything
+    if (wave > 15) {
+        if (rand < 0.15) return 'healer';
+        if (rand < 0.30) return 'stunner';
+        if (rand < 0.45) return 'thief';
+        if (rand < 0.65) return 'tank';
+        if (rand < 0.85) return 'flying';
+        return 'fast';
+    }
+
+    // Mid Game (8-14): Introduce Stunner/Healer
+    if (wave > 7) {
+        if (rand < 0.15) return 'healer';
+        if (rand < 0.25) return 'stunner';
+        if (rand < 0.50) return 'tank';
+        if (rand < 0.75) return 'flying';
+        return 'fast';
+    }
+
+    // Early Game
+    if (wave >= 3) {
+        if (rand < 0.2) return 'tank';
+        if (rand < 0.4) return 'fast';
+        return 'normal';
+    }
+
+    return 'normal';
 };
 
 export const createEnemy = (type: EnemyType, wave: number): Enemy => {

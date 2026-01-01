@@ -1,6 +1,6 @@
 import { memo } from 'react';
 import { Enemy } from '@/types/game';
-import { CELL_SIZE, DEFENDER_CONFIGS, ENEMY_CONFIGS } from '@/config/gameConfig';
+import { DEFENDER_CONFIGS, ENEMY_CONFIGS } from '@/config/gameConfig';
 import { cn } from '@/lib/utils';
 
 interface EnemyUnitProps {
@@ -30,8 +30,7 @@ export const EnemyUnit = memo(({ enemy, cellSize }: EnemyUnitProps) => {
 
   const typeLabel = getTypeLabel();
   const size = isBoss ? 14 : enemy.type === 'tank' ? 12 : 10;
-  
-  const GAP_SIZE = 4; // gap-1 is 4px 
+  const GAP_SIZE = 4; 
   
   return (
     <div

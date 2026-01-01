@@ -14,6 +14,7 @@ interface MobileBottomBarProps {
   defenders: Defender[];
   onUpgrade: (id: string) => void;
   onSell: (id: string) => void;
+  unlockedDefenders: DefenderType[];
 }
 
 type PanelType = 'shop' | 'defender' | null;
@@ -27,6 +28,7 @@ export const MobileBottomBar = memo(({
   defenders,
   onUpgrade,
   onSell,
+  unlockedDefenders,
 }: MobileBottomBarProps) => {
   const [activePanel, setActivePanel] = useState<PanelType>(null);
 
@@ -66,6 +68,7 @@ export const MobileBottomBar = memo(({
               onDragStart={onDragStart}
               onDragEnd={onDragEnd}
               defenders={defenders}
+              unlockedDefenders={unlockedDefenders}
             />
           )}
           {activePanel === 'defender' && (

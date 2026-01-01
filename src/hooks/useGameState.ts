@@ -10,6 +10,7 @@ export const useGameState = () => {
         isPlaying: false, selectedDefender: null, isLoading: true,
         gameWon: false, isPaused: false, totalMined: 0,
         unlockedAchievements: [], lastUnlockedAchievement: null, floatingTexts: [],
+        notification: null, unlockedDefenders: ['warrior', 'archer', 'miner'], screenFlash: null,
     });
 
     const [speedMultiplier, setSpeedMultiplier] = useState(1);
@@ -23,6 +24,7 @@ export const useGameState = () => {
             isPlaying: false, selectedDefender: null, isLoading: false,
             gameWon: false, isPaused: false, totalMined: 0,
             unlockedAchievements: [], lastUnlockedAchievement: null, floatingTexts: [],
+            notification: null, unlockedDefenders: ['warrior', 'archer', 'miner'], screenFlash: null,
         });
         enemiesSpawnedRef.current = 0;
     }, []);
@@ -73,6 +75,8 @@ export const useGameState = () => {
 
     return {
         gameState, setGameState, speedMultiplier, toggleSpeed,
-        enemiesSpawnedRef, resetGame, placeDefender, upgradeDefender
+        enemiesSpawnedRef, resetGame, placeDefender, upgradeDefender,
+        dismissNotification: () => setGameState(prev => ({ ...prev, notification: null })),
+        clearScreenFlash: () => setGameState(prev => ({ ...prev, screenFlash: null })),
     };
 };

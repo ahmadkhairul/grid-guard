@@ -3,7 +3,7 @@ import { DefenderConfig, Position, DefenderType, EnemyType } from '@/types/game'
 export const GRID_WIDTH = 10;
 export const GRID_HEIGHT = 7;
 export const CELL_SIZE = 64;
-export const MAX_WAVE = 10;
+export const MAX_WAVE = 25;
 export const MAX_PER_TYPE = 5; // Hard limit for ALL towers
 export const MAX_LEVEL = 20;
 
@@ -79,6 +79,17 @@ export const DEFENDER_CONFIGS: Record<DefenderType, DefenderConfig> = {
     upgradeCost: 50,
     sellValue: 50,
   },
+  stone: {
+    type: 'stone',
+    name: 'Stone Cannon',
+    cost: 300,
+    damage: 50,
+    range: 2.0,
+    attackSpeed: 2000,
+    emoji: '🗿', // or 🌋 or 🏰
+    upgradeCost: 150,
+    sellValue: 150,
+  },
 };
 
 // Enemy type configurations
@@ -98,6 +109,14 @@ export const ENEMY_CONFIGS: Record<EnemyType, EnemyConfig> = {
   boss: { emoji: '👹', hpMultiplier: 25, speedMultiplier: 0.8, rewardMultiplier: 20 },
   boss_warrior: { emoji: '🤖', hpMultiplier: 25, speedMultiplier: 1.0, rewardMultiplier: 20 },
   boss_archer: { emoji: '👻', hpMultiplier: 25, speedMultiplier: 1.8, rewardMultiplier: 20 },
+  // New Enemies
+  thief: { emoji: '🦹', hpMultiplier: 1.0, speedMultiplier: 2.5, rewardMultiplier: 3.0 }, // Fast, Steals Gold
+  healer: { emoji: '🧚', hpMultiplier: 2.5, speedMultiplier: 1.0, rewardMultiplier: 2.0 }, // Heals allies
+  stunner: { emoji: '🦇', hpMultiplier: 1.5, speedMultiplier: 1.5, rewardMultiplier: 2.5, isFlying: true }, // Stuns towers
+  // New Bosses
+  boss_golem: { emoji: '🦍', hpMultiplier: 50, speedMultiplier: 0.5, rewardMultiplier: 50 }, // Wave 15
+  boss_assassin: { emoji: '🥷', hpMultiplier: 30, speedMultiplier: 3.0, rewardMultiplier: 40 }, // Wave 20
+  boss_demon: { emoji: '👿', hpMultiplier: 100, speedMultiplier: 1.0, rewardMultiplier: 100 }, // Wave 25
 };
 
 export const isPathCell = (x: number, y: number): boolean => {
