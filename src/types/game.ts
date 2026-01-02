@@ -99,4 +99,5 @@ export interface GameState {
   // Checkpoint System
   lastCheckpoint: number; // Last checkpoint wave (5, 10, 15, 20)
   checkpointCoins: number; // Coins at checkpoint
+  checkpointDefenders: Defender[]; // Defenders at checkpoint
 }

@@ -109,11 +109,9 @@ export const ENEMY_CONFIGS: Record<EnemyType, EnemyConfig> = {
   boss: { emoji: '👹', hpMultiplier: 25, speedMultiplier: 0.8, rewardMultiplier: 20 },
   boss_warrior: { emoji: '🤖', hpMultiplier: 25, speedMultiplier: 1.0, rewardMultiplier: 20 },
   boss_archer: { emoji: '👻', hpMultiplier: 25, speedMultiplier: 1.8, rewardMultiplier: 20 },
-  // New Enemies
-  thief: { emoji: '🦹', hpMultiplier: 1.0, speedMultiplier: 2.5, rewardMultiplier: 3.0 }, // Fast, Steals Gold
+  thief: { emoji: '🦹', hpMultiplier: 1, speedMultiplier: 7.0, rewardMultiplier: 3.0 }, // Fast, Steals Gold
   healer: { emoji: '🧚', hpMultiplier: 2.5, speedMultiplier: 1.0, rewardMultiplier: 2.0 }, // Heals allies
   stunner: { emoji: '🦇', hpMultiplier: 1.5, speedMultiplier: 1.5, rewardMultiplier: 2.5, isFlying: true }, // Stuns towers
-  // New Bosses
   boss_golem: { emoji: '🦍', hpMultiplier: 50, speedMultiplier: 0.5, rewardMultiplier: 50 }, // Wave 15
   boss_assassin: { emoji: '🥷', hpMultiplier: 30, speedMultiplier: 3.0, rewardMultiplier: 40 }, // Wave 20
   boss_demon: { emoji: '👿', hpMultiplier: 100, speedMultiplier: 1.0, rewardMultiplier: 100 }, // Wave 25

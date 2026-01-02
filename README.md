@@ -21,15 +21,14 @@ An epic tower defense game built with React, TypeScript, and Vite. Defend the gr
 | ⛏️ **Miner** | Generates gold over time | Default |
 | 🗿 **Stone Cannon** | Knockback - pushes enemies back 2 tiles | Beat Wave 15 |
 
-### Enemy Types
 | Enemy | Special Ability |
 |-------|----------------|
 | 👾 Normal | Basic enemy |
 | 🏃 Fast | 2.2x movement speed |
 | 🛡️ Tank | 12x health |
 | 🦅 Flying | Takes alternate path |
-| 🦹 **Thief** | Steals 1000 gold if escapes |
-| 🧚 **Healer** | Heals all enemies +200 HP on spawn |
+| 🦹 **Thief** | **ULTRA FAST** (7x speed) - Steals 5000 gold but doesn't reduce lives |
+| 🧚 **Healer** | Heals all enemies +500 HP on spawn |
 | 🦇 **Stunner** | Stuns nearby towers for 3s on death |
 | 👹 **Boss** | Mini-boss with immunity phases |
 | 🦍 **Iron Golem** | Wave 15 boss - extreme HP |
@@ -96,8 +95,8 @@ npm run preview
 - 🎯 **Mix Tower Types** - Combine Warriors (melee) and Archers (range) for coverage
 - ⚡ **Upgrade Strategically** - Focus upgrades on key chokepoints
 - 🗿 **Unlock Stone Cannon** - Beat Wave 15 to unlock the powerful knockback tower
-- 🦹 **Watch for Thieves** - Don't let them escape or you'll lose 1000 gold!
-- 🧚 **Kill Healers Fast** - They heal all enemies when they spawn
+- 🦹 **Watch for Thieves** - Ultra fast (7x speed)! Won't reduce lives but will steal 5000 gold!
+- 🧚 **Kill Healers Fast** - They heal all enemies +500 HP when they spawn
 
 ## 🛠️ Tech Stack
 

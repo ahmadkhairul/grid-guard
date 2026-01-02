@@ -37,14 +37,14 @@ export const updateGameTick = (
         // HEALER LOGIC: Global Heal on Spawn
         if (newEnemyType === 'healer') {
             newEnemies.forEach(e => {
-                const healAmount = 200;
+                const healAmount = 500;
                 if (e.hp < e.maxHp) {
                     e.hp = Math.min(e.maxHp, e.hp + healAmount);
                     e.healGlow = true; // Add glow effect
-                    addText(e.position.x, e.position.y, '+200', 'text-green-500');
+                    addText(e.position.x, e.position.y, '+500', 'text-green-500');
                 }
             });
-            notification = { id: `heal-${Date.now()}`, title: 'ENEMY HEALED!', description: 'All enemies recovered 200 HP!', icon: '🧚', color: 'text-green-500' };
+            notification = { id: `heal-${Date.now()}`, title: 'ENEMY HEALED!', description: 'All enemies recovered 500 HP!', icon: '🧚', color: 'text-green-500' };
         }
 
         newEnemies.push(newEnemy);
@@ -56,15 +56,17 @@ export const updateGameTick = (
         const nextPathIndex = enemy.pathIndex + enemy.speed * speedMultiplier * (deltaTime / 1000);
 
         if (nextPathIndex >= path.length - 1) {
+            // THIEF LOGIC: Steal Gold (no life reduction)
+            if (enemy.type === 'thief') {
+                newCoins = Math.max(0, newCoins - 5000);
+                addText(enemy.position.x, enemy.position.y, '-5000', 'text-red-600 font-bold');
+                notification = { id: `thief-${Date.now()}`, title: 'ROBBERY!', description: 'A Thief stole 5000 Gold!', icon: '🦹', color: 'text-red-500' };
+                return null; // Remove thief without reducing lives
+            }
+
+            // Other enemies reduce lives
             const isBoss = enemy.type.includes('boss');
             newLives -= isBoss ? 5 : 1;
-
-            // THIEF LOGIC: Steal Gold
-            if (enemy.type === 'thief') {
-                newCoins = Math.max(0, newCoins - 1000);
-                addText(enemy.position.x, enemy.position.y, '-1000', 'text-red-600 font-bold');
-                notification = { id: `thief-${Date.now()}`, title: 'ROBBERY!', description: 'A Thief stole 1000 Gold!', icon: '🦹', color: 'text-red-500' };
-            }
 
             return null;
         }
@@ -208,7 +210,19 @@ export const updateGameTick = (
         }
     }
 
-    if (newLives <= 0) return { ...prev, lives: 0, isPlaying: false, enemies: [], lastCheckpoint: prev.lastCheckpoint, checkpointCoins: prev.checkpointCoins };
+    if (newLives <= 0) return { ...prev, lives: 0, isPlaying: false, enemies: [], lastCheckpoint: prev.lastCheckpoint, checkpointCoins: prev.checkpointCoins, checkpointDefenders: prev.checkpointDefenders };
+
+    // Determine checkpoint values for return
+    let returnCheckpoint = prev.lastCheckpoint;
+    let returnCheckpointCoins = prev.checkpointCoins;
+    let returnCheckpointDefenders = prev.checkpointDefenders;
+
+    // Update checkpoint if we just completed a checkpoint wave
+    if ([5, 10, 15, 20].includes(newWave) && newEnemies.length === 0 && enemiesSpawnedRef.current >= enemiesPerWave) {
+        returnCheckpoint = newWave;
+        returnCheckpointCoins = newCoins;
+        returnCheckpointDefenders = updatedDefenders.map(d => ({ ...d })); // Deep copy
+    }
 
     return {
         ...prev, enemies: newEnemies, defenders: updatedDefenders, coins: newCoins, lives: newLives,
@@ -218,7 +232,8 @@ export const updateGameTick = (
         notification,
         unlockedDefenders: newUnlockedDefenders,
         screenFlash,
-        lastCheckpoint: prev.lastCheckpoint,
-        checkpointCoins: prev.checkpointCoins,
+        lastCheckpoint: returnCheckpoint,
+        checkpointCoins: returnCheckpointCoins,
+        checkpointDefenders: returnCheckpointDefenders,
     };
 };

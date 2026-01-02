@@ -11,7 +11,7 @@ export const useGameState = () => {
         gameWon: false, isPaused: false, totalMined: 0,
         unlockedAchievements: [], lastUnlockedAchievement: null, floatingTexts: [],
         notification: null, unlockedDefenders: ['warrior', 'archer', 'miner'], screenFlash: null,
-        lastCheckpoint: 0, checkpointCoins: 100,
+        lastCheckpoint: 0, checkpointCoins: 100, checkpointDefenders: [],
     });
 
     const [speedMultiplier, setSpeedMultiplier] = useState(1);
@@ -26,7 +26,7 @@ export const useGameState = () => {
             gameWon: false, isPaused: false, totalMined: 0,
             unlockedAchievements: [], lastUnlockedAchievement: null, floatingTexts: [],
             notification: null, unlockedDefenders: ['warrior', 'archer', 'miner'], screenFlash: null,
-            lastCheckpoint: 0, checkpointCoins: 100,
+            lastCheckpoint: 0, checkpointCoins: 100, checkpointDefenders: [],
         });
         enemiesSpawnedRef.current = 0;
     }, []);
@@ -83,7 +83,7 @@ export const useGameState = () => {
             coins: prev.checkpointCoins,
             wave: prev.lastCheckpoint,
             enemies: [],
-            defenders: [],
+            defenders: prev.checkpointDefenders.map(d => ({ ...d })), // Deep copy defenders
             lives: 10,
             isPlaying: false,
             selectedDefender: null,
@@ -99,6 +99,7 @@ export const useGameState = () => {
             screenFlash: null,
             lastCheckpoint: prev.lastCheckpoint,
             checkpointCoins: prev.checkpointCoins,
+            checkpointDefenders: prev.checkpointDefenders,
         }));
         enemiesSpawnedRef.current = 0;
     }, []);

@@ -52,7 +52,16 @@ export const getNextEnemyType = (wave: number, enemiesSpawned: number): EnemyTyp
         return 'flying';
     }
 
+
     const rand = Math.random();
+
+    if (wave > 20) {
+        if (rand < 0.20) return 'healer';      // 20% healers (constant healing)
+        if (rand < 0.55) return 'tank';        // 35% tanks (high HP)
+        if (rand < 0.70) return 'thief';       // 15% thieves (steal gold)
+        if (rand < 0.90) return 'stunner';     // 20% stunners (disable towers + flying)
+        return 'fast';                         // 10% fast (speed demons)
+    }
 
     if (wave > 15) {
         if (rand < 0.15) return 'healer';
