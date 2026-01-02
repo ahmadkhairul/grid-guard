@@ -116,16 +116,6 @@ export const Game = () => {
                       <Volume2 className="w-3.5 h-3.5 text-primary" />
                     )}
                   </button>
-                  {/* Speed Button */}
-                  <Button
-                    size="icon"
-                    variant={speedMultiplier > 1 ? "secondary" : "outline"}
-                    onClick={toggleSpeed}
-                    className="h-8 w-8"
-                    title="Toggle Speed"
-                  >
-                    <span className="font-bold text-xs">{speedMultiplier}x</span>
-                  </Button>
                 </div>
               </div>
               

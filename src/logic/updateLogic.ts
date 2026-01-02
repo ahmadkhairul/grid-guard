@@ -182,6 +182,11 @@ export const updateGameTick = (
         return { id: `w${wave}`, title: `WAVE ${wave}`, description: 'Prepare yourself!', icon: '⚔️' };
     };
 
+    // Checkpoint return values (default to previous)
+    let returnCheckpoint = prev.lastCheckpoint;
+    let returnCheckpointCoins = prev.checkpointCoins;
+    let returnCheckpointDefenders = prev.checkpointDefenders;
+
     if (newEnemies.length === 0 && enemiesSpawnedRef.current >= enemiesPerWave) {
         if (prev.wave >= MAX_WAVE) {
             gameWon = true;
@@ -192,12 +197,12 @@ export const updateGameTick = (
             enemiesSpawnedRef.current = 0;
             newCoins += 25 * prev.wave;
 
-            // CHECKPOINT LOGIC: Save checkpoint at waves 5, 10, 15, 20
-            let newCheckpoint = prev.lastCheckpoint;
-            let newCheckpointCoins = prev.checkpointCoins;
+            // CHECKPOINT LOGIC: Save checkpoint only on transition
             if ([5, 10, 15, 20].includes(newWave)) {
-                newCheckpoint = newWave;
-                newCheckpointCoins = newCoins;
+                returnCheckpoint = newWave;
+                returnCheckpointCoins = newCoins;
+                // Deep copy defenders to save the state exactly at start of wave
+                returnCheckpointDefenders = updatedDefenders.map(d => ({ ...d }));
                 notification = { id: `checkpoint-${newWave}`, title: 'CHECKPOINT SAVED!', description: `You can restart from Wave ${newWave}!`, icon: '💾', color: 'text-blue-500' };
             }
             // UNLOCK LOGIC: Beat Wave 15 -> Unlock Stone Cannon (Wave 16 Start)
@@ -211,18 +216,6 @@ export const updateGameTick = (
     }
 
     if (newLives <= 0) return { ...prev, lives: 0, isPlaying: false, enemies: [], lastCheckpoint: prev.lastCheckpoint, checkpointCoins: prev.checkpointCoins, checkpointDefenders: prev.checkpointDefenders };
-
-    // Determine checkpoint values for return
-    let returnCheckpoint = prev.lastCheckpoint;
-    let returnCheckpointCoins = prev.checkpointCoins;
-    let returnCheckpointDefenders = prev.checkpointDefenders;
-
-    // Update checkpoint if we just completed a checkpoint wave
-    if ([5, 10, 15, 20].includes(newWave) && newEnemies.length === 0 && enemiesSpawnedRef.current >= enemiesPerWave) {
-        returnCheckpoint = newWave;
-        returnCheckpointCoins = newCoins;
-        returnCheckpointDefenders = updatedDefenders.map(d => ({ ...d })); // Deep copy
-    }
 
     return {
         ...prev, enemies: newEnemies, defenders: updatedDefenders, coins: newCoins, lives: newLives,
