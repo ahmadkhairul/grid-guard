@@ -10,9 +10,10 @@ import { TutorialModal } from './TutorialModal';
 import { LoadingScreen } from './LoadingScreen';
 import { MobileBottomBar } from './MobileBottomBar';
 import { NotificationToast } from './NotificationToast'; // New Component
+import { ChangelogModal } from './ChangelogModal';
 import { DefenderType } from '@/types/game';
 import { MAX_WAVE, DEFENDER_CONFIGS, MAX_LEVEL } from '@/config/gameConfig';
-import { Volume2, VolumeX, Pause } from 'lucide-react';
+import { Volume2, VolumeX, Pause, History } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 export const Game = () => {
@@ -37,6 +38,7 @@ export const Game = () => {
   } = useGameLoop(playAttackSound);
 
   const [showTutorial, setShowTutorial] = useState(false);
+  const [showChangelog, setShowChangelog] = useState(false);
   const [draggedDefender, setDraggedDefender] = useState<DefenderType | null>(null);
   
   // Mobile Interaction States
@@ -153,6 +155,14 @@ export const Game = () => {
                     ) : (
                       <Volume2 className="w-3.5 h-3.5 text-primary" />
                     )}
+                  </button>
+                  
+                  <button
+                    onClick={() => setShowChangelog(true)}
+                    className="p-1.5 rounded-md bg-primary/20 hover:bg-primary/30 transition-colors border border-primary/30"
+                    title="Changelog / Updates"
+                  >
+                    <History className="w-3.5 h-3.5 text-primary" />
                   </button>
                 </div>
               </div>
@@ -300,9 +310,12 @@ export const Game = () => {
 
       {/* Tutorial Modal */}
       <TutorialModal open={showTutorial} onOpenChange={setShowTutorial} />
+      
+      {/* Changelog Modal */}
+      <ChangelogModal open={showChangelog} onOpenChange={setShowChangelog} />
 
       <NotificationToast 
-        notification={gameState.notification} 
+        notification={gameState.notification}  
         onClose={dismissNotification} 
       />
     </div>
