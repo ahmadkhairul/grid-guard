@@ -79,7 +79,7 @@ export const updateGameTick = (
         return {
             ...enemy, pathIndex: nextPathIndex,
             position: { x: currentPos.x + (nextPos.x - currentPos.x) * progress, y: currentPos.y + (nextPos.y - currentPos.y) * progress },
-            immuneTo: enemy.type === 'boss' ? getBossImmunity((enemy.hp / enemy.maxHp) * 100) : undefined,
+            immuneTo: getBossImmunity(enemy.type, (enemy.hp / enemy.maxHp) * 100),
             healGlow: false, // Clear glow after movement
         } as Enemy;
     }).filter((e): e is Enemy => e !== null);

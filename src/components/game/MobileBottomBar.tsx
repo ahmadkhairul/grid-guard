@@ -85,7 +85,7 @@ export const MobileBottomBar = memo(({
           <button
             onClick={() => togglePanel('shop')}
             className={cn(
-              "flex-1 flex items-center justify-center gap-2 py-3 transition-colors",
+              "h-16 flex-1 flex items-center justify-center gap-2 py-3 transition-colors",
               activePanel === 'shop' 
                 ? "bg-primary/20 text-primary" 
                 : "text-muted-foreground hover:bg-muted"

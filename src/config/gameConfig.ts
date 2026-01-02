@@ -126,8 +126,19 @@ export const getPathCellIndex = (x: number, y: number): number => {
 };
 
 // Boss immunity phases based on HP percentage
-export const getBossImmunity = (hpPercentage: number): DefenderType | undefined => {
-  if (hpPercentage > 66) return 'warrior';
-  if (hpPercentage > 33) return 'archer';
-  return 'warrior';
+export const getBossImmunity = (type: string, hpPercentage: number): DefenderType | undefined => {
+  // Iron Golem: Immune to Arrows below 50% HP (Hardened Skin)
+  if (type === 'boss_golem' && hpPercentage < 50) return 'archer';
+
+  // Assassin: Immune to Warriors above 50% HP (Too fast to hit)
+  if (type === 'boss_assassin' && hpPercentage > 50) return 'warrior';
+
+  // Demon Lord & Rest: Rotate immunities
+  if (type === 'boss' || type === 'boss_demon') {
+    if (hpPercentage > 66) return 'warrior';
+    if (hpPercentage > 33) return 'archer';
+    return 'warrior';
+  }
+
+  return undefined;
 };

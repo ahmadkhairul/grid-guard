@@ -1,6 +1,7 @@
-import { useState, useCallback, useRef } from 'react';
+import { useState, useCallback, useRef, useEffect } from 'react';
 import { GameState } from '@/types/game';
 import { DEFENDER_CONFIGS, isPathCell, MAX_PER_TYPE, MAX_LEVEL } from '@/config/gameConfig';
+import { saveGame, loadGame, clearSave } from '@/lib/storage';
 
 const generateDefenderId = () => `defender-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
@@ -17,9 +18,25 @@ export const useGameState = () => {
     const [speedMultiplier, setSpeedMultiplier] = useState(1);
     const enemiesSpawnedRef = useRef<number>(0);
 
+    // AUTO-SAVE: Load game on mount
+    useEffect(() => {
+        const saved = loadGame();
+        if (saved) {
+            setGameState(saved);
+        }
+    }, []);
+
+    // AUTO-SAVE: Save game on wave or coin change
+    useEffect(() => {
+        if (gameState.wave > 1 || gameState.coins !== 100) {
+            saveGame(gameState);
+        }
+    }, [gameState.wave, gameState.coins, gameState.defenders, gameState.lives, gameState.unlockedDefenders, gameState.unlockedAchievements]);
+
     const toggleSpeed = useCallback(() => setSpeedMultiplier(prev => (prev === 1 ? 2 : prev === 2 ? 3 : 1)), []);
 
     const resetGame = useCallback(() => {
+        clearSave(); // Clear local storage on reset
         setGameState({
             coins: 100, wave: 1, enemies: [], defenders: [], lives: 10,
             isPlaying: false, selectedDefender: null, isLoading: false,

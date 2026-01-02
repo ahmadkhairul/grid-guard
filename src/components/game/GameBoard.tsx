@@ -13,6 +13,8 @@ interface GameBoardProps {
   attackAnimations: Set<string>;
   draggedDefender: DefenderType | null;
   floatingTexts: FloatingText[];
+  interactionMode: 'normal' | 'upgrade';
+  selectedUnitId: string | null;
 }
 
 export const GameBoard = memo(({ 
@@ -24,6 +26,8 @@ export const GameBoard = memo(({
   attackAnimations,
   draggedDefender,
   floatingTexts,
+  interactionMode,
+  selectedUnitId,
 }: GameBoardProps) => {
   const [hoveredCell, setHoveredCell] = useState<{ x: number; y: number } | null>(null);
   const [draggedOverCell, setDraggedOverCell] = useState<{ x: number; y: number } | null>(null);
@@ -84,6 +88,8 @@ export const GameBoard = memo(({
             onDragLeave={() => setDraggedOverCell(null)}
             cellSize={cellSize}
             defenderIndex={defender ? defenders.findIndex(d => d.id === defender.id) : undefined}
+            interactionMode={interactionMode}
+            selectedUnitId={selectedUnitId}
           />
         </div>
       );

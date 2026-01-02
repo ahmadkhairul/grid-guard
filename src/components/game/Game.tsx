@@ -11,7 +11,7 @@ import { LoadingScreen } from './LoadingScreen';
 import { MobileBottomBar } from './MobileBottomBar';
 import { NotificationToast } from './NotificationToast'; // New Component
 import { DefenderType } from '@/types/game';
-import { MAX_WAVE } from '@/config/gameConfig';
+import { MAX_WAVE, DEFENDER_CONFIGS, MAX_LEVEL } from '@/config/gameConfig';
 import { Volume2, VolumeX, Pause } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -38,8 +38,46 @@ export const Game = () => {
 
   const [showTutorial, setShowTutorial] = useState(false);
   const [draggedDefender, setDraggedDefender] = useState<DefenderType | null>(null);
+  
+  // Mobile Interaction States
+  const [interactionMode, setInteractionMode] = useState<'normal' | 'upgrade'>('normal');
+  const [selectedUnitId, setSelectedUnitId] = useState<string | null>(null);
 
-  // Start/stop background music based on game state
+  const onToggleMode = useCallback(() => {
+     setInteractionMode(prev => prev === 'normal' ? 'upgrade' : 'normal');
+     setSelectedUnitId(null); // Clear selection on mode switch
+  }, []);
+
+  const handleCellClick = useCallback((x: number, y: number) => {
+    const clickedDefender = gameState.defenders.find(d => d.position.x === x && d.position.y === y);
+
+    if (interactionMode === 'upgrade') {
+       if (clickedDefender) {
+          const config = DEFENDER_CONFIGS[clickedDefender.type];
+          const cost = config.upgradeCost * clickedDefender.level;
+          
+          if (clickedDefender.level >= MAX_LEVEL) {
+              // Maybe show "MAX LEVEL" feedback?
+          } else if (gameState.coins >= cost) {
+              upgradeDefender(clickedDefender.id);
+              // Feedback handled by state update visually (level badge)
+          } else {
+              // Not enough coins logic (maybe shake effect or sound?)
+          }
+       }
+       // If empty cell, do nothing in upgrade mode
+    } else {
+       // Normal Mode (Placement or Selection)
+       if (clickedDefender) {
+           // Select unit to show range
+           setSelectedUnitId(clickedDefender.id);
+       } else {
+           // Empty cell - attempt placement
+           placeDefender(x, y);
+           setSelectedUnitId(null); // Deselect if clicking empty ground
+       }
+    }
+  }, [interactionMode, gameState.defenders, gameState.coins, upgradeDefender, placeDefender]);
   useEffect(() => {
     if (gameState.isPlaying && !isMuted) {
       playBgMusic();
@@ -131,6 +169,8 @@ export const Game = () => {
                 onReset={resetGame}
                 onOpenTutorial={() => setShowTutorial(true)}
                 onToggleSpeed={toggleSpeed}
+                interactionMode={interactionMode}
+                onToggleMode={onToggleMode}
               />
             </div>
             
@@ -140,11 +180,13 @@ export const Game = () => {
                 defenders={gameState.defenders}
                 enemies={gameState.enemies}
                 selectedDefender={gameState.selectedDefender}
-                onCellClick={placeDefender}
+                onCellClick={handleCellClick}
                 onDrop={handleDrop}
                 attackAnimations={attackAnimations}
                 draggedDefender={draggedDefender}
                 floatingTexts={gameState.floatingTexts || []}
+                interactionMode={interactionMode}
+                selectedUnitId={selectedUnitId}
               />
             </div>
           </div>

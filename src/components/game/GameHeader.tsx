@@ -1,5 +1,5 @@
 import { memo } from 'react';
-import { Coins, Heart, Waves, Play, Pause, RotateCcw, HelpCircle } from 'lucide-react';
+import { Coins, Heart, Waves, Play, Pause, RotateCcw, HelpCircle, ArrowUpCircle, ScanEye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface GameHeaderProps {
@@ -13,6 +13,8 @@ interface GameHeaderProps {
   onReset: () => void;
   onOpenTutorial: () => void;
   onToggleSpeed: () => void;
+  interactionMode?: 'normal' | 'upgrade';
+  onToggleMode?: () => void;
 }
 
 export const GameHeader = memo(({ 
@@ -26,6 +28,8 @@ export const GameHeader = memo(({
   onReset,
   onOpenTutorial,
   onToggleSpeed,
+  interactionMode = 'normal',
+  onToggleMode,
 }: GameHeaderProps) => {
   return (
     <div className="flex flex-wrap items-center justify-between gap-3 bg-card/80 rounded-lg p-3 border border-border/50">
@@ -100,6 +104,30 @@ export const GameHeader = memo(({
           <RotateCcw className="w-4 h-4" />
         </Button>
       </div>
+
+      {/* Mode Toggle (Mobile) */}
+      {onToggleMode && (
+        <div className="w-full flex justify-end md:w-auto">
+          <Button
+            variant={interactionMode === 'upgrade' ? 'default' : 'outline'}
+            size="sm"
+            onClick={onToggleMode}
+            className={`w-full md:w-auto gap-2 ${interactionMode === 'upgrade' ? 'bg-amber-500 hover:bg-amber-600' : ''}`}
+          >
+            {interactionMode === 'upgrade' ? (
+              <>
+                <ArrowUpCircle className="w-4 h-4" />
+                <span>UPGRADE MODE</span>
+              </>
+            ) : (
+              <>
+                <ScanEye className="w-4 h-4" />
+                <span>VIEW MODE</span>
+              </>
+            )}
+          </Button>
+        </div>
+      )}
     </div>
   );
 });
