@@ -29,7 +29,7 @@ export const EnemyUnit = memo(({ enemy, cellSize }: EnemyUnitProps) => {
   };
 
   const typeLabel = getTypeLabel();
-  const size = isBoss ? 14 : enemy.type === 'tank' ? 12 : 10;
+  const unitSize = isBoss ? cellSize * 0.9 : enemy.type === 'tank' ? cellSize * 0.8 : cellSize * 0.65;
   const GAP_SIZE = 4; 
   
   return (
@@ -42,10 +42,10 @@ export const EnemyUnit = memo(({ enemy, cellSize }: EnemyUnitProps) => {
         enemy.healGlow && "animate-pulse"
       )}
       style={{
-        width: size * 4,
-        height: size * 4,
-        left: enemy.position.x * (cellSize + GAP_SIZE) + cellSize / 2 - (size * 2),
-        top: enemy.position.y * (cellSize + GAP_SIZE) + cellSize / 2 - (size * 2),
+        width: unitSize,
+        height: unitSize,
+        left: enemy.position.x * (cellSize + GAP_SIZE) + cellSize / 2 - (unitSize / 2),
+        top: enemy.position.y * (cellSize + GAP_SIZE) + cellSize / 2 - (unitSize / 2),
         transition: 'left 0.05s linear, top 0.05s linear',
         filter: enemy.healGlow ? 'drop-shadow(0 0 12px rgb(34 197 94))' : undefined,
       }}

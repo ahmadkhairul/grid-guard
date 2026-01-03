@@ -26,12 +26,12 @@ export const useGameState = () => {
         }
     }, []);
 
-    // AUTO-SAVE: Save game on wave or coin change
+    // AUTO-SAVE: Save game on wave or coin change (Only when NOT playing to ensure Start of Wave state)
     useEffect(() => {
-        if (gameState.wave > 1 || gameState.coins !== 100) {
+        if (!gameState.isPlaying && !gameState.isLoading) {
             saveGame(gameState);
         }
-    }, [gameState.wave, gameState.coins, gameState.defenders, gameState.lives, gameState.unlockedDefenders, gameState.unlockedAchievements]);
+    }, [gameState.wave, gameState.coins, gameState.defenders, gameState.lives, gameState.unlockedDefenders, gameState.unlockedAchievements, gameState.isPlaying, gameState.isLoading]);
 
     const toggleSpeed = useCallback(() => setSpeedMultiplier(prev => (prev === 1 ? 2 : prev === 2 ? 3 : 1)), []);
 

@@ -20,7 +20,7 @@ export const ChangelogModal = ({ open, onOpenChange }: ChangelogModalProps) => {
       <DialogContent className="sm:max-w-md bg-card border-border max-h-[85vh]">
         <DialogHeader>
           <DialogTitle className="font-game text-xl text-primary tracking-wider flex items-center gap-2">
-             <span>📜 PATCH NOTES</span>
+            <span>📜 PATCH NOTES</span>
           </DialogTitle>
           <DialogDescription>
             Latest updates and balance changes.
@@ -29,44 +29,75 @@ export const ChangelogModal = ({ open, onOpenChange }: ChangelogModalProps) => {
 
         <ScrollArea className="h-[60vh] pr-4">
           <div className="space-y-6">
-            
-            {/* version 1.2.0 */}
+
+            {/* version 1.2.1 */}
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <h3 className="font-bold text-lg text-foreground">v1.2.0 - The "Hardcore" Update</h3>
-                <Badge variant="default" className="bg-primary text-primary-foreground">NEW</Badge>
+                <h3 className="font-bold text-lg text-foreground">v1.2.1 - Polished & Balanced</h3>
+                <Badge variant="default" className="bg-primary text-primary-foreground">LATEST</Badge>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Critical bug fixes and balance adjustments based on your feedback!
+              </p>
+
+              <div className="space-y-2 text-sm">
+                <div>
+                  <h4 className="font-bold text-foreground mb-1">⚖️ Balance</h4>
+                  <ul className="list-disc pl-4 space-y-1 text-muted-foreground">
+                    <li><span className="text-green-500 font-bold">Wider Spawns:</span> Enemies now have more breathing room (2.5s base gap).</li>
+                    <li>Fixed "Instant Spawn" bug where enemies would rush you at the start of a wave.</li>
+                    <li>Fixed Spawn Rate inconsistency between 1x and 3x speeds.</li>
+                  </ul>
+                </div>
+                <div>
+                  <h4 className="font-bold text-foreground mb-1">📱 Mobile & UI</h4>
+                  <ul className="list-disc pl-4 space-y-1 text-muted-foreground">
+                    <li>Moved Notifications to <span className="text-primary font-bold">Top</span> on mobile to prevent blocking buttons.</li>
+                    <li>Fixed Upgrade Mode preventing unit purchase/placement.</li>
+                    <li>Optimized Enemy Size on mobile (scaling with grid).</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <Separator />
+
+            {/* version 1.2.0 */}
+            <div className="space-y-3 opacity-75">
+              <div className="flex items-center justify-between">
+                <h3 className="font-bold text-base text-foreground">v1.2.0 - The "Hardcore" Update</h3>
               </div>
               <p className="text-sm text-muted-foreground">
                 We heard you wanted a challenge! This update introduces deeper mechanics and mobile quality-of-life improvements.
               </p>
-              
+
               <div className="space-y-2 text-sm">
                 <div>
-                   <h4 className="font-bold text-foreground mb-1">🔥 Gameplay & Balance</h4>
-                   <ul className="list-disc pl-4 space-y-1 text-muted-foreground">
-                     <li><span className="text-destructive font-bold">New Boss Immunities!</span> Bosses now have specific weaknesses. Check the Tutorial for details.</li>
-                     <li>Added <span className="text-foreground font-bold">Mini-Boss</span> at Wave 7 (Ogre). Good luck!</li>
-                     <li>Thieves are now faster but only steal gold (no life loss).</li>
-                     <li>Added Checkpoint System (Waves 5, 10, 15, 20).</li>
-                   </ul>
+                  <h4 className="font-bold text-foreground mb-1">🔥 Gameplay & Balance</h4>
+                  <ul className="list-disc pl-4 space-y-1 text-muted-foreground">
+                    <li><span className="text-destructive font-bold">New Boss Immunities!</span> Bosses now have specific weaknesses. Check the Tutorial for details.</li>
+                    <li>Added <span className="text-foreground font-bold">Mini-Boss</span> at Wave 7 (Ogre). Good luck!</li>
+                    <li>Thieves are now faster but only steal gold (no life loss).</li>
+                    <li>Added Checkpoint System (Waves 5, 10, 15, 20).</li>
+                  </ul>
                 </div>
 
                 <div>
-                   <h4 className="font-bold text-foreground mb-1">📱 Mobile Experience</h4>
-                   <ul className="list-disc pl-4 space-y-1 text-muted-foreground">
-                     <li>Added <span className="text-amber-500 font-bold">Upgrade Mode</span>: One-tap upgrades!</li>
-                     <li>Added "View Mode": Tap units to see range/stats.</li>
-                     <li>Added Upgrade Cost badges in Upgrade Mode.</li>
-                   </ul>
+                  <h4 className="font-bold text-foreground mb-1">📱 Mobile Experience</h4>
+                  <ul className="list-disc pl-4 space-y-1 text-muted-foreground">
+                    <li>Added <span className="text-amber-500 font-bold">Upgrade Mode</span>: One-tap upgrades!</li>
+                    <li>Added "View Mode": Tap units to see range/stats.</li>
+                    <li>Added Upgrade Cost badges in Upgrade Mode.</li>
+                  </ul>
                 </div>
 
                 <div>
-                   <h4 className="font-bold text-foreground mb-1">⚙️ System</h4>
-                   <ul className="list-disc pl-4 space-y-1 text-muted-foreground">
-                     <li><span className="text-green-500 font-bold">Auto-Save</span> is now active! Progress is saved automatically.</li>
-                     <li>New App Icons & Visual Polish.</li>
-                     <li>Overhauled Tutorial with 4-page detailed guide.</li>
-                   </ul>
+                  <h4 className="font-bold text-foreground mb-1">⚙️ System</h4>
+                  <ul className="list-disc pl-4 space-y-1 text-muted-foreground">
+                    <li><span className="text-green-500 font-bold">Auto-Save</span> is now active! Progress is saved automatically.</li>
+                    <li>New App Icons & Visual Polish.</li>
+                    <li>Overhauled Tutorial with 4-page detailed guide.</li>
+                  </ul>
                 </div>
               </div>
             </div>

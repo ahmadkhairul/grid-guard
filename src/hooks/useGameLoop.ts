@@ -19,6 +19,7 @@ export const useGameLoop = (onAttack?: (defenderType: DefenderType) => void) => 
   const startGame = useCallback(() => {
     lastUpdateRef.current = Date.now();
     enemiesSpawnedRef.current = 0;
+    enemySpawnTimerRef.current = 0;
     setGameState(p => ({ ...p, isPlaying: true, isPaused: false }));
   }, [setGameState, enemiesSpawnedRef]);
   const pauseGame = useCallback(() => setGameState(p => ({ ...p, isPlaying: false, isPaused: true })), [setGameState]);

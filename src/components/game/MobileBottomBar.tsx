@@ -39,12 +39,11 @@ export const MobileBottomBar = memo(({
       {/* Backdrop removed for Tab Pane behavior */}
 
       {/* Slide-up Panel */}
-      <div 
+      <div
         className={cn(
           "fixed bottom-16 left-0 right-0 bg-card border-t border-border z-30 lg:hidden transition-transform duration-300 ease-out shadow-xl",
           activePanel ? "translate-y-0" : "translate-y-full"
         )}
-        style={{ height: '35vh' }}
       >
         <div className="flex items-center justify-between p-3 border-b border-border/50">
           <h3 className="font-game text-sm text-primary">
@@ -86,8 +85,8 @@ export const MobileBottomBar = memo(({
             onClick={() => togglePanel('shop')}
             className={cn(
               "h-16 flex-1 flex items-center justify-center gap-2 py-3 transition-colors",
-              activePanel === 'shop' 
-                ? "bg-primary/20 text-primary" 
+              activePanel === 'shop'
+                ? "bg-primary/20 text-primary"
                 : "text-muted-foreground hover:bg-muted"
             )}
           >
@@ -99,8 +98,8 @@ export const MobileBottomBar = memo(({
             onClick={() => togglePanel('defender')}
             className={cn(
               "flex-1 flex items-center justify-center gap-2 py-3 transition-colors",
-              activePanel === 'defender' 
-                ? "bg-primary/20 text-primary" 
+              activePanel === 'defender'
+                ? "bg-primary/20 text-primary"
                 : "text-muted-foreground hover:bg-muted"
             )}
           >

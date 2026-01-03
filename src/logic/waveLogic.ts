@@ -113,7 +113,7 @@ export const createEnemy = (type: EnemyType, wave: number): Enemy => {
         speed: baseSpeed * config.speedMultiplier,
         reward: Math.floor(baseReward * config.rewardMultiplier),
         type,
-        immuneTo: type === 'boss' ? getBossImmunity(100) :
+        immuneTo: type === 'boss' ? getBossImmunity(type, 100) :
             type === 'boss_warrior' ? 'warrior' :
                 type === 'boss_archer' ? 'archer' : undefined,
         isFlying: config.isFlying,

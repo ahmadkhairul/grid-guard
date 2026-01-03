@@ -51,6 +51,12 @@ export const Game = () => {
   }, []);
 
   const handleCellClick = useCallback((x: number, y: number) => {
+    // PRIORITY: If buying a unit (selected from shop), allow placement REGARDLESS of mode
+    if (gameState.selectedDefender) {
+        placeDefender(x, y);
+        return;
+    }
+
     const clickedDefender = gameState.defenders.find(d => d.position.x === x && d.position.y === y);
 
     if (interactionMode === 'upgrade') {
@@ -79,7 +85,7 @@ export const Game = () => {
            setSelectedUnitId(null); // Deselect if clicking empty ground
        }
     }
-  }, [interactionMode, gameState.defenders, gameState.coins, upgradeDefender, placeDefender]);
+  }, [interactionMode, gameState.defenders, gameState.coins, upgradeDefender, placeDefender, gameState.selectedDefender]);
   useEffect(() => {
     if (gameState.isPlaying && !isMuted) {
       playBgMusic();

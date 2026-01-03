@@ -25,11 +25,15 @@ export const updateGameTick = (
 
     // 1. Spawn Enemies
     const enemiesPerWave = getEnemiesPerWave(prev.wave);
-    enemySpawnTimerRef.current += deltaTime;
-    const spawnInterval = Math.max(500, 2000 - (prev.wave * 150));
+
+    if (enemiesSpawnedRef.current < enemiesPerWave) {
+        enemySpawnTimerRef.current += deltaTime * speedMultiplier;
+    }
+
+    const spawnInterval = Math.max(800, 2500 - (prev.wave * 120));
 
     if (enemySpawnTimerRef.current >= spawnInterval && enemiesSpawnedRef.current < enemiesPerWave) {
-        enemySpawnTimerRef.current = 0;
+        enemySpawnTimerRef.current -= spawnInterval;
         enemiesSpawnedRef.current++;
         const newEnemyType = getNextEnemyType(prev.wave, enemiesSpawnedRef.current);
         const newEnemy = createEnemy(newEnemyType, prev.wave);
