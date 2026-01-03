@@ -30,7 +30,7 @@ export const updateGameTick = (
         enemySpawnTimerRef.current += deltaTime * speedMultiplier;
     }
 
-    const spawnInterval = Math.max(800, 2500 - (prev.wave * 120));
+    const spawnInterval = Math.max(1500, 5000 - (prev.wave * 200));
 
     if (enemySpawnTimerRef.current >= spawnInterval && enemiesSpawnedRef.current < enemiesPerWave) {
         enemySpawnTimerRef.current -= spawnInterval;
