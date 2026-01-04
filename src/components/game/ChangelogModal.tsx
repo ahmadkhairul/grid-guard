@@ -30,11 +30,33 @@ export const ChangelogModal = ({ open, onOpenChange }: ChangelogModalProps) => {
         <ScrollArea className="h-[60vh] pr-4">
           <div className="space-y-6">
 
-            {/* version 1.2.1 */}
+            {/* version 1.2.2 */}
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <h3 className="font-bold text-lg text-foreground">v1.2.1 - Polished & Balanced</h3>
-                <Badge variant="default" className="bg-primary text-primary-foreground">LATEST</Badge>
+                <h3 className="font-bold text-lg text-foreground">v1.2.2 - Social Distancing</h3>
+                <Badge variant="default" className="bg-primary text-primary-foreground">HOTFIX</Badge>
+              </div>
+              <p className="text-sm text-muted-foreground">
+                Drastically reduced enemy density to prevent unfair stacking.
+              </p>
+
+              <div className="space-y-2 text-sm">
+                <div>
+                  <h4 className="font-bold text-foreground mb-1">⚖️ Balance</h4>
+                  <ul className="list-disc pl-4 space-y-1 text-muted-foreground">
+                    <li><span className="text-green-500 font-bold">Significantly Wider Spawns:</span> Base gap increased from 2.5s -&gt; 5.0s!</li>
+                    <li>Reduced late-game grouping (especially Tanks).</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <Separator />
+
+            {/* version 1.2.1 */}
+            <div className="space-y-3 opacity-75">
+              <div className="flex items-center justify-between">
+                <h3 className="font-bold text-base text-foreground">v1.2.1 - Polished & Balanced</h3>
               </div>
               <p className="text-sm text-muted-foreground">
                 Critical bug fixes and balance adjustments based on your feedback!
