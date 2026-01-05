@@ -11,7 +11,7 @@ import { MobileBottomBar } from './MobileBottomBar';
 import { NotificationToast } from './NotificationToast'; // New Component
 import { DefenderType } from '@/types/game';
 import { MAX_WAVE, DEFENDER_CONFIGS, MAX_LEVEL, MAPS } from '@/config/gameConfig';
-import { Volume2, VolumeX, Pause, Home } from 'lucide-react';
+import { Volume2, VolumeX, Pause, Home, RotateCcw } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
 
@@ -35,6 +35,8 @@ export const Game = ({ mapId = 'default' }: { mapId?: string }) => {
     dismissNotification,
     clearScreenFlash,
     restoreCheckpoint,
+    triggerMeteor,
+    triggerBlizzard,
   } = useGameLoop(mapId, playAttackSound);
 
   const [draggedDefender, setDraggedDefender] = useState<DefenderType | null>(null);
@@ -177,7 +179,6 @@ export const Game = ({ mapId = 'default' }: { mapId?: string }) => {
                 speedMultiplier={speedMultiplier} // Changed from isSpeedUp
                 onStart={startGame}
                 onPause={pauseGame}
-                onReset={resetGame}
                 onToggleSpeed={toggleSpeed}
                 interactionMode={interactionMode}
                 onToggleMode={onToggleMode}
@@ -199,6 +200,53 @@ export const Game = ({ mapId = 'default' }: { mapId?: string }) => {
                 selectedUnitId={selectedUnitId}
                 path={currentMap.path}
               />
+            </div>
+
+            {/* Active Skills */}
+            <div className="mt-3 w-full max-w-[min(calc(100vw-1.5rem),calc((100dvh-10rem)*1.25))] lg:max-w-[min(calc(100vw-22rem),calc((100vh-6rem)*1.25))]">
+              <div className="flex gap-2 justify-center">
+                <Button
+                  onClick={triggerMeteor}
+                  disabled={gameState.coins < 10000 || Date.now() < gameState.activeSkills.meteorReadyAt}
+                  className="relative h-14 px-6 bg-gradient-to-br from-orange-600 to-red-600 hover:from-orange-500 hover:to-red-500 disabled:opacity-50 disabled:cursor-not-allowed border-2 border-orange-400 shadow-[0_0_20px_rgba(251,146,60,0.4)]"
+                >
+                  <div className="flex flex-col items-center gap-1">
+                    <div className="flex items-center gap-2">
+                      <span className="text-2xl">☄️</span>
+                      <span className="font-bold">METEOR</span>
+                    </div>
+                    <span className="text-xs opacity-90">10,000 💰 | 500 DMG</span>
+                  </div>
+                  {Date.now() < gameState.activeSkills.meteorReadyAt && (
+                    <div className="absolute inset-0 bg-black/60 flex items-center justify-center rounded-md">
+                      <span className="font-bold text-white">
+                        {Math.ceil((gameState.activeSkills.meteorReadyAt - Date.now()) / 1000)}s
+                      </span>
+                    </div>
+                  )}
+                </Button>
+
+                <Button
+                  onClick={triggerBlizzard}
+                  disabled={gameState.coins < 5000 || Date.now() < gameState.activeSkills.blizzardReadyAt}
+                  className="relative h-14 px-6 bg-gradient-to-br from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 disabled:opacity-50 disabled:cursor-not-allowed border-2 border-blue-400 shadow-[0_0_20px_rgba(59,130,246,0.4)]"
+                >
+                  <div className="flex flex-col items-center gap-1">
+                    <div className="flex items-center gap-2">
+                      <span className="text-2xl">❄️</span>
+                      <span className="font-bold">BLIZZARD</span>
+                    </div>
+                    <span className="text-xs opacity-90">5,000 💰 | Freeze 5s</span>
+                  </div>
+                  {Date.now() < gameState.activeSkills.blizzardReadyAt && (
+                    <div className="absolute inset-0 bg-black/60 flex items-center justify-center rounded-md">
+                      <span className="font-bold text-white">
+                        {Math.ceil((gameState.activeSkills.blizzardReadyAt - Date.now()) / 1000)}s
+                      </span>
+                    </div>
+                  )}
+                </Button>
+              </div>
             </div>
           </div>
         </div>
@@ -249,6 +297,16 @@ export const Game = ({ mapId = 'default' }: { mapId?: string }) => {
                 Resume
               </button>
               <Button variant="outline" onClick={() => navigate('/')}>Exit to Menu</Button>
+              <Button
+                variant="ghost"
+                className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                onClick={() => {
+                  resetGame();
+                }}
+              >
+                <RotateCcw className="w-4 h-4 mr-2" />
+                Restart Map
+              </Button>
             </div>
           </div>
         </div>

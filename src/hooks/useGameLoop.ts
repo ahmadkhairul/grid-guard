@@ -8,7 +8,8 @@ export const useGameLoop = (mapId: string, onAttack?: (defenderType: DefenderTyp
   const {
     gameState, setGameState, speedMultiplier, toggleSpeed,
     enemiesSpawnedRef, resetGame, placeDefender, upgradeDefender,
-    dismissNotification, clearScreenFlash, restoreCheckpoint
+    dismissNotification, clearScreenFlash, restoreCheckpoint,
+    triggerMeteor, triggerBlizzard
   } = useGameState(mapId);
 
   const lastUpdateRef = useRef<number>(Date.now());
@@ -60,5 +61,6 @@ export const useGameLoop = (mapId: string, onAttack?: (defenderType: DefenderTyp
     getDefenderCount, speedMultiplier, toggleSpeed,
     dismissAchievement: () => setGameState(p => ({ ...p, lastUnlockedAchievement: null })),
     dismissNotification, clearScreenFlash, restoreCheckpoint,
+    triggerMeteor, triggerBlizzard,
   };
 };

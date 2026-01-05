@@ -14,6 +14,7 @@ export const useGameState = (mapId: string) => {
         notification: null, unlockedDefenders: ['warrior', 'archer', 'miner'], screenFlash: null,
         lastCheckpoint: 0, checkpointCoins: 100, checkpointDefenders: [],
         mapId: mapId,
+        activeSkills: { meteorReadyAt: 0, blizzardReadyAt: 0, blizzardActiveUntil: 0 },
     });
 
     const [speedMultiplier, setSpeedMultiplier] = useState(1);
@@ -21,7 +22,7 @@ export const useGameState = (mapId: string) => {
 
     // AUTO-SAVE: Load game on mount
     useEffect(() => {
-        const saved = loadGame();
+        const saved = loadGame(mapId);
         if (saved && saved.mapId === mapId) {
             setGameState(saved);
         } else {
@@ -40,7 +41,7 @@ export const useGameState = (mapId: string) => {
     const toggleSpeed = useCallback(() => setSpeedMultiplier(prev => (prev === 1 ? 2 : prev === 2 ? 3 : 1)), []);
 
     const resetGame = useCallback(() => {
-        clearSave(); // Clear local storage on reset
+        clearSave(mapId); // Clear local storage on reset
         setGameState({
             coins: 100, wave: 1, enemies: [], defenders: [], lives: 10,
             isPlaying: false, selectedDefender: null, isLoading: false,
@@ -49,6 +50,7 @@ export const useGameState = (mapId: string) => {
             notification: null, unlockedDefenders: ['warrior', 'archer', 'miner'], screenFlash: null,
             lastCheckpoint: 0, checkpointCoins: 100, checkpointDefenders: [],
             mapId: mapId,
+            activeSkills: { meteorReadyAt: 0, blizzardReadyAt: 0, blizzardActiveUntil: 0 },
         });
         enemiesSpawnedRef.current = 0;
     }, [mapId]);
@@ -124,8 +126,39 @@ export const useGameState = (mapId: string) => {
             checkpointCoins: prev.checkpointCoins,
             checkpointDefenders: prev.checkpointDefenders,
             mapId: prev.mapId,
+            activeSkills: prev.activeSkills || { meteorReadyAt: 0, blizzardReadyAt: 0, blizzardActiveUntil: 0 },
         }));
         enemiesSpawnedRef.current = 0;
+    }, []);
+
+    const triggerMeteor = useCallback(() => {
+        const now = Date.now();
+        setGameState(prev => {
+            if (prev.coins < 10000) return prev;
+            if (prev.activeSkills.meteorReadyAt > now) return prev;
+            const newEnemies = prev.enemies.map(e => ({ ...e, hp: e.hp - 500, isHit: true }));
+            return {
+                ...prev,
+                coins: prev.coins - 10000,
+                enemies: newEnemies,
+                activeSkills: { ...prev.activeSkills, meteorReadyAt: now + 15000 },
+                notification: { id: `meteor-${now}`, title: 'METEOR STRIKE!', description: 'Dealt 500 damage to all enemies!', icon: '☄️', color: 'text-orange-500' },
+            };
+        });
+    }, []);
+
+    const triggerBlizzard = useCallback(() => {
+        const now = Date.now();
+        setGameState(prev => {
+            if (prev.coins < 5000) return prev;
+            if (prev.activeSkills.blizzardReadyAt > now) return prev;
+            return {
+                ...prev,
+                coins: prev.coins - 5000,
+                activeSkills: { ...prev.activeSkills, blizzardReadyAt: now + 20000, blizzardActiveUntil: now + 5000 },
+                notification: { id: `blizzard-${now}`, title: 'BLIZZARD!', description: 'All enemies frozen for 5 seconds!', icon: '❄️', color: 'text-blue-500' },
+            };
+        });
     }, []);
 
     return {
@@ -134,5 +167,7 @@ export const useGameState = (mapId: string) => {
         dismissNotification,
         clearScreenFlash,
         restoreCheckpoint,
+        triggerMeteor,
+        triggerBlizzard,
     };
 };

@@ -56,9 +56,11 @@ export const updateGameTick = (
     }
 
     // 2. Move Enemies
+    const isBlizzardActive = Date.now() < prev.activeSkills.blizzardActiveUntil;
     newEnemies = newEnemies.map(enemy => {
         const enemyPath = enemy.path || path;
-        const nextPathIndex = enemy.pathIndex + enemy.speed * speedMultiplier * (deltaTime / 1000);
+        const effectiveSpeed = isBlizzardActive ? 0 : enemy.speed; // Freeze if blizzard active
+        const nextPathIndex = enemy.pathIndex + effectiveSpeed * speedMultiplier * (deltaTime / 1000);
 
         if (nextPathIndex >= enemyPath.length - 1) {
             // THIEF LOGIC: Steal Gold (no life reduction)
@@ -107,7 +109,7 @@ export const updateGameTick = (
             const gain = 15 + (d.level - 1) * 10;
             newCoins += gain;
             const totalMined = (prev.totalMined || 0) + gain;
-            if (totalMined >= 100000 && !newUnlockedIds.includes('rich_man')) {
+            if (totalMined >= 1000000 && !newUnlockedIds.includes('rich_man')) {
                 newUnlockedIds.push('rich_man');
                 achievementUnlocked = ACHIEVEMENTS.find(a => a.id === 'rich_man') || null;
             }

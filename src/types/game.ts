@@ -3,7 +3,7 @@ export interface Position {
   y: number;
 }
 
-export type EnemyType = 'normal' | 'boss' | 'fast' | 'tank' | 'flying' | 'boss_warrior' | 'boss_archer' | 'thief' | 'healer' | 'stunner' | 'boss_golem' | 'boss_assassin' | 'boss_demon';
+export type EnemyType = 'normal' | 'boss' | 'fast' | 'tank' | 'flying' | 'boss_warrior' | 'boss_archer' | 'thief' | 'healer' | 'stunner' | 'boss_golem' | 'boss_assassin' | 'boss_demon' | 'dragon' | 'iron_golem' | 'shadow_assassin' | 'phantom';
 
 export interface Enemy {
   id: string;
@@ -33,7 +33,7 @@ export interface Defender {
   stunnedUntil?: number; // Timestamp
 }
 
-export type DefenderType = 'warrior' | 'archer' | 'miner' | 'stone';
+export type DefenderType = 'warrior' | 'archer' | 'miner' | 'stone' | 'ice_mage' | 'lightning';
 
 export interface DefenderConfig {
   type: DefenderType;
@@ -55,7 +55,7 @@ export interface Achievement {
 
 export const ACHIEVEMENTS: Achievement[] = [
   { id: 'duo_leveling', title: 'SOLO LEVELING', description: 'Win with exactly 1 Warrior and 1 Archer', icon: '🗡️' },
-  { id: 'rich_man', title: 'RICH MAN', description: 'Mine 100000 gold in a single game', icon: '💰' },
+  { id: 'rich_man', title: 'RICH MAN', description: 'Mine 1000000 gold in a single game', icon: '💰' },
   { id: 'man_of_steel', title: 'MAN OF STEEL', description: 'Win with full health (10 Lives)', icon: '🛡️' },
 ];
 
@@ -74,6 +74,12 @@ export interface GameNotification {
   description: string;
   icon: string;
   color?: string; // Optional: 'text-red-500', 'text-yellow-500'
+}
+
+export interface ActiveSkills {
+  meteorReadyAt: number; // Timestamp when meteor is ready
+  blizzardReadyAt: number; // Timestamp when blizzard is ready
+  blizzardActiveUntil: number; // Timestamp when blizzard effect ends
 }
 
 export interface GameState {
@@ -101,4 +107,5 @@ export interface GameState {
   checkpointCoins: number; // Coins at checkpoint
   checkpointDefenders: Defender[]; // Defenders at checkpoint
   mapId: string;
+  activeSkills: ActiveSkills;
 }
