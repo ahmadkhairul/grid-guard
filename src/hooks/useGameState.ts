@@ -1,11 +1,11 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { GameState } from '@/types/game';
-import { DEFENDER_CONFIGS, isPathCell, MAX_PER_TYPE, MAX_LEVEL } from '@/config/gameConfig';
+import { DEFENDER_CONFIGS, isPathCell, MAX_PER_TYPE, MAX_LEVEL, MAPS } from '@/config/gameConfig';
 import { saveGame, loadGame, clearSave } from '@/lib/storage';
 
 const generateDefenderId = () => `defender-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
-export const useGameState = () => {
+export const useGameState = (mapId: string) => {
     const [gameState, setGameState] = useState<GameState>({
         coins: 100, wave: 1, enemies: [], defenders: [], lives: 10,
         isPlaying: false, selectedDefender: null, isLoading: true,
@@ -13,6 +13,7 @@ export const useGameState = () => {
         unlockedAchievements: [], lastUnlockedAchievement: null, floatingTexts: [],
         notification: null, unlockedDefenders: ['warrior', 'archer', 'miner'], screenFlash: null,
         lastCheckpoint: 0, checkpointCoins: 100, checkpointDefenders: [],
+        mapId: mapId,
     });
 
     const [speedMultiplier, setSpeedMultiplier] = useState(1);
@@ -21,17 +22,20 @@ export const useGameState = () => {
     // AUTO-SAVE: Load game on mount
     useEffect(() => {
         const saved = loadGame();
-        if (saved) {
+        if (saved && saved.mapId === mapId) {
             setGameState(saved);
+        } else {
+            // If save exists but for different map, or no save, ensure we start fresh for this map
+            setGameState(prev => ({ ...prev, mapId, isLoading: false }));
         }
-    }, []);
+    }, [mapId]);
 
     // AUTO-SAVE: Save game on wave or coin change (Only when NOT playing to ensure Start of Wave state)
     useEffect(() => {
         if (!gameState.isPlaying && !gameState.isLoading) {
             saveGame(gameState);
         }
-    }, [gameState.wave, gameState.coins, gameState.defenders, gameState.lives, gameState.unlockedDefenders, gameState.unlockedAchievements, gameState.isPlaying, gameState.isLoading]);
+    }, [gameState.wave, gameState.coins, gameState.defenders, gameState.lives, gameState.unlockedDefenders, gameState.unlockedAchievements, gameState.isPlaying, gameState.isLoading, gameState.mapId]);
 
     const toggleSpeed = useCallback(() => setSpeedMultiplier(prev => (prev === 1 ? 2 : prev === 2 ? 3 : 1)), []);
 
@@ -44,13 +48,15 @@ export const useGameState = () => {
             unlockedAchievements: [], lastUnlockedAchievement: null, floatingTexts: [],
             notification: null, unlockedDefenders: ['warrior', 'archer', 'miner'], screenFlash: null,
             lastCheckpoint: 0, checkpointCoins: 100, checkpointDefenders: [],
+            mapId: mapId,
         });
         enemiesSpawnedRef.current = 0;
-    }, []);
+    }, [mapId]);
 
     const placeDefender = useCallback((x: number, y: number) => {
         setGameState(prev => {
-            if (!prev.selectedDefender || isPathCell(x, y)) return prev;
+            const currentMap = MAPS.find(m => m.id === prev.mapId) || MAPS[0];
+            if (!prev.selectedDefender || isPathCell(x, y, currentMap.path)) return prev;
             const config = DEFENDER_CONFIGS[prev.selectedDefender];
             if (prev.coins < config.cost) return prev;
 
@@ -117,6 +123,7 @@ export const useGameState = () => {
             lastCheckpoint: prev.lastCheckpoint,
             checkpointCoins: prev.checkpointCoins,
             checkpointDefenders: prev.checkpointDefenders,
+            mapId: prev.mapId,
         }));
         enemiesSpawnedRef.current = 0;
     }, []);

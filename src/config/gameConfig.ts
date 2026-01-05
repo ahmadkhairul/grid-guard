@@ -7,7 +7,15 @@ export const MAX_WAVE = 25;
 export const MAX_PER_TYPE = 10;
 export const MAX_LEVEL = 20;
 
-export const ENEMY_PATH: Position[] = [
+export interface MapConfig {
+  id: string;
+  name: string;
+  description: string;
+  path: Position[];
+  difficulty: 'Easy' | 'Medium' | 'Hard';
+}
+
+const DEFAULT_PATH: Position[] = [
   { x: 0, y: 5 },
   { x: 1, y: 5 },
   { x: 2, y: 5 },
@@ -36,6 +44,36 @@ export const ENEMY_PATH: Position[] = [
   { x: 1, y: 3 },
   { x: 0, y: 3 },
 ];
+
+const SPIRAL_PATH: Position[] = [
+  { x: 0, y: 0 }, { x: 1, y: 0 }, { x: 2, y: 0 }, { x: 3, y: 0 }, { x: 4, y: 0 }, { x: 5, y: 0 }, { x: 6, y: 0 }, { x: 7, y: 0 }, { x: 8, y: 0 }, { x: 9, y: 0 },
+  { x: 9, y: 1 }, { x: 9, y: 2 }, { x: 9, y: 3 }, { x: 9, y: 4 }, { x: 9, y: 5 }, { x: 9, y: 6 },
+  { x: 8, y: 6 }, { x: 7, y: 6 }, { x: 6, y: 6 }, { x: 5, y: 6 }, { x: 4, y: 6 }, { x: 3, y: 6 }, { x: 2, y: 6 }, { x: 1, y: 6 }, { x: 0, y: 6 },
+  { x: 0, y: 5 }, { x: 0, y: 4 }, { x: 0, y: 3 }, { x: 0, y: 2 },
+  { x: 1, y: 2 }, { x: 2, y: 2 }, { x: 3, y: 2 }, { x: 4, y: 2 }, { x: 5, y: 2 }, { x: 6, y: 2 }, { x: 7, y: 2 },
+  { x: 7, y: 3 }, { x: 7, y: 4 },
+  { x: 6, y: 4 }, { x: 5, y: 4 }, { x: 4, y: 4 }, { x: 3, y: 4 }, { x: 2, y: 4 },
+];
+
+export const MAPS: MapConfig[] = [
+  {
+    id: 'default',
+    name: 'Snake Road',
+    description: 'A winding path ideal for beginners using standard strategies.',
+    path: DEFAULT_PATH,
+    difficulty: 'Easy',
+  },
+  {
+    id: 'spiral',
+    name: 'The Coil',
+    description: 'A long spiral path maximizing tower exposure time.',
+    path: SPIRAL_PATH,
+    difficulty: 'Medium',
+  },
+];
+
+// Kept for legacy reference but ideally should be replaced by dynamic calls
+export const ENEMY_PATH = DEFAULT_PATH;
 
 export const generateFlyingPath = (): Position[] => {
   const yPositions = [0, 2, 4, 6];
@@ -117,12 +155,12 @@ export const ENEMY_CONFIGS: Record<EnemyType, EnemyConfig> = {
   boss_demon: { emoji: '👿', hpMultiplier: 100, speedMultiplier: 1.0, rewardMultiplier: 100 }, // Wave 25
 };
 
-export const isPathCell = (x: number, y: number): boolean => {
-  return ENEMY_PATH.some(pos => pos.x === x && pos.y === y);
+export const isPathCell = (x: number, y: number, path: Position[] = DEFAULT_PATH): boolean => {
+  return path.some(pos => pos.x === x && pos.y === y);
 };
 
-export const getPathCellIndex = (x: number, y: number): number => {
-  return ENEMY_PATH.findIndex(pos => pos.x === x && pos.y === y);
+export const getPathCellIndex = (x: number, y: number, path: Position[] = DEFAULT_PATH): number => {
+  return path.findIndex(pos => pos.x === x && pos.y === y);
 };
 
 // Boss immunity phases based on HP percentage

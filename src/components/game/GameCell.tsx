@@ -1,5 +1,5 @@
 import { memo, DragEvent } from 'react';
-import { isPathCell, DEFENDER_CONFIGS } from '@/config/gameConfig';
+import { DEFENDER_CONFIGS } from '@/config/gameConfig';
 import { Defender, DefenderType } from '@/types/game';
 import { cn } from '@/lib/utils';
 
@@ -21,11 +21,11 @@ interface GameCellProps {
   selectedUnitId: string | null;
 }
 
-export const GameCell = memo(({ 
-  x, 
-  y, 
-  defender, 
-  selectedDefender, 
+export const GameCell = memo(({
+  x,
+  y,
+  defender,
+  selectedDefender,
   onCellClick,
   onDrop,
   isAttacking,
@@ -37,8 +37,8 @@ export const GameCell = memo(({
   defenderIndex,
   interactionMode,
   selectedUnitId,
-}: GameCellProps) => {
-  const isPath = isPathCell(x, y);
+  isPath,
+}: GameCellProps & { isPath: boolean }) => {
   const canPlace = (selectedDefender || draggedDefender) && !isPath && !defender;
   // Allow click if we can place OR if there is a defender (to upgrade/select)
   const isInteractive = canPlace || !!defender;
@@ -89,7 +89,7 @@ export const GameCell = memo(({
     >
 
       {(showAoePreview) && canPlace && (selectedDefender || draggedDefender) && aoeRange > 0 && (
-        <div 
+        <div
           className="absolute pointer-events-none z-10 rounded-full border-2 border-primary/60 bg-primary/10 animate-pulse"
           style={{
             width: aoeSize,
@@ -99,10 +99,10 @@ export const GameCell = memo(({
           }}
         />
       )}
-      
+
       {/* Selected Unit Range Display */}
       {defender && selectedUnitId === defender.id && (
-        <div 
+        <div
           className="absolute pointer-events-none z-10 rounded-full border-2 border-accent/60 bg-accent/10"
           style={{
             width: defender.range * cellSize * 2,
@@ -121,7 +121,7 @@ export const GameCell = memo(({
       )}
 
       {defender && (
-        <div 
+        <div
           className={cn(
             'defender-unit text-2xl relative',
             isAttacking && 'animate-defender-attack',
@@ -130,10 +130,10 @@ export const GameCell = memo(({
           style={{ width: cellSize * 0.75, height: cellSize * 0.75 }}
         >
           {DEFENDER_CONFIGS[defender.type].emoji}
-          
+
           {defender.stunnedUntil && (
             <div className="absolute -top-4 left-1/2 -translate-x-1/2 animate-bounce z-20">
-               <span className="text-xl drop-shadow-md">⚡</span>
+              <span className="text-xl drop-shadow-md">⚡</span>
             </div>
           )}
 
@@ -143,9 +143,9 @@ export const GameCell = memo(({
             </span>
           )}
           {interactionMode === 'normal' && defenderIndex !== undefined && (
-             <span className="absolute h-4 flex items-center m-0 -bottom-1 -left-1 bg-primary text-primary-foreground text-[9px] rounded-md px-1 font-bold z-10 border border-background">
-               #{defenderIndex + 1}
-             </span>
+            <span className="absolute h-4 flex items-center m-0 -bottom-1 -left-1 bg-primary text-primary-foreground text-[9px] rounded-md px-1 font-bold z-10 border border-background">
+              #{defenderIndex + 1}
+            </span>
           )}
 
           {/* Upgrade Cost Badge */}

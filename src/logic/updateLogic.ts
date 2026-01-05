@@ -1,5 +1,5 @@
-import { GameState, Enemy, Achievement, DefenderType, ACHIEVEMENTS } from '@/types/game';
-import { MAX_WAVE, ENEMY_PATH, getBossImmunity } from '@/config/gameConfig';
+import { GameState, Enemy, Achievement, DefenderType, ACHIEVEMENTS, Position } from '@/types/game';
+import { MAX_WAVE, getBossImmunity } from '@/config/gameConfig';
 import { getEnemiesPerWave, getNextEnemyType, createEnemy } from '@/logic/waveLogic';
 
 export const updateGameTick = (
@@ -9,6 +9,7 @@ export const updateGameTick = (
     enemiesSpawnedRef: React.MutableRefObject<number>,
     enemySpawnTimerRef: React.MutableRefObject<number>,
     attackAnimationsRef: React.MutableRefObject<Set<string>>,
+    path: Position[],
     onAttack?: (type: DefenderType) => void
 ): GameState => {
     let newEnemies = [...prev.enemies];
@@ -56,10 +57,10 @@ export const updateGameTick = (
 
     // 2. Move Enemies
     newEnemies = newEnemies.map(enemy => {
-        const path = enemy.path || ENEMY_PATH;
+        const enemyPath = enemy.path || path;
         const nextPathIndex = enemy.pathIndex + enemy.speed * speedMultiplier * (deltaTime / 1000);
 
-        if (nextPathIndex >= path.length - 1) {
+        if (nextPathIndex >= enemyPath.length - 1) {
             // THIEF LOGIC: Steal Gold (no life reduction)
             if (enemy.type === 'thief') {
                 newCoins = Math.max(0, newCoins - 5000);
@@ -130,13 +131,13 @@ export const updateGameTick = (
                 // Push Back 2 tiles (approx)
                 newEnemies = newEnemies.map(e => {
                     if (e.id !== target.id) return e;
-                    const path = e.path || ENEMY_PATH;
+                    const enemyPath = e.path || path;
                     const pushedIndex = Math.max(0, e.pathIndex - 2.0);
                     // Re-calc Position immediately for visual snap
                     const idx = Math.floor(pushedIndex);
                     const progress = pushedIndex - idx;
-                    const currentPos = path[idx];
-                    const nextPos = path[Math.min(idx + 1, path.length - 1)];
+                    const currentPos = enemyPath[idx];
+                    const nextPos = enemyPath[Math.min(idx + 1, enemyPath.length - 1)];
                     const newPos = { x: currentPos.x + (nextPos.x - currentPos.x) * progress, y: currentPos.y + (nextPos.y - currentPos.y) * progress };
 
                     return { ...e, hp: e.hp - d.damage, isHit: true, pathIndex: pushedIndex, position: newPos };

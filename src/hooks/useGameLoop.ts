@@ -2,13 +2,14 @@ import { useCallback, useEffect, useRef } from 'react';
 import { DefenderType, Defender } from '@/types/game';
 import { useGameState } from './useGameState';
 import { updateGameTick } from '@/logic/updateLogic';
+import { MAPS } from '@/config/gameConfig';
 
-export const useGameLoop = (onAttack?: (defenderType: DefenderType) => void) => {
+export const useGameLoop = (mapId: string, onAttack?: (defenderType: DefenderType) => void) => {
   const {
     gameState, setGameState, speedMultiplier, toggleSpeed,
     enemiesSpawnedRef, resetGame, placeDefender, upgradeDefender,
     dismissNotification, clearScreenFlash, restoreCheckpoint
-  } = useGameState();
+  } = useGameState(mapId);
 
   const lastUpdateRef = useRef<number>(Date.now());
   const enemySpawnTimerRef = useRef<number>(0);
@@ -39,10 +40,15 @@ export const useGameLoop = (onAttack?: (defenderType: DefenderType) => void) => 
       const deltaTime = now - lastUpdateRef.current;
       lastUpdateRef.current = now;
 
-      setGameState(prev => updateGameTick(
-        prev, deltaTime, speedMultiplier,
-        enemiesSpawnedRef, enemySpawnTimerRef, attackAnimationsRef, onAttack
-      ));
+      setGameState(prev => {
+        const currentMap = MAPS.find(m => m.id === prev.mapId) || MAPS[0];
+        return updateGameTick(
+          prev, deltaTime, speedMultiplier,
+          enemiesSpawnedRef, enemySpawnTimerRef, attackAnimationsRef,
+          currentMap.path,
+          onAttack
+        );
+      });
     }, 50);
     return () => clearInterval(loop);
   }, [gameState.isPlaying, speedMultiplier, onAttack, setGameState, enemiesSpawnedRef]);

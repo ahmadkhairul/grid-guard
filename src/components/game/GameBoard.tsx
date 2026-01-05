@@ -1,8 +1,8 @@
 import { memo, useState, useEffect, useRef } from 'react';
 import { GameCell } from './GameCell';
 import { EnemyUnit } from './EnemyUnit';
-import { GRID_WIDTH, GRID_HEIGHT } from '@/config/gameConfig';
-import { Defender, Enemy, DefenderType, FloatingText } from '@/types/game';
+import { GRID_WIDTH, GRID_HEIGHT, isPathCell } from '@/config/gameConfig';
+import { Defender, Enemy, DefenderType, FloatingText, Position } from '@/types/game';
 
 interface GameBoardProps {
   defenders: Defender[];
@@ -15,12 +15,13 @@ interface GameBoardProps {
   floatingTexts: FloatingText[];
   interactionMode: 'normal' | 'upgrade';
   selectedUnitId: string | null;
+  path: Position[];
 }
 
-export const GameBoard = memo(({ 
-  defenders, 
-  enemies, 
-  selectedDefender, 
+export const GameBoard = memo(({
+  defenders,
+  enemies,
+  selectedDefender,
   onCellClick,
   onDrop,
   attackAnimations,
@@ -28,17 +29,18 @@ export const GameBoard = memo(({
   floatingTexts,
   interactionMode,
   selectedUnitId,
+  path,
 }: GameBoardProps) => {
   const [hoveredCell, setHoveredCell] = useState<{ x: number; y: number } | null>(null);
   const [draggedOverCell, setDraggedOverCell] = useState<{ x: number; y: number } | null>(null);
   const [cellSize, setCellSize] = useState(64); // Default to 64px
   const containerRef = useRef<HTMLDivElement>(null);
-  
+
   // Calculate cell size based on container width
   useEffect(() => {
     const container = containerRef.current;
     if (!container) return;
-    
+
     const updateCellSize = () => {
       const containerWidth = container.clientWidth;
       const padding = 32; // p-4 = 16px * 2
@@ -48,24 +50,24 @@ export const GameBoard = memo(({
       const newCellSize = Math.floor(availableWidth / GRID_WIDTH);
       setCellSize(Math.max(24, Math.min(newCellSize, 80))); // Min 24px, max 80px
     };
-    
+
     updateCellSize();
-    
+
     const resizeObserver = new ResizeObserver(updateCellSize);
     resizeObserver.observe(container);
-    
+
     return () => resizeObserver.disconnect();
   }, []);
-  
+
   const grid = [];
-  
+
   for (let y = 0; y < GRID_HEIGHT; y++) {
     for (let x = 0; x < GRID_WIDTH; x++) {
       const defender = defenders.find(d => d.position.x === x && d.position.y === y);
       const isHovered = (hoveredCell?.x === x && hoveredCell?.y === y);
       const isDraggedOver = (draggedOverCell?.x === x && draggedOverCell?.y === y);
       const isActiveData = isHovered || isDraggedOver;
-      
+
       grid.push(
         <div
           key={`${x}-${y}`}
@@ -90,6 +92,7 @@ export const GameBoard = memo(({
             defenderIndex={defender ? defenders.findIndex(d => d.id === defender.id) : undefined}
             interactionMode={interactionMode}
             selectedUnitId={selectedUnitId}
+            isPath={isPathCell(x, y, path)}
           />
         </div>
       );
@@ -98,22 +101,22 @@ export const GameBoard = memo(({
 
   return (
     <div ref={containerRef} className="relative bg-card rounded-xl p-4 shadow-2xl border border-border overflow-hidden">
-      <div 
+      <div
         className="grid gap-1"
-        style={{ 
+        style={{
           gridTemplateColumns: `repeat(${GRID_WIDTH}, ${cellSize}px)`,
           gridTemplateRows: `repeat(${GRID_HEIGHT}, ${cellSize}px)`,
         }}
       >
         {grid}
       </div>
-      
+
       {/* Enemies layer - z-50 to stay above grid cells */}
       <div className="absolute inset-4 pointer-events-none z-45">
         {enemies.map(enemy => (
           <EnemyUnit key={enemy.id} enemy={enemy} cellSize={cellSize} />
         ))}
-        
+
         {/* Floating Text Layer */}
         {floatingTexts.map(ft => (
           <div

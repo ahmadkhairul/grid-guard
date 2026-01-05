@@ -1,5 +1,5 @@
 import { memo } from 'react';
-import { Coins, Heart, Waves, Play, Pause, RotateCcw, HelpCircle, ArrowUpCircle, ScanEye } from 'lucide-react';
+import { Coins, Heart, Waves, Play, Pause, RotateCcw, ArrowUpCircle, ScanEye } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface GameHeaderProps {
@@ -11,22 +11,20 @@ interface GameHeaderProps {
   onStart: () => void;
   onPause: () => void;
   onReset: () => void;
-  onOpenTutorial: () => void;
   onToggleSpeed: () => void;
   interactionMode?: 'normal' | 'upgrade';
   onToggleMode?: () => void;
 }
 
-export const GameHeader = memo(({ 
-  coins, 
-  lives, 
-  wave, 
+export const GameHeader = memo(({
+  coins,
+  lives,
+  wave,
   isPlaying,
   speedMultiplier,
-  onStart, 
-  onPause, 
+  onStart,
+  onPause,
   onReset,
-  onOpenTutorial,
   onToggleSpeed,
   interactionMode = 'normal',
   onToggleMode,
@@ -42,20 +40,20 @@ export const GameHeader = memo(({
           </div>
           <span className="font-game text-sm text-accent">{coins}</span>
         </div>
-        
+
         {/* Lives */}
         <div className="flex items-center gap-1.5">
           <Heart className="w-5 h-5 text-destructive fill-destructive" />
           <span className="font-game text-sm text-destructive">{lives}</span>
         </div>
-        
+
         {/* Wave */}
         <div className="flex items-center gap-1.5">
           <Waves className="w-5 h-5 text-primary" />
           <span className="font-game text-xs text-primary">Wave {wave}</span>
         </div>
       </div>
-      
+
       {/* Controls Row */}
       <div className="flex items-center gap-1.5">
         {isPlaying ? (
@@ -86,14 +84,6 @@ export const GameHeader = memo(({
           title={`Speed: ${speedMultiplier}x`}
         >
           <span className="font-bold text-xs">{speedMultiplier}x</span>
-        </Button>
-        <Button
-          variant="outline"
-          size="icon"
-          onClick={onOpenTutorial}
-          className="h-8 w-8 border-muted-foreground/50 text-muted-foreground hover:bg-muted"
-        >
-          <HelpCircle className="w-4 h-4" />
         </Button>
         <Button
           variant="outline"
