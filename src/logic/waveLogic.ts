@@ -14,9 +14,23 @@ export const getEnemiesPerWave = (wave: number): number => {
 };
 
 export const getNextEnemyType = (wave: number, enemiesSpawned: number, mapId: string): EnemyType => {
+    let bossByMap: EnemyType = ENEMY_TYPES.BOSS_GOLEM;
+    if (mapId === MAP_TYPES.FREEZE_LAND) bossByMap = ENEMY_TYPES.BOSS_PHANTOM;
+    else if (mapId === MAP_TYPES.DRAGON_CAVE) bossByMap = ENEMY_TYPES.BOSS_DRAGON;
+
+    if (wave === 50) {
+        if (enemiesSpawned <= 6) return ENEMY_TYPES.BOSS_DEMON_LORD;
+        return ENEMY_TYPES.STUNNER;
+    }
+
+    if (wave === 40) {
+        if (enemiesSpawned <= 6) return ENEMY_TYPES.BOSS_DEMON_LORD;
+        return ENEMY_TYPES.STUNNER;
+    }
+
     if (wave === 25) {
         if (enemiesSpawned === 1) return ENEMY_TYPES.BOSS_DEMON_LORD;
-        if (enemiesSpawned <= 3) return ENEMY_TYPES.BOSS_GOLEM;
+        if (enemiesSpawned <= 3) return bossByMap;
         if (enemiesSpawned <= 5) return ENEMY_TYPES.BOSS_ASSASSIN;
         const remainder = enemiesSpawned % 3;
         return remainder === 0 ? ENEMY_TYPES.STUNNER : remainder === 1 ? ENEMY_TYPES.HEALER : ENEMY_TYPES.TANK;
@@ -29,25 +43,15 @@ export const getNextEnemyType = (wave: number, enemiesSpawned: number, mapId: st
     }
 
     if (wave === 15) {
-        if (mapId === MAP_TYPES.GOLEM_LAIR) {
-            if (enemiesSpawned === 1) return ENEMY_TYPES.BOSS_GOLEM;
-            if (enemiesSpawned <= 6) return ENEMY_TYPES.HEALER;
-            return ENEMY_TYPES.TANK;
-        } else if (mapId === MAP_TYPES.FREEZE_LAND) {
-            if (enemiesSpawned === 1) return ENEMY_TYPES.BOSS_PHANTOM;
-            if (enemiesSpawned <= 6) return ENEMY_TYPES.HEALER;
-            return ENEMY_TYPES.TANK;
-        } else if (mapId === MAP_TYPES.DRAGON_CAVE) {
-            if (enemiesSpawned === 1) return ENEMY_TYPES.BOSS_DRAGON;
-            if (enemiesSpawned <= 6) return ENEMY_TYPES.HEALER;
-            return ENEMY_TYPES.TANK;
-        }
+        if (enemiesSpawned === 1) return bossByMap;
+        if (enemiesSpawned <= 6) return ENEMY_TYPES.HEALER;
+        return ENEMY_TYPES.TANK;
     }
-
 
     if (wave === 10) {
         if (enemiesSpawned === 1) return ENEMY_TYPES.BOSS_WARRIOR;
         if (enemiesSpawned === 2) return ENEMY_TYPES.BOSS_ARCHER;
+        if (enemiesSpawned <= 6) return ENEMY_TYPES.HEALER;
         return ENEMY_TYPES.TANK;
     }
 
@@ -63,6 +67,23 @@ export const getNextEnemyType = (wave: number, enemiesSpawned: number, mapId: st
     let enemiesByMap: EnemyType = ENEMY_TYPES.IRON_GOLEM;
     if (mapId === MAP_TYPES.FREEZE_LAND) enemiesByMap = ENEMY_TYPES.PHANTOM;
     else if (mapId === MAP_TYPES.DRAGON_CAVE) enemiesByMap = ENEMY_TYPES.DRAGON;
+
+    if (wave > 40) {
+        if (rand < 0.40) return enemiesByMap;
+        if (rand < 0.55) return bossByMap;
+        if (rand < 0.60) return ENEMY_TYPES.BOSS_ASSASSIN;
+        if (rand < 0.70) return ENEMY_TYPES.BOSS_WARRIOR;
+        if (rand < 0.80) return ENEMY_TYPES.BOSS_ARCHER;
+        return ENEMY_TYPES.STUNNER;
+    }
+
+    if (wave > 30) {
+        if (rand < 0.40) return enemiesByMap;
+        if (rand < 0.55) return ENEMY_TYPES.TANK;
+        if (rand < 0.60) return ENEMY_TYPES.THIEF;
+        if (rand < 0.90) return ENEMY_TYPES.STUNNER;
+        return ENEMY_TYPES.FAST;
+    }
 
     if (wave > 20) {
         if (rand < 0.20) return ENEMY_TYPES.HEALER;
@@ -107,9 +128,10 @@ export const getNextEnemyType = (wave: number, enemiesSpawned: number, mapId: st
 
 export const createEnemy = (type: EnemyType, wave: number): Enemy => {
     const config = ENEMY_CONFIGS[type];
-    const baseHp = 60 + wave * 35;
-    const baseSpeed = 0.5 + wave * 0.1;
-    const baseReward = 8 + wave * 1;
+    const effectiveWave = Math.min(wave, 25);
+    const baseHp = 60 + effectiveWave * 35;
+    const baseSpeed = 0.5 + effectiveWave * 0.1;
+    const baseReward = 8 + effectiveWave * 1;
 
     const flyingPath = config.isFlying ? generateFlyingPath() : undefined;
     const startPath = flyingPath ? flyingPath[0] : ENEMY_PATH[0];

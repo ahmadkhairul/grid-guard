@@ -8,6 +8,7 @@ import { TutorialModal } from '@/components/game/TutorialModal';
 import { ChangelogModal } from '@/components/game/ChangelogModal';
 import { MapPreview } from '@/components/game/MapPreview';
 import { hasSave } from '@/lib/storage';
+import { trackEvent } from '@/lib/analytics';
 
 const Home = () => {
     const navigate = useNavigate();
@@ -15,6 +16,7 @@ const Home = () => {
     const [showChangelog, setShowChangelog] = useState(false);
 
     const handleStart = (mapId: string) => {
+        trackEvent('start_game', { map: mapId });
         navigate(`/play/${mapId}`);
     };
 

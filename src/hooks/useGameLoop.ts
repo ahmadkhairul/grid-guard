@@ -3,6 +3,7 @@ import { DefenderType, Defender } from '@/types/game';
 import { useGameState } from './useGameState';
 import { updateGameTick } from '@/logic/updateLogic';
 import { MAPS } from '@/config/gameConfig';
+import { trackEvent } from '@/lib/analytics';
 
 export const useGameLoop = (mapId: string, onAttack?: (defenderType: DefenderType) => void) => {
   const {
@@ -56,7 +57,15 @@ export const useGameLoop = (mapId: string, onAttack?: (defenderType: DefenderTyp
 
   return {
     gameState, startGame, pauseGame, resetGame, resumeGame,
-    selectDefender, placeDefender, upgradeDefender,
+    selectDefender,
+    placeDefender: (x: number, y: number) => {
+      placeDefender(x, y);
+      // We only know the type if we look at gameState.selectedDefender
+      if (gameState.selectedDefender) {
+        trackEvent('place_defender', { type: gameState.selectedDefender });
+      }
+    },
+    upgradeDefender,
     finishLoading, attackAnimations: attackAnimationsRef.current,
     getDefenderCount, speedMultiplier, toggleSpeed,
     dismissAchievement: () => setGameState(p => ({ ...p, lastUnlockedAchievement: null })),

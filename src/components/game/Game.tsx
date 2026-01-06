@@ -15,6 +15,7 @@ import { Volume2, VolumeX, Pause, Home, RotateCcw } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
 import { ActiveSkillsPanel } from './ActiveSkillsPanel';
+import { trackEvent } from '@/lib/analytics';
 
 export const Game = ({ mapId = 'default' }: { mapId?: string }) => {
   const { playAttackSound, playBgMusic, stopBgMusic, toggleMute, isMuted, playMeteorSound, playBlizzardSound } = useAudio();
@@ -146,6 +147,13 @@ export const Game = ({ mapId = 'default' }: { mapId?: string }) => {
   }
 
   const currentMap = MAPS.find(m => m.id === gameState.mapId) || MAPS[0];
+
+  // Track Victory
+  useEffect(() => {
+    if (gameState.gameWon) {
+      trackEvent('game_won', { map: mapId, lives: gameState.lives });
+    }
+  }, [gameState.gameWon, gameState.lives, mapId]);
 
   return (
     <div className="h-[100dvh] bg-background flex flex-col overflow-hidden relative">
