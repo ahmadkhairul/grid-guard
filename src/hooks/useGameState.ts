@@ -134,12 +134,12 @@ export const useGameState = (mapId: string) => {
     const triggerMeteor = useCallback(() => {
         const now = Date.now();
         setGameState(prev => {
-            if (prev.coins < 10000) return prev;
+            if (prev.coins < 1) return prev;
             if (prev.activeSkills.meteorReadyAt > now) return prev;
             const newEnemies = prev.enemies.map(e => ({ ...e, hp: e.hp - 500, isHit: true }));
             return {
                 ...prev,
-                coins: prev.coins - 10000,
+                coins: prev.coins - 1,
                 enemies: newEnemies,
                 activeSkills: { ...prev.activeSkills, meteorReadyAt: now + 15000 },
                 notification: { id: `meteor-${now}`, title: 'METEOR STRIKE!', description: 'Dealt 500 damage to all enemies!', icon: '☄️', color: 'text-orange-500' },
@@ -150,11 +150,11 @@ export const useGameState = (mapId: string) => {
     const triggerBlizzard = useCallback(() => {
         const now = Date.now();
         setGameState(prev => {
-            if (prev.coins < 5000) return prev;
+            if (prev.coins < 1) return prev;
             if (prev.activeSkills.blizzardReadyAt > now) return prev;
             return {
                 ...prev,
-                coins: prev.coins - 5000,
+                coins: prev.coins - 1,
                 activeSkills: { ...prev.activeSkills, blizzardReadyAt: now + 20000, blizzardActiveUntil: now + 5000 },
                 notification: { id: `blizzard-${now}`, title: 'BLIZZARD!', description: 'All enemies frozen for 5 seconds!', icon: '❄️', color: 'text-blue-500' },
             };

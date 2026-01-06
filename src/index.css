@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Outfit:wght@400;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Outfit:wght@400;500;600;700&display=swap");
 
 @tailwind base;
 @tailwind components;
@@ -48,10 +48,22 @@
     --game-hp: 140 70% 45%;
 
     /* Gradients */
-    --gradient-primary: linear-gradient(135deg, hsl(180 100% 50%), hsl(200 100% 60%));
+    --gradient-primary: linear-gradient(
+      135deg,
+      hsl(180 100% 50%),
+      hsl(200 100% 60%)
+    );
     --gradient-enemy: linear-gradient(135deg, hsl(0 80% 55%), hsl(20 90% 50%));
-    --gradient-coin: linear-gradient(135deg, hsl(45 100% 55%), hsl(35 100% 45%));
-    --gradient-card: linear-gradient(180deg, hsl(220 20% 16%), hsl(220 20% 12%));
+    --gradient-coin: linear-gradient(
+      135deg,
+      hsl(45 100% 55%),
+      hsl(35 100% 45%)
+    );
+    --gradient-card: linear-gradient(
+      180deg,
+      hsl(220 20% 16%),
+      hsl(220 20% 12%)
+    );
 
     /* Shadows */
     --shadow-glow-primary: 0 0 20px hsl(180 100% 50% / 0.4);
@@ -76,11 +88,11 @@
 
   body {
     @apply bg-background text-foreground;
-    font-family: 'Outfit', sans-serif;
+    font-family: "Outfit", sans-serif;
   }
 
   .font-game {
-    font-family: 'Press Start 2P', cursive;
+    font-family: "Press Start 2P", cursive;
   }
 }
 
@@ -130,26 +142,32 @@
 }
 
 @keyframes pulse-enemy {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.05); }
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
 }
 
 @keyframes defender-attack {
-  0% { 
-    transform: scale(1); 
+  0% {
+    transform: scale(1);
     filter: brightness(1);
   }
-  25% { 
-    transform: scale(1.2); 
+  25% {
+    transform: scale(1.2);
     filter: brightness(1.5);
-    box-shadow: 0 0 30px hsl(var(--primary) / 0.8), 0 0 60px hsl(var(--primary) / 0.4);
+    box-shadow: 0 0 30px hsl(var(--primary) / 0.8),
+      0 0 60px hsl(var(--primary) / 0.4);
   }
   50% {
     transform: scale(1.1);
     filter: brightness(1.3);
   }
-  100% { 
-    transform: scale(1); 
+  100% {
+    transform: scale(1);
     filter: brightness(1);
   }
 }
@@ -166,20 +184,41 @@
 }
 
 @keyframes coin-pop {
-  0% { transform: scale(0) rotate(-180deg); opacity: 0; }
-  50% { transform: scale(1.2) rotate(0deg); }
-  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+  0% {
+    transform: scale(0) rotate(-180deg);
+    opacity: 0;
+  }
+  50% {
+    transform: scale(1.2) rotate(0deg);
+  }
+  100% {
+    transform: scale(1) rotate(0deg);
+    opacity: 1;
+  }
 }
 
 @keyframes enemy-spawn {
-  0% { transform: scale(0); opacity: 0; }
-  100% { transform: scale(1); opacity: 1; }
+  0% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
 }
 
 @keyframes damage-shake {
-  0%, 100% { transform: translateX(0); }
-  25% { transform: translateX(-3px); }
-  75% { transform: translateX(3px); }
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  25% {
+    transform: translateX(-3px);
+  }
+  75% {
+    transform: translateX(3px);
+  }
 }
 
 .animate-defender-attack {
@@ -187,11 +226,15 @@
 }
 
 .animate-defender-attack::after {
-  content: '';
+  content: "";
   position: absolute;
   inset: -4px;
   border-radius: 12px;
-  background: radial-gradient(circle, hsl(var(--primary) / 0.6) 0%, transparent 70%);
+  background: radial-gradient(
+    circle,
+    hsl(var(--primary) / 0.6) 0%,
+    transparent 70%
+  );
   animation: attack-projectile 0.4s ease-out forwards;
   pointer-events: none;
 }
@@ -209,8 +252,13 @@
 }
 
 @keyframes hit-flash {
-  0%, 100% { filter: brightness(1); }
-  50% { filter: brightness(1.5) saturate(1.5); }
+  0%,
+  100% {
+    filter: brightness(1);
+  }
+  50% {
+    filter: brightness(1.5) saturate(1.5);
+  }
 }
 
 .animate-hit {
@@ -218,10 +266,51 @@
 }
 
 @keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-6px); }
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-6px);
+  }
 }
 
 .animate-float {
   animation: float 1.5s ease-in-out infinite;
+}
+
+@keyframes meteor-glow {
+  0% {
+    box-shadow: 0 0 0 0 rgba(251, 146, 60, 0.7);
+  }
+  50% {
+    box-shadow: 0 0 30px 15px rgba(251, 146, 60, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(251, 146, 60, 0);
+  }
+}
+
+@keyframes blizzard-glow {
+  0% {
+    background-position: 200% center;
+  }
+  100% {
+    background-position: -200% center;
+  }
+}
+
+.animate-meteor-glow {
+  animation: meteor-glow 1s ease-out;
+}
+
+.animate-blizzard-glow {
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(6, 182, 212, 0.4) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  animation: blizzard-glow 1s ease-out;
 }

@@ -13,9 +13,11 @@ interface GameBoardProps {
   attackAnimations: Set<string>;
   draggedDefender: DefenderType | null;
   floatingTexts: FloatingText[];
-  interactionMode: 'normal' | 'upgrade';
-  selectedUnitId: string | null;
+  interactionMode?: 'normal' | 'upgrade';
+  selectedUnitId?: string | null;
   path: Position[];
+  meteorAnimating?: boolean;
+  blizzardAnimating?: boolean;
 }
 
 export const GameBoard = memo(({
@@ -27,9 +29,11 @@ export const GameBoard = memo(({
   attackAnimations,
   draggedDefender,
   floatingTexts,
-  interactionMode,
+  interactionMode = 'normal',
   selectedUnitId,
   path,
+  meteorAnimating = false,
+  blizzardAnimating = false,
 }: GameBoardProps) => {
   const [hoveredCell, setHoveredCell] = useState<{ x: number; y: number } | null>(null);
   const [draggedOverCell, setDraggedOverCell] = useState<{ x: number; y: number } | null>(null);
@@ -134,6 +138,18 @@ export const GameBoard = memo(({
           </div>
         ))}
       </div>
+
+      {/* Skill Animation Overlays */}
+      {meteorAnimating && (
+        <div className="absolute inset-0 pointer-events-none z-50 animate-meteor-glow flex items-center justify-center">
+          <div className="text-9xl animate-pulse">☄️</div>
+        </div>
+      )}
+      {blizzardAnimating && (
+        <div className="absolute inset-0 pointer-events-none z-50 animate-blizzard-glow flex items-center justify-center">
+          <div className="text-9xl animate-pulse">❄️</div>
+        </div>
+      )}
     </div>
   );
 });

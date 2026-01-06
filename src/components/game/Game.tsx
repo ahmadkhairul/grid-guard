@@ -14,9 +14,10 @@ import { MAX_WAVE, DEFENDER_CONFIGS, MAX_LEVEL, MAPS } from '@/config/gameConfig
 import { Volume2, VolumeX, Pause, Home, RotateCcw } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
+import { ActiveSkillsPanel } from './ActiveSkillsPanel';
 
 export const Game = ({ mapId = 'default' }: { mapId?: string }) => {
-  const { playAttackSound, playBgMusic, stopBgMusic, toggleMute, isMuted } = useAudio();
+  const { playAttackSound, playBgMusic, stopBgMusic, toggleMute, isMuted, playMeteorSound, playBlizzardSound } = useAudio();
   const navigate = useNavigate();
 
   const {
@@ -49,6 +50,24 @@ export const Game = ({ mapId = 'default' }: { mapId?: string }) => {
     setInteractionMode(prev => prev === 'normal' ? 'upgrade' : 'normal');
     setSelectedUnitId(null); // Clear selection on mode switch
   }, []);
+
+  // Animation states for skills
+  const [meteorAnimating, setMeteorAnimating] = useState(false);
+  const [blizzardAnimating, setBlizzardAnimating] = useState(false);
+
+  const handleMeteor = useCallback(() => {
+    triggerMeteor();
+    playMeteorSound();
+    setMeteorAnimating(true);
+    setTimeout(() => setMeteorAnimating(false), 600);
+  }, [triggerMeteor, playMeteorSound]);
+
+  const handleBlizzard = useCallback(() => {
+    triggerBlizzard();
+    playBlizzardSound();
+    setBlizzardAnimating(true);
+    setTimeout(() => setBlizzardAnimating(false), 1000);
+  }, [triggerBlizzard, playBlizzardSound]);
 
   const handleCellClick = useCallback((x: number, y: number) => {
     // PRIORITY: If buying a unit (selected from shop), allow placement REGARDLESS of mode
@@ -199,57 +218,13 @@ export const Game = ({ mapId = 'default' }: { mapId?: string }) => {
                 interactionMode={interactionMode}
                 selectedUnitId={selectedUnitId}
                 path={currentMap.path}
+                meteorAnimating={meteorAnimating}
+                blizzardAnimating={blizzardAnimating}
               />
-            </div>
-
-            {/* Active Skills */}
-            <div className="mt-3 w-full max-w-[min(calc(100vw-1.5rem),calc((100dvh-10rem)*1.25))] lg:max-w-[min(calc(100vw-22rem),calc((100vh-6rem)*1.25))]">
-              <div className="flex gap-2 justify-center">
-                <Button
-                  onClick={triggerMeteor}
-                  disabled={gameState.coins < 10000 || Date.now() < gameState.activeSkills.meteorReadyAt}
-                  className="relative h-14 px-6 bg-gradient-to-br from-orange-600 to-red-600 hover:from-orange-500 hover:to-red-500 disabled:opacity-50 disabled:cursor-not-allowed border-2 border-orange-400 shadow-[0_0_20px_rgba(251,146,60,0.4)]"
-                >
-                  <div className="flex flex-col items-center gap-1">
-                    <div className="flex items-center gap-2">
-                      <span className="text-2xl">☄️</span>
-                      <span className="font-bold">METEOR</span>
-                    </div>
-                    <span className="text-xs opacity-90">10,000 💰 | 500 DMG</span>
-                  </div>
-                  {Date.now() < gameState.activeSkills.meteorReadyAt && (
-                    <div className="absolute inset-0 bg-black/60 flex items-center justify-center rounded-md">
-                      <span className="font-bold text-white">
-                        {Math.ceil((gameState.activeSkills.meteorReadyAt - Date.now()) / 1000)}s
-                      </span>
-                    </div>
-                  )}
-                </Button>
-
-                <Button
-                  onClick={triggerBlizzard}
-                  disabled={gameState.coins < 5000 || Date.now() < gameState.activeSkills.blizzardReadyAt}
-                  className="relative h-14 px-6 bg-gradient-to-br from-blue-600 to-cyan-600 hover:from-blue-500 hover:to-cyan-500 disabled:opacity-50 disabled:cursor-not-allowed border-2 border-blue-400 shadow-[0_0_20px_rgba(59,130,246,0.4)]"
-                >
-                  <div className="flex flex-col items-center gap-1">
-                    <div className="flex items-center gap-2">
-                      <span className="text-2xl">❄️</span>
-                      <span className="font-bold">BLIZZARD</span>
-                    </div>
-                    <span className="text-xs opacity-90">5,000 💰 | Freeze 5s</span>
-                  </div>
-                  {Date.now() < gameState.activeSkills.blizzardReadyAt && (
-                    <div className="absolute inset-0 bg-black/60 flex items-center justify-center rounded-md">
-                      <span className="font-bold text-white">
-                        {Math.ceil((gameState.activeSkills.blizzardReadyAt - Date.now()) / 1000)}s
-                      </span>
-                    </div>
-                  )}
-                </Button>
-              </div>
             </div>
           </div>
         </div>
+
 
         {/* Right Sidebar - Shop & Defenders (Desktop only) */}
         <aside className="hidden lg:flex w-72 xl:w-80 border-l border-border/50 bg-card/30 p-4 flex-col gap-3">
@@ -262,6 +237,17 @@ export const Game = ({ mapId = 'default' }: { mapId?: string }) => {
             defenders={gameState.defenders}
             unlockedDefenders={gameState.unlockedDefenders}
           />
+
+          <ActiveSkillsPanel
+            coins={gameState.coins}
+            meteorReadyAt={gameState.activeSkills.meteorReadyAt}
+            blizzardReadyAt={gameState.activeSkills.blizzardReadyAt}
+            meteorAnimating={meteorAnimating}
+            blizzardAnimating={blizzardAnimating}
+            onMeteor={handleMeteor}
+            onBlizzard={handleBlizzard}
+          />
+
           <DefendersList
             defenders={gameState.defenders}
             coins={gameState.coins}
@@ -270,7 +256,6 @@ export const Game = ({ mapId = 'default' }: { mapId?: string }) => {
         </aside>
       </div>
 
-      {/* Mobile Bottom Bar */}
       <MobileBottomBar
         coins={gameState.coins}
         selectedDefender={gameState.selectedDefender}
@@ -280,100 +265,111 @@ export const Game = ({ mapId = 'default' }: { mapId?: string }) => {
         defenders={gameState.defenders}
         onUpgrade={upgradeDefender}
         unlockedDefenders={gameState.unlockedDefenders}
+        onMeteor={handleMeteor}
+        onBlizzard={handleBlizzard}
+        meteorReadyAt={gameState.activeSkills.meteorReadyAt}
+        blizzardReadyAt={gameState.activeSkills.blizzardReadyAt}
+        meteorAnimating={meteorAnimating}
+        blizzardAnimating={blizzardAnimating}
       />
 
-      {/* Pause Modal */}
-      {gameState.isPaused && (
-        <div className="fixed inset-0 bg-background/60 backdrop-blur-sm flex items-center justify-center z-40">
-          <div className="bg-card border border-border rounded-2xl p-8 text-center max-w-md mx-4 shadow-lg">
-            <Pause className="w-16 h-16 mx-auto text-primary mb-4" />
-            <h2 className="font-game text-2xl text-primary mb-4">PAUSED</h2>
-            <p className="text-muted-foreground mb-6">Click Resume to continue</p>
-            <div className="flex flex-col gap-3">
-              <button
-                onClick={resumeGame}
-                className="bg-primary text-primary-foreground font-semibold px-8 py-3 rounded-lg hover:bg-primary/90 transition-colors"
-              >
-                Resume
-              </button>
-              <Button variant="outline" onClick={() => navigate('/')}>Exit to Menu</Button>
-              <Button
-                variant="ghost"
-                className="text-destructive hover:text-destructive hover:bg-destructive/10"
-                onClick={() => {
-                  resetGame();
-                }}
-              >
-                <RotateCcw className="w-4 h-4 mr-2" />
-                Restart Map
+      {
+        gameState.isPaused && (
+          <div className="fixed inset-0 bg-background/60 backdrop-blur-sm flex items-center justify-center z-40">
+            <div className="bg-card border border-border rounded-2xl p-8 text-center max-w-md mx-4 shadow-lg">
+              <Pause className="w-16 h-16 mx-auto text-primary mb-4" />
+              <h2 className="font-game text-2xl text-primary mb-4">PAUSED</h2>
+              <p className="text-muted-foreground mb-6">Click Resume to continue</p>
+              <div className="flex flex-col gap-3">
+                <button
+                  onClick={resumeGame}
+                  className="bg-primary text-primary-foreground font-semibold px-8 py-3 rounded-lg hover:bg-primary/90 transition-colors"
+                >
+                  Resume
+                </button>
+                <Button variant="outline" onClick={() => navigate('/')}>Exit to Menu</Button>
+                <Button
+                  variant="ghost"
+                  className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                  onClick={() => {
+                    resetGame();
+                  }}
+                >
+                  <RotateCcw className="w-4 h-4 mr-2" />
+                  Restart Map
+                </Button>
+              </div>
+            </div>
+          </div>
+        )
+      }
+
+      {/* Game Over Overlay */}
+      {
+        gameState.lives <= 0 && (
+          <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-50">
+            <div className="bg-card border border-border rounded-2xl p-8 text-center max-w-md mx-4">
+              <h2 className="font-game text-2xl text-destructive mb-4">GAME OVER</h2>
+              <p className="text-muted-foreground mb-2">You reached</p>
+              <p className="font-game text-3xl text-primary mb-6">Wave {gameState.wave}</p>
+
+              <div className="flex flex-col gap-3">
+                {gameState.lastCheckpoint > 0 && (
+                  <button
+                    onClick={restoreCheckpoint}
+                    className="bg-blue-600 text-white font-semibold px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
+                  >
+                    <span>💾</span>
+                    <span>Continue from Wave {gameState.lastCheckpoint}</span>
+                  </button>
+                )}
+                <button
+                  onClick={resetGame}
+                  className="bg-primary text-primary-foreground font-semibold px-8 py-3 rounded-lg hover:bg-primary/90 transition-colors"
+                >
+                  Restart from Wave 1
+                </button>
+              </div>
+            </div>
+          </div>
+        )
+      }
+
+      {/* Victory Overlay */}
+      {
+        gameState.gameWon && (
+          <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-50">
+            <div className="bg-card p-8 rounded-xl shadow-2xl border-2 border-primary text-center max-w-sm w-full animate-in zoom-in-50 duration-300">
+              <h2 className="text-4xl font-game text-primary mb-2">VICTORY!</h2>
+              <p className="text-muted-foreground mb-6">The grid is safe... for now.</p>
+
+              {gameState.unlockedAchievements.length > 0 && (
+                <div className="mb-6 bg-secondary/20 p-4 rounded-lg">
+                  <h3 className="text-sm font-bold text-secondary-foreground mb-2 uppercase tracking-wide">Achievements Unlocked</h3>
+                  <div className="flex flex-wrap gap-2 justify-center">
+                    {gameState.unlockedAchievements.map(id => {
+                      return (
+                        <span key={id} className="badge bg-yellow-500/20 text-yellow-500 border border-yellow-500/50 px-2 py-1 rounded text-xs">
+                          {id.replace('_', ' ').toUpperCase()}
+                        </span>
+                      )
+                    })}
+                  </div>
+                </div>
+              )}
+
+              <Button size="lg" onClick={resetGame} className="w-full font-bold text-lg">
+                PLAY AGAIN
               </Button>
             </div>
           </div>
-        </div>
-      )}
-
-      {/* Game Over Overlay */}
-      {gameState.lives <= 0 && (
-        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-card border border-border rounded-2xl p-8 text-center max-w-md mx-4">
-            <h2 className="font-game text-2xl text-destructive mb-4">GAME OVER</h2>
-            <p className="text-muted-foreground mb-2">You reached</p>
-            <p className="font-game text-3xl text-primary mb-6">Wave {gameState.wave}</p>
-
-            <div className="flex flex-col gap-3">
-              {gameState.lastCheckpoint > 0 && (
-                <button
-                  onClick={restoreCheckpoint}
-                  className="bg-blue-600 text-white font-semibold px-8 py-3 rounded-lg hover:bg-blue-700 transition-colors flex items-center justify-center gap-2"
-                >
-                  <span>💾</span>
-                  <span>Continue from Wave {gameState.lastCheckpoint}</span>
-                </button>
-              )}
-              <button
-                onClick={resetGame}
-                className="bg-primary text-primary-foreground font-semibold px-8 py-3 rounded-lg hover:bg-primary/90 transition-colors"
-              >
-                Restart from Wave 1
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* Victory Overlay */}
-      {gameState.gameWon && (
-        <div className="fixed inset-0 bg-background/80 backdrop-blur-sm flex items-center justify-center z-50">
-          <div className="bg-card p-8 rounded-xl shadow-2xl border-2 border-primary text-center max-w-sm w-full animate-in zoom-in-50 duration-300">
-            <h2 className="text-4xl font-game text-primary mb-2">VICTORY!</h2>
-            <p className="text-muted-foreground mb-6">The grid is safe... for now.</p>
-
-            {gameState.unlockedAchievements.length > 0 && (
-              <div className="mb-6 bg-secondary/20 p-4 rounded-lg">
-                <h3 className="text-sm font-bold text-secondary-foreground mb-2 uppercase tracking-wide">Achievements Unlocked</h3>
-                <div className="flex flex-wrap gap-2 justify-center">
-                  {gameState.unlockedAchievements.map(id => {
-                    return (
-                      <span key={id} className="badge bg-yellow-500/20 text-yellow-500 border border-yellow-500/50 px-2 py-1 rounded text-xs">
-                        {id.replace('_', ' ').toUpperCase()}
-                      </span>
-                    )
-                  })}
-                </div>
-              </div>
-            )}
-
-            <Button size="lg" onClick={resetGame} className="w-full font-bold text-lg">
-              PLAY AGAIN
-            </Button>
-          </div>
-        </div>
-      )}
+        )
+      }
 
       <NotificationToast
         notification={gameState.notification}
         onClose={dismissNotification}
       />
-    </div>
+    </div >
   );
 };

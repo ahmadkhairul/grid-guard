@@ -103,6 +103,63 @@ export const useAudio = () => {
     }
   }, [isMuted, stopBgMusic]);
 
+  const playMeteorSound = useCallback(() => {
+    if (isMuted) return;
+
+    const ctx = getAudioContext();
+
+    // Explosive impact sound
+    const oscillator = ctx.createOscillator();
+    const gainNode = ctx.createGain();
+    const filter = ctx.createBiquadFilter();
+
+    oscillator.connect(filter);
+    filter.connect(gainNode);
+    gainNode.connect(ctx.destination);
+
+    oscillator.type = 'sawtooth';
+    oscillator.frequency.setValueAtTime(200, ctx.currentTime);
+    oscillator.frequency.exponentialRampToValueAtTime(50, ctx.currentTime + 0.3);
+
+    filter.type = 'lowpass';
+    filter.frequency.setValueAtTime(2000, ctx.currentTime);
+    filter.frequency.exponentialRampToValueAtTime(100, ctx.currentTime + 0.3);
+
+    gainNode.gain.setValueAtTime(0.3, ctx.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.6);
+
+    oscillator.start(ctx.currentTime);
+    oscillator.stop(ctx.currentTime + 0.6);
+  }, [isMuted, getAudioContext]);
+
+  const playBlizzardSound = useCallback(() => {
+    if (isMuted) return;
+
+    const ctx = getAudioContext();
+
+    // Icy wind sound
+    const oscillator = ctx.createOscillator();
+    const gainNode = ctx.createGain();
+    const filter = ctx.createBiquadFilter();
+
+    oscillator.connect(filter);
+    filter.connect(gainNode);
+    gainNode.connect(ctx.destination);
+
+    oscillator.type = 'sine';
+    oscillator.frequency.setValueAtTime(1000, ctx.currentTime);
+    oscillator.frequency.exponentialRampToValueAtTime(400, ctx.currentTime + 1.0);
+
+    filter.type = 'highpass';
+    filter.frequency.setValueAtTime(800, ctx.currentTime);
+
+    gainNode.gain.setValueAtTime(0.2, ctx.currentTime);
+    gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 1.0);
+
+    oscillator.start(ctx.currentTime);
+    oscillator.stop(ctx.currentTime + 1.0);
+  }, [isMuted, getAudioContext]);
+
   useEffect(() => {
     return () => {
       stopBgMusic();
@@ -119,5 +176,7 @@ export const useAudio = () => {
     toggleMute,
     isMuted,
     musicPlaying,
+    playMeteorSound,
+    playBlizzardSound,
   };
 };

@@ -27,13 +27,16 @@ export const updateGameTick = (
     // 1. Spawn Enemies
     const enemiesPerWave = getEnemiesPerWave(prev.wave);
 
-    if (enemiesSpawnedRef.current < enemiesPerWave) {
+    // Don't spawn enemies during Blizzard to prevent immediate freeze
+    const isBlizzardActive = prev.activeSkills?.blizzardActiveUntil && Date.now() < prev.activeSkills.blizzardActiveUntil;
+
+    if (!isBlizzardActive && enemiesSpawnedRef.current < enemiesPerWave) {
         enemySpawnTimerRef.current += deltaTime * speedMultiplier;
     }
 
     const spawnInterval = Math.max(1500, 5000 - (prev.wave * 200));
 
-    if (enemySpawnTimerRef.current >= spawnInterval && enemiesSpawnedRef.current < enemiesPerWave) {
+    if (!isBlizzardActive && enemySpawnTimerRef.current >= spawnInterval && enemiesSpawnedRef.current < enemiesPerWave) {
         enemySpawnTimerRef.current -= spawnInterval;
         enemiesSpawnedRef.current++;
         const newEnemyType = getNextEnemyType(prev.wave, enemiesSpawnedRef.current);
@@ -55,8 +58,6 @@ export const updateGameTick = (
         newEnemies.push(newEnemy);
     }
 
-    // 2. Move Enemies
-    const isBlizzardActive = Date.now() < prev.activeSkills.blizzardActiveUntil;
     newEnemies = newEnemies.map(enemy => {
         const enemyPath = enemy.path || path;
         const effectiveSpeed = isBlizzardActive ? 0 : enemy.speed; // Freeze if blizzard active
