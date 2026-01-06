@@ -1,6 +1,8 @@
-import { GameState, Enemy, Achievement, DefenderType, ACHIEVEMENTS, Position } from '@/types/game';
-import { MAX_WAVE, getBossImmunity } from '@/config/gameConfig';
-import { getEnemiesPerWave, getNextEnemyType, createEnemy } from '@/logic/waveLogic';
+import { GameState, Achievement, DefenderType, Position } from '@/types/game';
+import { MAX_WAVE } from '@/config/gameConfig';
+import { getEnemiesPerWave } from '@/logic/waveLogic';
+import { spawnEnemies, updateEnemies } from '@/logic/enemyUpdate';
+import { updateDefenders } from '@/logic/defenderUpdate';
 
 export const updateGameTick = (
     prev: GameState,
@@ -24,149 +26,62 @@ export const updateGameTick = (
 
     const addText = (x: number, y: number, t: string, c: string) => newFloatingTexts.push({ id: `ft-${Date.now()}-${Math.random()}`, x, y, text: t, color: c, life: 1.0 });
 
-    // 1. Spawn Enemies
-    const enemiesPerWave = getEnemiesPerWave(prev.wave);
+    // 1. SPAWN LOGIC
+    const spawnResult = spawnEnemies(prev, deltaTime, speedMultiplier, enemiesSpawnedRef, enemySpawnTimerRef, addText);
+    newEnemies = spawnResult.newEnemies;
+    if (spawnResult.notification) notification = spawnResult.notification;
 
-    // Don't spawn enemies during Blizzard to prevent immediate freeze
-    const isBlizzardActive = prev.activeSkills?.blizzardActiveUntil && Date.now() < prev.activeSkills.blizzardActiveUntil;
+    // 2. ENEMY MOVEMENT & LOGIC
+    const isBlizzardActive = !!(prev.activeSkills?.blizzardActiveUntil && Date.now() < prev.activeSkills.blizzardActiveUntil);
+    const enemyUpdateResult = updateEnemies(
+        newEnemies,
+        path,
+        deltaTime,
+        speedMultiplier,
+        isBlizzardActive,
+        newCoins,
+        newLives,
+        addText
+    );
 
-    if (!isBlizzardActive && enemiesSpawnedRef.current < enemiesPerWave) {
-        enemySpawnTimerRef.current += deltaTime * speedMultiplier;
-    }
+    newEnemies = enemyUpdateResult.newEnemies;
+    newCoins = enemyUpdateResult.newCoins;
+    newLives = enemyUpdateResult.newLives;
+    if (enemyUpdateResult.notification) notification = enemyUpdateResult.notification;
 
-    const spawnInterval = Math.max(1500, 5000 - (prev.wave * 200));
+    // 3. DEFENDER COMBAT LOGIC
+    const defenderUpdateResult = updateDefenders(
+        prev.defenders,
+        newEnemies,
+        path,
+        Date.now(),
+        speedMultiplier,
+        newCoins,
+        newUnlockedIds,
+        prev.totalMined || 0,
+        attackAnimationsRef,
+        addText,
+        onAttack
+    );
 
-    if (!isBlizzardActive && enemySpawnTimerRef.current >= spawnInterval && enemiesSpawnedRef.current < enemiesPerWave) {
-        enemySpawnTimerRef.current -= spawnInterval;
-        enemiesSpawnedRef.current++;
-        const newEnemyType = getNextEnemyType(prev.wave, enemiesSpawnedRef.current);
-        const newEnemy = createEnemy(newEnemyType, prev.wave);
+    const updatedDefenders = defenderUpdateResult.updatedDefenders;
+    newEnemies = defenderUpdateResult.updatedEnemies;
+    newCoins = defenderUpdateResult.newCoins;
+    const updatedUnlockedIds = defenderUpdateResult.newUnlockedIds;
+    if (defenderUpdateResult.achievementUnlocked) achievementUnlocked = defenderUpdateResult.achievementUnlocked;
 
-        // HEALER LOGIC: Global Heal on Spawn
-        if (newEnemyType === 'healer') {
-            newEnemies.forEach(e => {
-                const healAmount = 500;
-                if (e.hp < e.maxHp) {
-                    e.hp = Math.min(e.maxHp, e.hp + healAmount);
-                    e.healGlow = true; // Add glow effect
-                    addText(e.position.x, e.position.y, '+500', 'text-green-500');
-                }
-            });
-            notification = { id: `heal-${Date.now()}`, title: 'ENEMY HEALED!', description: 'All enemies recovered 500 HP!', icon: '🧚', color: 'text-green-500' };
-        }
 
-        newEnemies.push(newEnemy);
-    }
-
-    newEnemies = newEnemies.map(enemy => {
-        const enemyPath = enemy.path || path;
-        const effectiveSpeed = isBlizzardActive ? 0 : enemy.speed; // Freeze if blizzard active
-        const nextPathIndex = enemy.pathIndex + effectiveSpeed * speedMultiplier * (deltaTime / 1000);
-
-        if (nextPathIndex >= enemyPath.length - 1) {
-            // THIEF LOGIC: Steal Gold (no life reduction)
-            if (enemy.type === 'thief') {
-                newCoins = Math.max(0, newCoins - 5000);
-                addText(enemy.position.x, enemy.position.y, '-5000', 'text-red-600 font-bold');
-                notification = { id: `thief-${Date.now()}`, title: 'ROBBERY!', description: 'A Thief stole 5000 Gold!', icon: '🦹', color: 'text-red-500' };
-                return null; // Remove thief without reducing lives
-            }
-
-            // Other enemies reduce lives
-            const isBoss = enemy.type.includes('boss');
-            newLives -= isBoss ? 5 : 1;
-
-            return null;
-        }
-
-        const idx = Math.floor(nextPathIndex);
-        const progress = nextPathIndex - idx;
-        const currentPos = path[idx];
-        const nextPos = path[Math.min(idx + 1, path.length - 1)];
-
-        return {
-            ...enemy, pathIndex: nextPathIndex,
-            position: { x: currentPos.x + (nextPos.x - currentPos.x) * progress, y: currentPos.y + (nextPos.y - currentPos.y) * progress },
-            immuneTo: getBossImmunity(enemy.type, (enemy.hp / enemy.maxHp) * 100),
-            healGlow: false, // Clear glow after movement
-        } as Enemy;
-    }).filter((e): e is Enemy => e !== null);
-
-    // 3. Defenders Attack
-    const now = Date.now();
-    let updatedDefenders = prev.defenders.map(d => {
-        // STUN LOGIC: Skip attack if stunned
-        if (d.stunnedUntil) {
-            if (now >= d.stunnedUntil) {
-                return { ...d, stunnedUntil: undefined };
-            }
-            return d;
-        }
-
-        if (now - d.lastAttack < d.attackSpeed / speedMultiplier) return d;
-
-        if (d.type === 'miner') {
-            onAttack?.(d.type);
-            const gain = 15 + (d.level - 1) * 10;
-            newCoins += gain;
-            const totalMined = (prev.totalMined || 0) + gain;
-            if (totalMined >= 1000000 && !newUnlockedIds.includes('rich_man')) {
-                newUnlockedIds.push('rich_man');
-                achievementUnlocked = ACHIEVEMENTS.find(a => a.id === 'rich_man') || null;
-            }
-            addText(d.position.x, d.position.y, `+${gain}`, 'text-yellow-400');
-            return { ...d, lastAttack: now };
-        }
-
-        const target = newEnemies.find(e => {
-            if (e.immuneTo === d.type) return false;
-            const dist = Math.sqrt(Math.pow(e.position.x - d.position.x, 2) + Math.pow(e.position.y - d.position.y, 2));
-            return dist <= d.range;
-        });
-
-        if (target) {
-            attackAnimationsRef.current.add(d.id);
-            setTimeout(() => attackAnimationsRef.current.delete(d.id), 300);
-            onAttack?.(d.type);
-
-            // Stone Cannon Pushback Logic
-            if (d.type === 'stone') {
-                // Push Back 2 tiles (approx)
-                newEnemies = newEnemies.map(e => {
-                    if (e.id !== target.id) return e;
-                    const enemyPath = e.path || path;
-                    const pushedIndex = Math.max(0, e.pathIndex - 2.0);
-                    // Re-calc Position immediately for visual snap
-                    const idx = Math.floor(pushedIndex);
-                    const progress = pushedIndex - idx;
-                    const currentPos = enemyPath[idx];
-                    const nextPos = enemyPath[Math.min(idx + 1, enemyPath.length - 1)];
-                    const newPos = { x: currentPos.x + (nextPos.x - currentPos.x) * progress, y: currentPos.y + (nextPos.y - currentPos.y) * progress };
-
-                    return { ...e, hp: e.hp - d.damage, isHit: true, pathIndex: pushedIndex, position: newPos };
-                });
-            } else {
-                newEnemies = newEnemies.map(e => e.id === target.id ? { ...e, hp: e.hp - d.damage, isHit: true } : e);
-            }
-
-            setTimeout(() => { }, 200);
-            return { ...d, lastAttack: now };
-        }
-        return d;
-    });
-
-    // 4. Cleanup & Floating Text & Stun Logic
+    // 4. CLEANUP & WIN CONDITIONS
     newEnemies.filter(e => e.hp <= 0).forEach(e => {
         // STUNNER DEATH LOGIC
         if (e.type === 'stunner') {
-            // Stun towers in range 3
-            updatedDefenders = updatedDefenders.map(d => {
+            const now = Date.now();
+            updatedDefenders.forEach((d, idx) => {
                 const dist = Math.sqrt(Math.pow(e.position.x - d.position.x, 2) + Math.pow(e.position.y - d.position.y, 2));
                 if (dist <= 3) {
                     addText(d.position.x, d.position.y, 'STUNNED', 'text-blue-500 font-bold');
-                    return { ...d, stunnedUntil: now + 3000 };
+                    updatedDefenders[idx] = { ...d, stunnedUntil: now + 3000 };
                 }
-                return d;
             });
             addText(e.position.x, e.position.y, 'EXPLOSION!', 'text-blue-500');
         }
@@ -177,9 +92,12 @@ export const updateGameTick = (
     newEnemies = newEnemies.filter(e => e.hp > 0);
     newFloatingTexts = newFloatingTexts.map(ft => ({ ...ft, y: ft.y - (deltaTime / 1000) * 1.5, life: ft.life - (deltaTime / 1000) * 1.5 })).filter(ft => ft.life > 0);
 
-    // 5. Wave/Win Check
+    // 5. CHECKPOINTS & WAVES
     let newWave = prev.wave;
     let gameWon = prev.gameWon;
+    let returnCheckpoint = prev.lastCheckpoint;
+    let returnCheckpointCoins = prev.checkpointCoins;
+    let returnCheckpointDefenders = prev.checkpointDefenders;
 
     // Wave Notification Helper
     const announceWave = (wave: number) => {
@@ -190,31 +108,24 @@ export const updateGameTick = (
         return { id: `w${wave}`, title: `WAVE ${wave}`, description: 'Prepare yourself!', icon: '⚔️' };
     };
 
-    // Checkpoint return values (default to previous)
-    let returnCheckpoint = prev.lastCheckpoint;
-    let returnCheckpointCoins = prev.checkpointCoins;
-    let returnCheckpointDefenders = prev.checkpointDefenders;
+    const enemiesPerWave = getEnemiesPerWave(prev.wave);
 
     if (newEnemies.length === 0 && enemiesSpawnedRef.current >= enemiesPerWave) {
         if (prev.wave >= MAX_WAVE) {
             gameWon = true;
-            if (newLives >= 10 && !newUnlockedIds.includes('man_of_steel')) newUnlockedIds.push('man_of_steel');
-            if (prev.defenders.filter(d => d.type === 'warrior').length === 1 && prev.defenders.filter(d => d.type === 'archer').length === 1 && !newUnlockedIds.includes('duo_leveling')) newUnlockedIds.push('duo_leveling');
+            if (newLives >= 10 && !updatedUnlockedIds.includes('man_of_steel')) updatedUnlockedIds.push('man_of_steel');
+            if (prev.defenders.filter(d => d.type === 'warrior').length === 1 && prev.defenders.filter(d => d.type === 'archer').length === 1 && !updatedUnlockedIds.includes('duo_leveling')) updatedUnlockedIds.push('duo_leveling');
         } else {
             newWave++;
             enemiesSpawnedRef.current = 0;
             newCoins += 25 * prev.wave;
 
-            // CHECKPOINT LOGIC: Save checkpoint only on transition
             if ([5, 10, 15, 20].includes(newWave)) {
                 returnCheckpoint = newWave;
                 returnCheckpointCoins = newCoins;
-                // Deep copy defenders to save the state exactly at start of wave
                 returnCheckpointDefenders = updatedDefenders.map(d => ({ ...d }));
                 notification = { id: `checkpoint-${newWave}`, title: 'CHECKPOINT SAVED!', description: `You can restart from Wave ${newWave}!`, icon: '💾', color: 'text-blue-500' };
-            }
-            // UNLOCK LOGIC: Beat Wave 15 -> Unlock Stone Cannon (Wave 16 Start)
-            else if (newWave === 16 && !newUnlockedDefenders.includes('stone')) {
+            } else if (newWave === 16 && !newUnlockedDefenders.includes('stone')) {
                 newUnlockedDefenders.push('stone');
                 notification = { id: `unlock-stone`, title: 'NEW TOWER UNLOCKED!', description: 'Stone Cannon is available in Shop!', icon: '🗿', color: 'text-amber-500' };
             } else {
@@ -227,7 +138,7 @@ export const updateGameTick = (
 
     return {
         ...prev, enemies: newEnemies, defenders: updatedDefenders, coins: newCoins, lives: newLives,
-        wave: newWave, gameWon, unlockedAchievements: newUnlockedIds, floatingTexts: newFloatingTexts,
+        wave: newWave, gameWon, unlockedAchievements: updatedUnlockedIds, floatingTexts: newFloatingTexts,
         lastUnlockedAchievement: achievementUnlocked || prev.lastUnlockedAchievement,
         totalMined: (prev.totalMined || 0) + (newCoins - prev.coins),
         notification,

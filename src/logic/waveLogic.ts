@@ -1,98 +1,109 @@
-import { Enemy, EnemyType } from '@/types/game';
-import { ENEMY_CONFIGS, ENEMY_PATH, generateFlyingPath, getBossImmunity } from '@/config/gameConfig';
+import { DEFENDER_TYPES, Enemy, EnemyType, MAP_TYPES } from '@/types/game';
+import { ENEMY_CONFIGS, ENEMY_PATH, generateFlyingPath, getEnemyImmunity } from '@/config/gameConfig';
+import { ENEMY_TYPES } from '@/types/game';
 
 const generateEnemyId = () => `enemy-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
 export const getEnemiesPerWave = (wave: number): number => {
-    if (wave === 25) return 35; // Demon + Mix
-    if (wave === 20) return 25; // Assassins + Thieves
-    if (wave === 15) return 20; // Golem + Healers
-    if (wave === 10) return 17; // Twin Bosses
-    if (wave === 7) return 11;  // Mini Boss
-    // Scaling: 8, 11, 14, 17, 20...
+    if (wave === 25) return 35;
+    if (wave === 20) return 25;
+    if (wave === 15) return 20;
+    if (wave === 10) return 17;
+    if (wave === 7) return 11;
     return 8 + wave * 3;
 };
 
-export const getNextEnemyType = (wave: number, enemiesSpawned: number): EnemyType => {
-    // Wave 25: Demon Lord
+export const getNextEnemyType = (wave: number, enemiesSpawned: number, mapId: string): EnemyType => {
     if (wave === 25) {
-        if (enemiesSpawned === 1) return 'boss_demon';
-        if (enemiesSpawned <= 3) return 'boss_golem'; // 2 Golems
-        if (enemiesSpawned <= 5) return 'boss_assassin'; // 2 Assassins
+        if (enemiesSpawned === 1) return ENEMY_TYPES.BOSS_DEMON_LORD;
+        if (enemiesSpawned <= 3) return ENEMY_TYPES.BOSS_GOLEM;
+        if (enemiesSpawned <= 5) return ENEMY_TYPES.BOSS_ASSASSIN;
         const remainder = enemiesSpawned % 3;
-        return remainder === 0 ? 'stunner' : remainder === 1 ? 'healer' : 'tank';
+        return remainder === 0 ? ENEMY_TYPES.STUNNER : remainder === 1 ? ENEMY_TYPES.HEALER : ENEMY_TYPES.TANK;
     }
 
-    // Wave 20: Assassins
     if (wave === 20) {
-        if (enemiesSpawned <= 2) return 'boss_assassin'; // 2 Assassins
-        if (enemiesSpawned <= 12) return 'thief'; // 10 Thieves
-        return 'fast'; // Rest Fast
+        if (enemiesSpawned <= 2) return ENEMY_TYPES.BOSS_ASSASSIN;
+        if (enemiesSpawned <= 12) return ENEMY_TYPES.THIEF;
+        return ENEMY_TYPES.FAST;
     }
 
-    // Wave 15: Iron Golem
     if (wave === 15) {
-        if (enemiesSpawned === 1) return 'boss_golem';
-        if (enemiesSpawned <= 6) return 'healer'; // 5 Healers
-        return 'tank'; // Rest Tanks
+        if (mapId === MAP_TYPES.GOLEM_LAIR) {
+            if (enemiesSpawned === 1) return ENEMY_TYPES.BOSS_GOLEM;
+            if (enemiesSpawned <= 6) return ENEMY_TYPES.HEALER;
+            return ENEMY_TYPES.TANK;
+        } else if (mapId === MAP_TYPES.FREEZE_LAND) {
+            if (enemiesSpawned === 1) return ENEMY_TYPES.BOSS_PHANTOM;
+            if (enemiesSpawned <= 6) return ENEMY_TYPES.HEALER;
+            return ENEMY_TYPES.TANK;
+        } else if (mapId === MAP_TYPES.DRAGON_CAVE) {
+            if (enemiesSpawned === 1) return ENEMY_TYPES.BOSS_DRAGON;
+            if (enemiesSpawned <= 6) return ENEMY_TYPES.HEALER;
+            return ENEMY_TYPES.TANK;
+        }
     }
 
-    // Wave 10: Twin Bosses (Warrior/Archer)
+
     if (wave === 10) {
-        if (enemiesSpawned === 1) return 'boss_warrior';
-        if (enemiesSpawned === 2) return 'boss_archer';
-        return 'tank';
+        if (enemiesSpawned === 1) return ENEMY_TYPES.BOSS_WARRIOR;
+        if (enemiesSpawned === 2) return ENEMY_TYPES.BOSS_ARCHER;
+        return ENEMY_TYPES.TANK;
     }
 
-    // Wave 7: Mini Boss
     if (wave === 7) {
-        if (enemiesSpawned === 1) return 'boss';
-        if (enemiesSpawned <= 5) return 'tank';
-        if (enemiesSpawned <= 9) return 'fast';
-        return 'flying';
+        if (enemiesSpawned === 1) return ENEMY_TYPES.BOSS_DEMON;
+        if (enemiesSpawned <= 5) return ENEMY_TYPES.TANK;
+        if (enemiesSpawned <= 9) return ENEMY_TYPES.FAST;
+        return ENEMY_TYPES.FLYING;
     }
 
 
     const rand = Math.random();
+    let enemiesByMap: EnemyType = ENEMY_TYPES.IRON_GOLEM;
+    if (mapId === MAP_TYPES.FREEZE_LAND) enemiesByMap = ENEMY_TYPES.PHANTOM;
+    else if (mapId === MAP_TYPES.DRAGON_CAVE) enemiesByMap = ENEMY_TYPES.DRAGON;
 
     if (wave > 20) {
-        if (rand < 0.20) return 'healer';      // 20% healers (constant healing)
-        if (rand < 0.55) return 'tank';        // 35% tanks (high HP)
-        if (rand < 0.70) return 'thief';       // 15% thieves (steal gold)
-        if (rand < 0.90) return 'stunner';     // 20% stunners (disable towers + flying)
-        return 'fast';                         // 10% fast (speed demons)
+        if (rand < 0.20) return ENEMY_TYPES.HEALER;
+        if (rand < 0.40) return enemiesByMap;
+        if (rand < 0.55) return ENEMY_TYPES.TANK;
+        if (rand < 0.70) return ENEMY_TYPES.THIEF;
+        if (rand < 0.90) return ENEMY_TYPES.STUNNER;
+        return ENEMY_TYPES.FAST;
     }
 
     if (wave > 15) {
-        if (rand < 0.15) return 'healer';
-        if (rand < 0.30) return 'stunner';
-        if (rand < 0.45) return 'thief';
-        if (rand < 0.65) return 'tank';
-        if (rand < 0.85) return 'flying';
-        return 'fast';
+        if (rand < 0.15) return ENEMY_TYPES.HEALER;
+        if (rand < 0.30) return ENEMY_TYPES.STUNNER;
+        if (rand < 0.40) return enemiesByMap;
+        if (rand < 0.45) return ENEMY_TYPES.THIEF;
+        if (rand < 0.65) return ENEMY_TYPES.TANK;
+        if (rand < 0.85) return ENEMY_TYPES.FLYING;
+        return ENEMY_TYPES.FAST;
     }
 
     if (wave > 10) {
-        if (rand < 0.15) return 'healer';
-        if (rand < 0.50) return 'tank';
-        if (rand < 0.75) return 'flying';
-        return 'fast';
+        if (rand < 0.15) return ENEMY_TYPES.HEALER;
+        if (rand < 0.50) return ENEMY_TYPES.TANK;
+        if (rand < 0.75) return ENEMY_TYPES.FLYING;
+        return ENEMY_TYPES.FAST;
     }
 
     if (wave > 7) {
-        if (rand < 0.50) return 'tank';
-        if (rand < 0.75) return 'flying';
-        return 'fast';
+        if (rand < 0.50) return ENEMY_TYPES.TANK;
+        if (rand < 0.75) return ENEMY_TYPES.FLYING;
+        return ENEMY_TYPES.FAST;
     }
 
     if (wave >= 3) {
-        if (rand < 0.2) return 'tank';
-        if (rand < 0.4) return 'fast';
-        return 'normal';
+        if (rand < 0.2) return ENEMY_TYPES.TANK;
+        if (rand < 0.4) return ENEMY_TYPES.FAST;
+        return ENEMY_TYPES.NORMAL;
     }
-
-    return 'normal';
+    return ENEMY_TYPES.NORMAL;
 };
+
 
 export const createEnemy = (type: EnemyType, wave: number): Enemy => {
     const config = ENEMY_CONFIGS[type];
@@ -100,7 +111,6 @@ export const createEnemy = (type: EnemyType, wave: number): Enemy => {
     const baseSpeed = 0.5 + wave * 0.1;
     const baseReward = 8 + wave * 1;
 
-    // Generate unique path for flying enemies
     const flyingPath = config.isFlying ? generateFlyingPath() : undefined;
     const startPath = flyingPath ? flyingPath[0] : ENEMY_PATH[0];
 
@@ -113,10 +123,10 @@ export const createEnemy = (type: EnemyType, wave: number): Enemy => {
         speed: baseSpeed * config.speedMultiplier,
         reward: Math.floor(baseReward * config.rewardMultiplier),
         type,
-        immuneTo: type === 'boss' ? getBossImmunity(type, 100) :
-            type === 'boss_warrior' ? 'warrior' :
-                type === 'boss_archer' ? 'archer' : undefined,
+        immuneTo: type === ENEMY_TYPES.BOSS_DEMON || type === ENEMY_TYPES.BOSS_GOLEM ? getEnemyImmunity(type, 100) :
+            type === ENEMY_TYPES.BOSS_ASSASSIN ? DEFENDER_TYPES.WARRIOR :
+                type === ENEMY_TYPES.BOSS_ARCHER ? DEFENDER_TYPES.ARCHER : undefined,
         isFlying: config.isFlying,
-        path: flyingPath, // Store the unique path
+        path: flyingPath,
     };
 };

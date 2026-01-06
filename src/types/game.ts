@@ -3,7 +3,41 @@ export interface Position {
   y: number;
 }
 
-export type EnemyType = 'normal' | 'boss' | 'fast' | 'tank' | 'flying' | 'boss_warrior' | 'boss_archer' | 'thief' | 'healer' | 'stunner' | 'boss_golem' | 'boss_assassin' | 'boss_demon' | 'dragon' | 'iron_golem' | 'shadow_assassin' | 'phantom';
+
+
+export const MAP_TYPES = {
+  GOLEM_LAIR: 'golem_lair',
+  FREEZE_LAND: 'freeze_land',
+  DRAGON_CAVE: 'dragon_cave',
+}
+
+export const ENEMY_TYPES = {
+  NORMAL: 'normal',
+  FAST: 'fast',
+  TANK: 'tank',
+  FLYING: 'flying',
+  THIEF: 'thief',
+  HEALER: 'healer',
+  STUNNER: 'stunner',
+
+  IRON_GOLEM: 'iron_golem',
+  BOSS_GOLEM: 'boss_golem',
+
+  DRAGON: 'dragon',
+  BOSS_DRAGON: 'boss_dragon',
+
+  PHANTOM: 'phantom',
+  BOSS_PHANTOM: 'boss_phantom',
+
+  BOSS_DEMON: 'boss_demon',
+  BOSS_DEMON_LORD: 'boss_demon_lord',
+
+  BOSS_WARRIOR: 'boss_warrior',
+  BOSS_ARCHER: 'boss_archer',
+  BOSS_ASSASSIN: 'boss_assassin',
+} as const;
+
+export type EnemyType = typeof ENEMY_TYPES[keyof typeof ENEMY_TYPES];
 
 export interface Enemy {
   id: string;
@@ -17,8 +51,11 @@ export interface Enemy {
   immuneTo?: DefenderType;
   isHit?: boolean;
   isFlying?: boolean;
-  path?: Position[]; // Custom path for flying enemies
-  healGlow?: boolean; // Glow effect when healed
+  path?: Position[];
+  healGlow?: boolean;
+  teleportCooldown?: number;
+  isInvisible?: boolean;
+  slowedUntil?: number;
 }
 
 export interface Defender {
@@ -30,10 +67,19 @@ export interface Defender {
   lastAttack: number;
   level: number;
   type: DefenderType;
-  stunnedUntil?: number; // Timestamp
+  stunnedUntil?: number;
 }
 
-export type DefenderType = 'warrior' | 'archer' | 'miner' | 'stone' | 'ice_mage' | 'lightning';
+export const DEFENDER_TYPES = {
+  WARRIOR: 'warrior',
+  ARCHER: 'archer',
+  MINER: 'miner',
+  STONE: 'stone',
+  ICE: 'ice',
+  LIGHTNING: 'lightning',
+} as const;
+
+export type DefenderType = typeof DEFENDER_TYPES[keyof typeof DEFENDER_TYPES];
 
 export interface DefenderConfig {
   type: DefenderType;
@@ -54,7 +100,7 @@ export interface Achievement {
 }
 
 export const ACHIEVEMENTS: Achievement[] = [
-  { id: 'duo_leveling', title: 'SOLO LEVELING', description: 'Win with exactly 1 Warrior and 1 Archer', icon: '🗡️' },
+  { id: 'duo_leveling', title: 'DUO LEVELING', description: 'Win with exactly 1 Warrior and 1 Archer', icon: '🗡️' },
   { id: 'rich_man', title: 'RICH MAN', description: 'Mine 1000000 gold in a single game', icon: '💰' },
   { id: 'man_of_steel', title: 'MAN OF STEEL', description: 'Win with full health (10 Lives)', icon: '🛡️' },
 ];
@@ -64,8 +110,8 @@ export interface FloatingText {
   x: number;
   y: number;
   text: string;
-  color: string; // TailWind class like 'text-yellow-400'
-  life: number; // 0-1, fades out
+  color: string;
+  life: number;
 }
 
 export interface GameNotification {
@@ -73,13 +119,13 @@ export interface GameNotification {
   title: string;
   description: string;
   icon: string;
-  color?: string; // Optional: 'text-red-500', 'text-yellow-500'
+  color?: string;
 }
 
 export interface ActiveSkills {
-  meteorReadyAt: number; // Timestamp when meteor is ready
-  blizzardReadyAt: number; // Timestamp when blizzard is ready
-  blizzardActiveUntil: number; // Timestamp when blizzard effect ends
+  meteorReadyAt: number;
+  blizzardReadyAt: number;
+  blizzardActiveUntil: number;
 }
 
 export interface GameState {
@@ -93,19 +139,16 @@ export interface GameState {
   isLoading: boolean;
   gameWon: boolean;
   isPaused: boolean;
-  // Stats & Achievements
   totalMined: number;
   unlockedAchievements: string[];
-  lastUnlockedAchievement: Achievement | null; // For toast
-  // Visual Effects
+  lastUnlockedAchievement: Achievement | null;
   floatingTexts: FloatingText[];
   notification: GameNotification | null;
   unlockedDefenders: DefenderType[];
   screenFlash: 'heal' | 'damage' | null;
-  // Checkpoint System
-  lastCheckpoint: number; // Last checkpoint wave (5, 10, 15, 20)
-  checkpointCoins: number; // Coins at checkpoint
-  checkpointDefenders: Defender[]; // Defenders at checkpoint
+  lastCheckpoint: number;
+  checkpointCoins: number;
+  checkpointDefenders: Defender[];
   mapId: string;
   activeSkills: ActiveSkills;
 }
