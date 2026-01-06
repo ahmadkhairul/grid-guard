@@ -62,5 +62,16 @@ export const useGameLoop = (mapId: string, onAttack?: (defenderType: DefenderTyp
     dismissAchievement: () => setGameState(p => ({ ...p, lastUnlockedAchievement: null })),
     dismissNotification, clearScreenFlash, restoreCheckpoint,
     triggerMeteor, triggerBlizzard,
+    continueEndless: () => {
+      setGameState(p => ({
+        ...p,
+        gameWon: false,
+        isEndless: true,
+        isPlaying: true, // Auto-resume
+      }));
+      // Reset spawn timers for next wave
+      enemiesSpawnedRef.current = 0;
+      enemySpawnTimerRef.current = 0;
+    },
   };
 };

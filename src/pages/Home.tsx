@@ -113,11 +113,21 @@ const Home = () => {
                 </div>
 
                 {/* Footer info */}
-                <div className="mt-4 flex gap-4 text-sm text-muted-foreground animate-in fade-in duration-1000 delay-500">
+                <div className="mt-4 flex flex-col md:flex-row gap-4 text-sm text-muted-foreground animate-in fade-in duration-1000 delay-500 items-center">
                     <div className="flex items-center gap-2 px-4 py-2 rounded-full border border-border/50 bg-card/30">
                         <Trophy className="w-4 h-4 text-yellow-500" />
                         <span>Global Leaderboards Coming Soon</span>
                     </div>
+
+                    <a
+                        href="https://ko-fi.com"
+                        target="_blank"
+                        rel="noreferrer"
+                        className="flex items-center gap-2 px-4 py-2 rounded-full border border-pink-500/30 bg-pink-500/10 hover:bg-pink-500/20 text-pink-500 transition-colors cursor-pointer group"
+                    >
+                        <span className="group-hover:scale-110 transition-transform">❤️</span>
+                        <span className="font-bold">Support Developer</span>
+                    </a>
                 </div>
 
             </div>

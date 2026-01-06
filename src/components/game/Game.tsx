@@ -38,7 +38,12 @@ export const Game = ({ mapId = 'default' }: { mapId?: string }) => {
     restoreCheckpoint,
     triggerMeteor,
     triggerBlizzard,
+    continueEndless,
   } = useGameLoop(mapId, playAttackSound);
+
+  const handleContinueEndless = useCallback(() => {
+    continueEndless();
+  }, [continueEndless]);
 
   const [draggedDefender, setDraggedDefender] = useState<DefenderType | null>(null);
 
@@ -358,9 +363,14 @@ export const Game = ({ mapId = 'default' }: { mapId?: string }) => {
                 </div>
               )}
 
-              <Button size="lg" onClick={resetGame} className="w-full font-bold text-lg">
-                PLAY AGAIN
-              </Button>
+              <div className="flex flex-col gap-3 w-full">
+                <Button size="lg" onClick={handleContinueEndless} className="w-full font-bold text-lg bg-pink-600 hover:bg-pink-700">
+                  CONTINUE ENDLESS
+                </Button>
+                <Button variant="outline" size="lg" onClick={resetGame} className="w-full font-bold text-lg">
+                  PLAY AGAIN
+                </Button>
+              </div>
             </div>
           </div>
         )

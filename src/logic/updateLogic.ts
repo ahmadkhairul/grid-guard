@@ -111,14 +111,16 @@ export const updateGameTick = (
     const enemiesPerWave = getEnemiesPerWave(prev.wave);
 
     if (newEnemies.length === 0 && enemiesSpawnedRef.current >= enemiesPerWave) {
-        if (prev.wave >= MAX_WAVE) {
+        if (prev.wave >= MAX_WAVE && !prev.isEndless) {
             gameWon = true;
             if (newLives >= 10 && !updatedUnlockedIds.includes('man_of_steel')) updatedUnlockedIds.push('man_of_steel');
             if (prev.defenders.filter(d => d.type === 'warrior').length === 1 && prev.defenders.filter(d => d.type === 'archer').length === 1 && !updatedUnlockedIds.includes('duo_leveling')) updatedUnlockedIds.push('duo_leveling');
         } else {
             newWave++;
             enemiesSpawnedRef.current = 0;
-            newCoins += 25 * prev.wave;
+            // Endless Scaling: more coins
+            const waveBonus = prev.isEndless ? 50 * prev.wave : 25 * prev.wave;
+            newCoins += waveBonus;
 
             if ([5, 10, 15, 20].includes(newWave)) {
                 returnCheckpoint = newWave;

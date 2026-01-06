@@ -149,6 +149,9 @@ export interface GameState {
   lastCheckpoint: number;
   checkpointCoins: number;
   checkpointDefenders: Defender[];
+
+  // Endless Mode
+  isEndless?: boolean;
   mapId: string;
   activeSkills: ActiveSkills;
 }
