@@ -7,8 +7,9 @@ import { Play, Trophy, Swords, Map as MapIcon, HelpCircle, History } from 'lucid
 import { TutorialModal } from '@/components/game/TutorialModal';
 import { ChangelogModal } from '@/components/game/ChangelogModal';
 import { MapPreview } from '@/components/game/MapPreview';
-import { hasSave } from '@/lib/storage';
+import { hasSave, hasMapClear } from '@/lib/storage';
 import { trackEvent } from '@/lib/analytics';
+import { cn } from '@/lib/utils';
 
 const Home = () => {
     const navigate = useNavigate();
@@ -55,10 +56,16 @@ const Home = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full animate-in fade-in slide-in-from-bottom-10 duration-700 delay-200">
                     {MAPS.map((map) => {
                         const hasProgress = hasSave(map.id);
+                        const isCleared = hasMapClear(map.id);
                         return (
                             <div
                                 key={map.id}
-                                className="group relative bg-card/60 backdrop-blur-md border border-border rounded-xl p-4 md:p-5 hover:border-primary/50 transition-all duration-300 hover:shadow-[0_0_20px_-5px_rgba(var(--primary),0.2)] flex flex-col gap-4"
+                                className={cn(
+                                    "group relative bg-card/60 backdrop-blur-md border rounded-xl p-4 md:p-5 transition-all duration-300 flex flex-col gap-4",
+                                    isCleared
+                                        ? "border-green-500/50 shadow-[0_0_20px_-5px_rgba(34,197,94,0.3)] hover:border-green-500 hover:shadow-[0_0_25px_-5px_rgba(34,197,94,0.5)]"
+                                        : "border-border hover:border-primary/50 hover:shadow-[0_0_20px_-5px_rgba(var(--primary),0.2)]"
+                                )}
                             >
                                 <div className="flex flex-col sm:flex-row sm:items-start gap-4">
                                     {/* Left: Info */}
@@ -75,6 +82,11 @@ const Home = () => {
                                                     <Badge variant={map.difficulty === 'Hard' ? 'destructive' : map.difficulty === 'Medium' ? 'secondary' : 'outline'} className="text-[10px] h-5 px-1.5 uppercase font-bold tracking-wider">
                                                         {map.difficulty}
                                                     </Badge>
+                                                    {isCleared && (
+                                                        <Badge className="bg-green-500/20 text-green-500 hover:bg-green-500/30 border-green-500/50 text-[10px] h-5 px-1.5 uppercase font-bold tracking-wider gap-1">
+                                                            ✓ CLEARED
+                                                        </Badge>
+                                                    )}
                                                 </div>
                                             </div>
                                         </div>

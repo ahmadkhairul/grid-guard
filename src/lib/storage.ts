@@ -62,3 +62,30 @@ export const clearSave = (mapId: string) => {
         console.error('Failed to clear save', e);
     }
 };
+
+const CLEARED_MAPS_KEY = 'grid_guard_cleared_maps';
+
+export const saveMapClear = (mapId: string) => {
+    try {
+        const cleared = getClearedMaps();
+        if (!cleared.includes(mapId)) {
+            const newCleared = [...cleared, mapId];
+            localStorage.setItem(CLEARED_MAPS_KEY, JSON.stringify(newCleared));
+        }
+    } catch (e) {
+        console.error('Failed to save clear status', e);
+    }
+};
+
+export const getClearedMaps = (): string[] => {
+    try {
+        const json = localStorage.getItem(CLEARED_MAPS_KEY);
+        return json ? JSON.parse(json) : [];
+    } catch (e) {
+        return [];
+    }
+};
+
+export const hasMapClear = (mapId: string): boolean => {
+    return getClearedMaps().includes(mapId);
+};

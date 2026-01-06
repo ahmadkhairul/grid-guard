@@ -10,7 +10,8 @@ export const getEnemiesPerWave = (wave: number): number => {
     if (wave === 15) return 20;
     if (wave === 10) return 17;
     if (wave === 7) return 11;
-    return 8 + wave * 3;
+    const effectiveWave = Math.min(wave, 25);
+    return 8 + effectiveWave * 3;
 };
 
 export const getNextEnemyType = (wave: number, enemiesSpawned: number, mapId: string): EnemyType => {
@@ -24,7 +25,15 @@ export const getNextEnemyType = (wave: number, enemiesSpawned: number, mapId: st
     }
 
     if (wave === 40) {
-        if (enemiesSpawned <= 6) return ENEMY_TYPES.BOSS_DEMON_LORD;
+        // Boss Rush: Spawn all unique bosses
+        if (enemiesSpawned === 1) return ENEMY_TYPES.BOSS_GOLEM;
+        if (enemiesSpawned === 2) return ENEMY_TYPES.BOSS_PHANTOM;
+        if (enemiesSpawned === 3) return ENEMY_TYPES.BOSS_DRAGON;
+        if (enemiesSpawned === 4) return ENEMY_TYPES.BOSS_WARRIOR;
+        if (enemiesSpawned === 5) return ENEMY_TYPES.BOSS_ARCHER;
+        if (enemiesSpawned === 6) return ENEMY_TYPES.BOSS_ASSASSIN;
+        if (enemiesSpawned === 7) return ENEMY_TYPES.BOSS_DEMON;
+        if (enemiesSpawned === 8) return ENEMY_TYPES.BOSS_DEMON_LORD;
         return ENEMY_TYPES.STUNNER;
     }
 

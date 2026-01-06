@@ -16,6 +16,7 @@ import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
 import { ActiveSkillsPanel } from './ActiveSkillsPanel';
 import { trackEvent } from '@/lib/analytics';
+import { saveMapClear } from '@/lib/storage'; // Assuming I add it to imports
 
 export const Game = ({ mapId = 'default' }: { mapId?: string }) => {
   const { playAttackSound, playBgMusic, stopBgMusic, toggleMute, isMuted, playMeteorSound, playBlizzardSound } = useAudio();
@@ -148,10 +149,14 @@ export const Game = ({ mapId = 'default' }: { mapId?: string }) => {
 
   const currentMap = MAPS.find(m => m.id === gameState.mapId) || MAPS[0];
 
+
+  // ...
+
   // Track Victory
   useEffect(() => {
     if (gameState.gameWon) {
       trackEvent('game_won', { map: mapId, lives: gameState.lives });
+      saveMapClear(mapId);
     }
   }, [gameState.gameWon, gameState.lives, mapId]);
 
