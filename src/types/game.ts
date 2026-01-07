@@ -100,9 +100,17 @@ export interface Achievement {
 }
 
 export const ACHIEVEMENTS: Achievement[] = [
-  { id: 'duo_leveling', title: 'DUO LEVELING', description: 'Win with exactly 1 Warrior and 1 Archer', icon: '🗡️' },
-  { id: 'rich_man', title: 'RICH MAN', description: 'Mine 1000000 gold in a single game', icon: '💰' },
-  { id: 'man_of_steel', title: 'MAN OF STEEL', description: 'Win with full health (10 Lives)', icon: '🛡️' },
+  { id: 'duo_legends', title: 'DUO OF LEGENDS', description: 'Win Wave 25 with exactly 1 Warrior and 1 Archer (Miners & Special Towers allowed)', icon: '🏹' },
+  { id: 'midas_touch', title: 'MIDAS TOUCH', description: 'Mine 1,000,000 gold before completing Wave 25', icon: '💰' },
+  { id: 'untouchable', title: 'UNTOUCHABLE', description: 'Win Wave 25 with 100% Health (10 Lives)', icon: '🛡️' },
+  { id: 'ironman_run', title: 'IRONMAN RUN', description: 'Win Wave 25 without using continue or loading checkpoint', icon: '🦾' },
+  { id: 'grid_avenger', title: 'GRID AVENGER', description: 'Survive until Wave 50', icon: '🦸' },
+  { id: 'grid_guardian', title: 'GUARDIAN OF THE GRID', description: 'Achieve Victory on all 3 maps', icon: '🌍' },
+  { id: 'economist', title: 'ECONOMIST', description: 'Have 5,000 unspent gold at the end of a wave', icon: '💎' },
+  { id: 'boss_slayer', title: 'BOSS SLAYER', description: 'Defeat the Demon Lord (W25) in under 10 seconds', icon: '⚔️' },
+  { id: 'minimalist', title: 'MINIMALIST', description: 'Win Wave 25 with fewer than 10 towers placed', icon: '🏗️' },
+  { id: 'elementalist', title: 'ELEMENTALIST', description: 'Build every tower type at least once across all games', icon: '🌈' },
+  { id: 'close_call', title: 'CLOSE CALL', description: 'Win a wave with exactly 1 Life remaining', icon: '❤️' },
 ];
 
 export interface FloatingText {

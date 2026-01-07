@@ -3,6 +3,7 @@ import { MAX_WAVE } from '@/config/gameConfig';
 import { getEnemiesPerWave } from '@/logic/waveLogic';
 import { spawnEnemies, updateEnemies } from '@/logic/enemyUpdate';
 import { updateDefenders } from '@/logic/defenderUpdate';
+import { checkAchievements } from '@/logic/achievementLogic';
 
 export const updateGameTick = (
     prev: GameState,
@@ -70,6 +71,12 @@ export const updateGameTick = (
     const updatedUnlockedIds = defenderUpdateResult.newUnlockedIds;
     if (defenderUpdateResult.achievementUnlocked) achievementUnlocked = defenderUpdateResult.achievementUnlocked;
 
+    // Check Tick Achievements (Real-time: Midas, Elementalist)
+    if (!achievementUnlocked) { // Only check if we haven't already unlocked one this tick
+        const tickAch = checkAchievements({ ...prev, defenders: updatedDefenders, coins: newCoins, totalMined: (prev.totalMined || 0) + (newCoins - prev.coins) }, 'tick');
+        if (tickAch) achievementUnlocked = tickAch;
+    }
+
 
     // 4. CLEANUP & WIN CONDITIONS
     newEnemies.filter(e => e.hp <= 0).forEach(e => {
@@ -113,11 +120,19 @@ export const updateGameTick = (
     if (newEnemies.length === 0 && enemiesSpawnedRef.current >= enemiesPerWave) {
         if (prev.wave >= MAX_WAVE && !prev.isEndless) {
             gameWon = true;
-            if (newLives >= 10 && !updatedUnlockedIds.includes('man_of_steel')) updatedUnlockedIds.push('man_of_steel');
-            if (prev.defenders.filter(d => d.type === 'warrior').length === 1 && prev.defenders.filter(d => d.type === 'archer').length === 1 && !updatedUnlockedIds.includes('duo_leveling')) updatedUnlockedIds.push('duo_leveling');
+
+            // Check Victory Achievements
+            const victoryAch = checkAchievements({ ...prev, isPlaying: false, gameWon: true, lives: newLives, defenders: updatedDefenders }, 'game_won');
+            if (victoryAch) achievementUnlocked = victoryAch;
+
         } else {
             newWave++;
             enemiesSpawnedRef.current = 0;
+
+            // Check Wave End Achievements
+            const waveAch = checkAchievements({ ...prev, wave: prev.wave, coins: newCoins, lives: newLives }, 'wave_end'); // Use PREV wave since we just finished it? Or new? "End of wave".
+            if (waveAch) achievementUnlocked = waveAch;
+
             // Endless Scaling: more coins
             const waveBonus = prev.isEndless ? 50 * prev.wave : 25 * prev.wave;
             newCoins += waveBonus;

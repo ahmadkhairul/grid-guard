@@ -6,6 +6,7 @@ import { Badge } from '@/components/ui/badge';
 import { Play, Trophy, Swords, Map as MapIcon, HelpCircle, History } from 'lucide-react';
 import { TutorialModal } from '@/components/game/TutorialModal';
 import { ChangelogModal } from '@/components/game/ChangelogModal';
+import { AchievementModal } from '@/components/game/AchievementModal';
 import { MapPreview } from '@/components/game/MapPreview';
 import { hasSave, hasMapClear } from '@/lib/storage';
 import { trackEvent } from '@/lib/analytics';
@@ -15,6 +16,7 @@ const Home = () => {
     const navigate = useNavigate();
     const [showTutorial, setShowTutorial] = useState(false);
     const [showChangelog, setShowChangelog] = useState(false);
+    const [showAchievements, setShowAchievements] = useState(false);
 
     const handleStart = (mapId: string) => {
         trackEvent('start_game', { map: mapId });
@@ -45,10 +47,26 @@ const Home = () => {
                             <HelpCircle className="w-3.5 h-3.5" />
                             <span>Tutorial</span>
                         </Button>
+                        <Button variant="outline" size="sm" onClick={() => setShowAchievements(true)} className="gap-2 h-8 text-xs border-yellow-500/50 text-yellow-500 hover:text-yellow-400 hover:border-yellow-400 hover:bg-yellow-500/10">
+                            <Trophy className="w-3.5 h-3.5" />
+                            <span>Achievements</span>
+                        </Button>
                         <Button variant="outline" size="sm" onClick={() => setShowChangelog(true)} className="gap-2 h-8 text-xs">
                             <History className="w-3.5 h-3.5" />
                             <span>Patch Notes</span>
                         </Button>
+                        <div className="flex-1" />
+                        <div className="hidden md:flex items-center gap-4 text-sm text-muted-foreground animate-in fade-in duration-1000 delay-500">
+                            <a
+                                href="https://ko-fi.com/ahmadkhairul"
+                                target="_blank"
+                                rel="noreferrer"
+                                className="flex items-center gap-2 px-4 py-2 rounded-full border border-pink-500/30 bg-pink-500/10 hover:bg-pink-500/20 text-pink-500 transition-colors cursor-pointer group"
+                            >
+                                <span className="group-hover:scale-110 transition-transform">❤️</span>
+                                <span className="font-bold">Support Developer</span>
+                            </a>
+                        </div>
                     </div>
                 </div>
 
@@ -126,15 +144,10 @@ const Home = () => {
                     })}
                 </div>
 
-                {/* Footer info */}
-                <div className="mt-4 flex flex-col md:flex-row gap-4 text-sm text-muted-foreground animate-in fade-in duration-1000 delay-500 items-center">
-                    <div className="flex items-center gap-2 px-4 py-2 rounded-full border border-border/50 bg-card/30">
-                        <Trophy className="w-4 h-4 text-yellow-500" />
-                        <span>Global Leaderboards Coming Soon</span>
-                    </div>
-
+                {/* Mobile Footer Support Link */}
+                <div className="md:hidden mt-4 flex justify-center text-sm text-muted-foreground animate-in fade-in duration-1000 delay-500">
                     <a
-                        href="https://ko-fi.com"
+                        href="https://ko-fi.com/ahmadkhairul"
                         target="_blank"
                         rel="noreferrer"
                         className="flex items-center gap-2 px-4 py-2 rounded-full border border-pink-500/30 bg-pink-500/10 hover:bg-pink-500/20 text-pink-500 transition-colors cursor-pointer group"
@@ -148,6 +161,7 @@ const Home = () => {
 
             <TutorialModal open={showTutorial} onOpenChange={setShowTutorial} />
             <ChangelogModal open={showChangelog} onOpenChange={setShowChangelog} />
+            <AchievementModal open={showAchievements} onOpenChange={setShowAchievements} />
         </div>
     );
 };

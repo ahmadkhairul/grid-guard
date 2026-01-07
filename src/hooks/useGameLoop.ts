@@ -4,6 +4,7 @@ import { useGameState } from './useGameState';
 import { updateGameTick } from '@/logic/updateLogic';
 import { MAPS } from '@/config/gameConfig';
 import { trackEvent } from '@/lib/analytics';
+import { saveUsedDefender } from '@/lib/storage';
 
 export const useGameLoop = (mapId: string, onAttack?: (defenderType: DefenderType) => void) => {
   const {
@@ -63,6 +64,7 @@ export const useGameLoop = (mapId: string, onAttack?: (defenderType: DefenderTyp
       // We only know the type if we look at gameState.selectedDefender
       if (gameState.selectedDefender) {
         trackEvent('place_defender', { type: gameState.selectedDefender });
+        saveUsedDefender(gameState.selectedDefender);
       }
     },
     upgradeDefender,

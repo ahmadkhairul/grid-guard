@@ -89,3 +89,49 @@ export const getClearedMaps = (): string[] => {
 export const hasMapClear = (mapId: string): boolean => {
     return getClearedMaps().includes(mapId);
 };
+
+const ACHIEVEMENTS_KEY = 'grid_guard_global_achievements';
+
+export const getUnlockedAchievements = (): string[] => {
+    try {
+        const json = localStorage.getItem(ACHIEVEMENTS_KEY);
+        return json ? JSON.parse(json) : [];
+    } catch (e) {
+        return [];
+    }
+};
+
+export const saveAchievement = (id: string) => {
+    try {
+        const unlocked = getUnlockedAchievements();
+        if (!unlocked.includes(id)) {
+            const newUnlocked = [...unlocked, id];
+            localStorage.setItem(ACHIEVEMENTS_KEY, JSON.stringify(newUnlocked));
+        }
+    } catch (e) {
+        console.error('Failed to save achievement', e);
+    }
+};
+
+const USED_DEFENDERS_KEY = 'grid_guard_used_defenders';
+
+export const getUsedDefenders = (): string[] => {
+    try {
+        const json = localStorage.getItem(USED_DEFENDERS_KEY);
+        return json ? JSON.parse(json) : [];
+    } catch (e) {
+        return [];
+    }
+};
+
+export const saveUsedDefender = (type: string) => {
+    try {
+        const used = getUsedDefenders();
+        if (!used.includes(type)) {
+            const newUsed = [...used, type];
+            localStorage.setItem(USED_DEFENDERS_KEY, JSON.stringify(newUsed));
+        }
+    } catch (e) {
+        console.error('Failed to save used defender', e);
+    }
+};
