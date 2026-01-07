@@ -6,7 +6,6 @@ import { GameHeader } from './GameHeader';
 import { ShopPanel } from './ShopPanel';
 import { DefendersList } from './DefendersList';
 import { Button } from '@/components/ui/button';
-import { LoadingScreen } from './LoadingScreen';
 import { MobileBottomBar } from './MobileBottomBar';
 import { NotificationToast } from './NotificationToast'; // New Component
 import { DefenderType } from '@/types/game';
@@ -142,10 +141,6 @@ export const Game = ({ mapId = 'default' }: { mapId?: string }) => {
     placeDefender(x, y);
     setDraggedDefender(null);
   }, [selectDefender, placeDefender]);
-
-  if (gameState.isLoading) {
-    return <LoadingScreen onComplete={finishLoading} />;
-  }
 
   const currentMap = MAPS.find(m => m.id === gameState.mapId) || MAPS[0];
 

@@ -314,3 +314,12 @@
   background-size: 200% 100%;
   animation: blizzard-glow 1s ease-out;
 }
+
+@keyframes progress-stripe {
+  from {
+    background-position: 0 0;
+  }
+  to {
+    background-position: 20px 0;
+  }
+}

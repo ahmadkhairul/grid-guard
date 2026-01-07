@@ -31,7 +31,7 @@ const Home = () => {
             <div className="z-10 w-full max-w-5xl flex flex-col gap-6 md:gap-8">
 
                 {/* Header Section */}
-                <div className="space-y-2 animate-in fade-in slide-in-from-top-10 duration-700">
+                <div className="space-y-2">
                     <h1 className="text-xs md:text-base flex items-center font-game text-primary tracking-widest drop-shadow-lg">
                         GRID DEFENDER
                         <span className="text-xs md:text-base ml-4 text-muted-foreground align-top">
@@ -71,7 +71,7 @@ const Home = () => {
                 </div>
 
                 {/* Map Selection Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full animate-in fade-in slide-in-from-bottom-10 duration-700 delay-200">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 w-full">
                     {MAPS.map((map) => {
                         const hasProgress = hasSave(map.id);
                         const isCleared = hasMapClear(map.id);

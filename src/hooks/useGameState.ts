@@ -24,10 +24,27 @@ export const useGameState = (mapId: string) => {
     useEffect(() => {
         const saved = loadGame(mapId);
         if (saved && saved.mapId === mapId) {
-            setGameState(saved);
+            setGameState({ ...saved, isLoading: false });
         } else {
-            // If save exists but for different map, or no save, ensure we start fresh for this map
-            setGameState(prev => ({ ...prev, mapId, isLoading: false }));
+            // Ensure fresh start for this map
+            setGameState(prev => ({
+                ...prev,
+                mapId,
+                isLoading: false,
+                coins: 100,
+                wave: 1,
+                enemies: [],
+                defenders: [],
+                lives: 10,
+                isPlaying: false,
+                gameWon: false,
+                isPaused: false,
+                lastCheckpoint: 0,
+                checkpointCoins: 100,
+                checkpointDefenders: [],
+                unlockedDefenders: ['warrior', 'archer', 'miner'],
+                activeSkills: { meteorReadyAt: 0, blizzardReadyAt: 0, blizzardActiveUntil: 0 }
+            }));
         }
     }, [mapId]);
 
