@@ -54,6 +54,8 @@ export const AchievementModal = ({ open, onOpenChange }: AchievementModalProps) 
                         <div className="space-y-3">
                             {ACHIEVEMENTS.map((ach) => {
                                 const isUnlocked = unlocked.includes(ach.id);
+                                const isHidden = ach.hidden && !isUnlocked;
+
                                 return (
                                     <div
                                         key={ach.id}
@@ -69,17 +71,17 @@ export const AchievementModal = ({ open, onOpenChange }: AchievementModalProps) 
                                                 "w-12 h-12 rounded-full flex items-center justify-center text-2xl border-2 shrink-0",
                                                 isUnlocked ? "bg-background border-yellow-500/50" : "bg-muted border-muted-foreground/30"
                                             )}>
-                                                {isUnlocked ? ach.icon : <Lock className="w-5 h-5" />}
+                                                {isUnlocked ? ach.icon : isHidden ? '❓' : <Lock className="w-5 h-5" />}
                                             </div>
                                             <div className="flex-1 space-y-1">
                                                 <h4 className={cn(
                                                     "font-bold tracking-tight",
                                                     isUnlocked ? "text-foreground" : "text-muted-foreground"
                                                 )}>
-                                                    {ach.title}
+                                                    {isHidden ? "HIDDEN ACHIEVEMENT" : ach.title}
                                                 </h4>
                                                 <p className="text-xs text-muted-foreground leading-relaxed">
-                                                    {ach.description}
+                                                    {isHidden ? "Complete the secret challenge to reveal this achievement." : ach.description}
                                                 </p>
                                             </div>
                                             {isUnlocked && (
