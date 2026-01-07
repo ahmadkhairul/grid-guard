@@ -7,6 +7,29 @@ export const MAX_WAVE = 25;
 export const MAX_PER_TYPE = 10;
 export const MAX_LEVEL = 20;
 
+export const SKILL_CONFIGS = {
+  meteor: {
+    baseCost: 5000, // Usage cost
+    levels: [
+      { upgradeCost: 0, damagePercent: 0.25, cooldown: 12000 },      // Level 1: 25% HP, 12s
+      { upgradeCost: 15000, damagePercent: 0.30, cooldown: 12000 },  // Level 2: 30% HP, 12s
+      { upgradeCost: 15000, damagePercent: 0.35, cooldown: 12000 },  // Level 3: 35% HP, 12s
+      { upgradeCost: 25000, damagePercent: 0.40, cooldown: 12000 },   // Level 4: 40% HP, 12s
+      { upgradeCost: 50000, damagePercent: 0.50, cooldown: 10000 },   // Level 5: 50% HP, 10s
+    ]
+  },
+  blizzard: {
+    baseCost: 2500, // Usage cost
+    levels: [
+      { upgradeCost: 0, duration: 5000, cooldown: 15000 },      // Level 1: 5s freeze, 15s cooldown
+      { upgradeCost: 15000, duration: 6000, cooldown: 15000 },  // Level 2: 6s freeze, 15s cooldown
+      { upgradeCost: 20000, duration: 7000, cooldown: 15000 },  // Level 3: 7s freeze, 15s cooldown
+      { upgradeCost: 25000, duration: 8000, cooldown: 15000 },  // Level 4: 8s freeze, 15s cooldown
+      { upgradeCost: 50000, duration: 10000, cooldown: 13000 }, // Level 5: 10s freeze, 13s cooldown
+    ]
+  }
+};
+
 export interface MapConfig {
   id: string;
   name: string;

@@ -39,6 +39,7 @@ export const Game = ({ mapId = 'default' }: { mapId?: string }) => {
     restoreCheckpoint,
     triggerMeteor,
     triggerBlizzard,
+    upgradeSkill,
     continueEndless,
   } = useGameLoop(mapId, playAttackSound);
 
@@ -252,10 +253,13 @@ export const Game = ({ mapId = 'default' }: { mapId?: string }) => {
             coins={gameState.coins}
             meteorReadyAt={gameState.activeSkills.meteorReadyAt}
             blizzardReadyAt={gameState.activeSkills.blizzardReadyAt}
+            meteorLevel={gameState.activeSkills.meteorLevel}
+            blizzardLevel={gameState.activeSkills.blizzardLevel}
             meteorAnimating={meteorAnimating}
             blizzardAnimating={blizzardAnimating}
             onMeteor={handleMeteor}
             onBlizzard={handleBlizzard}
+            onUpgrade={upgradeSkill}
           />
 
           <DefendersList
@@ -279,8 +283,11 @@ export const Game = ({ mapId = 'default' }: { mapId?: string }) => {
         onBlizzard={handleBlizzard}
         meteorReadyAt={gameState.activeSkills.meteorReadyAt}
         blizzardReadyAt={gameState.activeSkills.blizzardReadyAt}
+        meteorLevel={gameState.activeSkills.meteorLevel}
+        blizzardLevel={gameState.activeSkills.blizzardLevel}
         meteorAnimating={meteorAnimating}
         blizzardAnimating={blizzardAnimating}
+        onUpgradeSkill={upgradeSkill}
       />
 
       {

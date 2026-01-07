@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { GameState, DefenderType } from '@/types/game';
-import { DEFENDER_CONFIGS, isPathCell, MAX_PER_TYPE, MAX_LEVEL, MAPS, MAP_DEFENDERS } from '@/config/gameConfig';
+import { DEFENDER_CONFIGS, isPathCell, MAX_PER_TYPE, MAX_LEVEL, MAPS, MAP_DEFENDERS, SKILL_CONFIGS } from '@/config/gameConfig';
 import { saveGame, loadGame, clearSave } from '@/lib/storage';
 
 const generateDefenderId = () => `defender-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
@@ -14,7 +14,7 @@ export const useGameState = (mapId: string) => {
         notification: null, unlockedDefenders: ['warrior', 'archer', 'miner'], screenFlash: null,
         lastCheckpoint: 0, checkpointCoins: 100, checkpointDefenders: [],
         mapId: mapId,
-        activeSkills: { meteorReadyAt: 0, blizzardReadyAt: 0, blizzardActiveUntil: 0 },
+        activeSkills: { meteorReadyAt: 0, blizzardReadyAt: 0, blizzardActiveUntil: 0, meteorLevel: 1, blizzardLevel: 1 },
     });
 
     const [speedMultiplier, setSpeedMultiplier] = useState(1);
@@ -43,7 +43,7 @@ export const useGameState = (mapId: string) => {
                 checkpointCoins: 100,
                 checkpointDefenders: [],
                 unlockedDefenders: ['warrior', 'archer', 'miner'],
-                activeSkills: { meteorReadyAt: 0, blizzardReadyAt: 0, blizzardActiveUntil: 0 }
+                activeSkills: { meteorReadyAt: 0, blizzardReadyAt: 0, blizzardActiveUntil: 0, meteorLevel: 1, blizzardLevel: 1 }
             }));
         }
     }, [mapId]);
@@ -67,7 +67,7 @@ export const useGameState = (mapId: string) => {
             notification: null, unlockedDefenders: ['warrior', 'archer', 'miner'], screenFlash: null,
             lastCheckpoint: 0, checkpointCoins: 100, checkpointDefenders: [],
             mapId: mapId,
-            activeSkills: { meteorReadyAt: 0, blizzardReadyAt: 0, blizzardActiveUntil: 0 },
+            activeSkills: { meteorReadyAt: 0, blizzardReadyAt: 0, blizzardActiveUntil: 0, meteorLevel: 1, blizzardLevel: 1 },
         });
         enemiesSpawnedRef.current = 0;
     }, [mapId]);
@@ -149,7 +149,7 @@ export const useGameState = (mapId: string) => {
                 checkpointCoins: prev.checkpointCoins,
                 checkpointDefenders: prev.checkpointDefenders,
                 mapId: prev.mapId,
-                activeSkills: prev.activeSkills || { meteorReadyAt: 0, blizzardReadyAt: 0, blizzardActiveUntil: 0 },
+                activeSkills: prev.activeSkills || { meteorReadyAt: 0, blizzardReadyAt: 0, blizzardActiveUntil: 0, meteorLevel: 1, blizzardLevel: 1 },
             };
         });
         enemiesSpawnedRef.current = 0;
@@ -158,15 +158,27 @@ export const useGameState = (mapId: string) => {
     const triggerMeteor = useCallback(() => {
         const now = Date.now();
         setGameState(prev => {
-            if (prev.coins < 1) return prev;
-            if (prev.activeSkills.meteorReadyAt > now) return prev;
-            const newEnemies = prev.enemies.map(e => ({ ...e, hp: e.hp - 500, isHit: true }));
+            const meteorLevel = prev.activeSkills.meteorLevel || 1;
+            const config = SKILL_CONFIGS.meteor.levels[meteorLevel - 1];
+            const cost = SKILL_CONFIGS.meteor.baseCost;
+
+            if (prev.coins < cost) return prev;
+
+            // Calculate damage as percentage of max HP
+            const newEnemies = prev.enemies.map(e => ({
+                ...e,
+                hp: e.hp - (e.maxHp * config.damagePercent),
+                isHit: true
+            }));
+
+            const damagePercent = Math.round(config.damagePercent * 100);
+
             return {
                 ...prev,
-                coins: prev.coins - 1,
+                coins: prev.coins - cost,
                 enemies: newEnemies,
-                activeSkills: { ...prev.activeSkills, meteorReadyAt: now + 15000 },
-                notification: { id: `meteor-${now}`, title: 'METEOR STRIKE!', description: 'Dealt 500 damage to all enemies!', icon: '☄️', color: 'text-orange-500' },
+                activeSkills: { ...prev.activeSkills, meteorReadyAt: now + config.cooldown },
+                notification: { id: `meteor-${now}`, title: 'METEOR STRIKE!', description: `Dealt ${damagePercent}% damage to all enemies!`, icon: '☄️', color: 'text-orange-500' },
             };
         });
     }, []);
@@ -174,13 +186,50 @@ export const useGameState = (mapId: string) => {
     const triggerBlizzard = useCallback(() => {
         const now = Date.now();
         setGameState(prev => {
-            if (prev.coins < 1) return prev;
-            if (prev.activeSkills.blizzardReadyAt > now) return prev;
+            const blizzardLevel = prev.activeSkills.blizzardLevel || 1;
+            const config = SKILL_CONFIGS.blizzard.levels[blizzardLevel - 1];
+            const cost = SKILL_CONFIGS.blizzard.baseCost;
+            const durationSec = config.duration / 1000;
+
+            if (prev.coins < cost) return prev;
+
             return {
                 ...prev,
-                coins: prev.coins - 1,
-                activeSkills: { ...prev.activeSkills, blizzardReadyAt: now + 20000, blizzardActiveUntil: now + 5000 },
-                notification: { id: `blizzard-${now}`, title: 'BLIZZARD!', description: 'All enemies frozen for 5 seconds!', icon: '❄️', color: 'text-blue-500' },
+                coins: prev.coins - cost,
+                activeSkills: { ...prev.activeSkills, blizzardReadyAt: now + config.cooldown, blizzardActiveUntil: now + config.duration },
+                notification: { id: `blizzard-${now}`, title: 'BLIZZARD!', description: `All enemies frozen for ${durationSec} seconds!`, icon: '❄️', color: 'text-blue-500' },
+            };
+        });
+    }, []);
+
+    const upgradeSkill = useCallback((skillType: 'meteor' | 'blizzard') => {
+        setGameState(prev => {
+            const currentLevel = skillType === 'meteor'
+                ? (prev.activeSkills.meteorLevel || 1)
+                : (prev.activeSkills.blizzardLevel || 1);
+
+            if (currentLevel >= 5) return prev; // Max level
+
+            const cost = SKILL_CONFIGS[skillType].levels[currentLevel].upgradeCost;
+            if (prev.coins < cost) return prev;
+
+            const newLevel = currentLevel + 1;
+            const skillName = skillType === 'meteor' ? 'Meteor' : 'Blizzard';
+
+            return {
+                ...prev,
+                coins: prev.coins - cost,
+                activeSkills: {
+                    ...prev.activeSkills,
+                    [skillType === 'meteor' ? 'meteorLevel' : 'blizzardLevel']: newLevel
+                },
+                notification: {
+                    id: `skill-upgrade-${Date.now()}`,
+                    title: `${skillName} Upgraded!`,
+                    description: `${skillName} is now Level ${newLevel}!`,
+                    icon: skillType === 'meteor' ? '☄️' : '❄️',
+                    color: skillType === 'meteor' ? 'text-orange-500' : 'text-blue-500'
+                }
             };
         });
     }, []);
@@ -193,5 +242,6 @@ export const useGameState = (mapId: string) => {
         restoreCheckpoint,
         triggerMeteor,
         triggerBlizzard,
+        upgradeSkill,
     };
 };

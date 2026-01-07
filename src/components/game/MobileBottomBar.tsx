@@ -20,8 +20,11 @@ interface MobileBottomBarProps {
   onBlizzard?: () => void;
   meteorReadyAt?: number;
   blizzardReadyAt?: number;
+  meteorLevel?: number;
+  blizzardLevel?: number;
   meteorAnimating?: boolean;
   blizzardAnimating?: boolean;
+  onUpgradeSkill?: (skill: 'meteor' | 'blizzard') => void;
 }
 
 type PanelType = 'shop' | 'skills' | 'defender' | null;
@@ -39,8 +42,11 @@ export const MobileBottomBar = memo(({
   onBlizzard,
   meteorReadyAt = 0,
   blizzardReadyAt = 0,
+  meteorLevel = 1,
+  blizzardLevel = 1,
   meteorAnimating = false,
   blizzardAnimating = false,
+  onUpgradeSkill,
 }: MobileBottomBarProps) => {
   const [activePanel, setActivePanel] = useState<PanelType>(null);
 
@@ -87,11 +93,13 @@ export const MobileBottomBar = memo(({
               coins={coins}
               meteorReadyAt={meteorReadyAt}
               blizzardReadyAt={blizzardReadyAt}
+              meteorLevel={meteorLevel}
+              blizzardLevel={blizzardLevel}
               meteorAnimating={meteorAnimating}
               blizzardAnimating={blizzardAnimating}
               onMeteor={onMeteor}
               onBlizzard={onBlizzard}
-              variant="mobile"
+              onUpgrade={onUpgradeSkill!}
             />
           )}
           {activePanel === 'defender' && (

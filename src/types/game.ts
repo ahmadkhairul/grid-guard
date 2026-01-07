@@ -133,6 +133,8 @@ export interface ActiveSkills {
   meteorReadyAt: number;
   blizzardReadyAt: number;
   blizzardActiveUntil: number;
+  meteorLevel: number;    // 1-5
+  blizzardLevel: number;  // 1-5
 }
 
 export interface GameState {
