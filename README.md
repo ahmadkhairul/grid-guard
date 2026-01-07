@@ -1,65 +1,69 @@
-# 🛡️ Grid Defender
+# 🛡️ Grid Guard: The Global Guardian (V2.0)
 
-An epic tower defense game built with React, TypeScript, and Vite. Defend the grid from waves of enemies using strategic tower placement and upgrades!
+An epic, cinematic tower defense game built with **React 18**, **TypeScript**, and **Vite**. Defend your grid against ever-evolving threats using strategic placement, active magic skills, and global progression.
 
-![Grid Defender](public/icon-512.png)
+![Grid Guard Banner](public/icon-512.png)
 
-## 🎮 Features
+## 🎮 Version 2.0 Major Features
 
-### Core Gameplay
-- **25 Waves of Enemies** - Progressive difficulty from Wave 1 to the final boss at Wave 25
-- **Strategic Tower Placement** - Place defenders on a grid to stop enemy invasions
-- **Tower Upgrades** - Upgrade your defenders up to level 20 for increased power
-- **Multiple Enemy Types** - Face normal, fast, tank, flying, and special enemies
-- **Boss Battles** - Epic boss encounters at Waves 7, 10, 15, 20, and 25
+### 🌍 Multi-Map Support
 
-### Defenders (Towers)
-| Tower | Ability | Unlock |
-|-------|---------|--------|
-| ⚔️ **Warrior** | Close-range melee damage | Default |
-| 🏹 **Archer** | Long-range attacks | Default |
-| ⛏️ **Miner** | Generates gold over time | Default |
-| 🗿 **Stone Cannon** | Knockback - pushes enemies back 2 tiles | Beat Wave 15 |
+Battle across different environments, each with unique paths and exclusive defenders:
 
-| Enemy | Special Ability |
-|-------|----------------|
-| 👾 Normal | Basic enemy |
-| 🏃 Fast | 2.2x movement speed |
-| 🛡️ Tank | 12x health |
-| 🦅 Flying | Takes alternate path |
-| 🦹 **Thief** | **ULTRA FAST** (7x speed) - Steals 5000 gold but doesn't reduce lives |
-| 🧚 **Healer** | Heals all enemies +500 HP on spawn |
-| 🦇 **Stunner** | Stuns nearby towers for 3s on death |
-| 👹 **Boss** | Mini-boss with immunity phases |
-| 🦍 **Iron Golem** | Wave 15 boss - extreme HP |
-| 🥷 **Assassin** | Wave 20 boss - extreme speed |
-| 👿 **Demon Lord** | Wave 25 final boss |
+- **Golem Lair (Easy)**: A winding path through ancient ruins.
+- **Freeze Land (Medium)**: A treacherous spiral. Home of the **Ice Cube** defender.
+- **Dragon's Lair (Hard)**: The ultimate test. Home of the **Lightning Rod** defender.
 
-### Progressive Web App (PWA)
-- ✅ **Offline Play** - Works completely offline after first visit
-- ✅ **Install to Home Screen** - Install like a native app
-- ✅ **Auto-Updates** - Service worker handles updates automatically
-- ✅ **Mobile Optimized** - Responsive design for all screen sizes
+### 🏆 Global Achievement System
 
-### Game Features
-- 🎯 **3 Speed Modes** - 1x, 2x, 3x game speed
-- 🏆 **Achievements** - Unlock special achievements for skilled play
-- 📱 **Mobile Support** - Touch-friendly controls with drag-and-drop
-- 🎨 **Modern UI** - Dark theme with smooth animations
-- 🔊 **Audio** - Background music and sound effects
-- 💾 **Auto-Save** - Game state persists in browser
+Your bravery is tracked across all maps and sessions:
+
+- **11 Unique Challenges**: Unlock achievements like _Midas Touch_, _Economist_, or the secret _G**d Av\*\***r_.
+- **Hidden Tasks**: Discover secret requirements to complete your collection.
+- **Certificate of Valor**: Generate a personalized, shareable certificate of your progress.
+- **Global Persistence**: Achievements save to local storage, persisting even if you switch maps.
+
+### ⚡ Active Skills (Spells)
+
+Turn the tide of battle with powerful manual abilities:
+
+- **☄️ Meteor Strike**: Rain fire on the entire grid. Deals massive damage to EVERY enemy.
+- **❄️ Blizzard**: Flash-freeze the battlefield. Stops all enemies in their tracks for 5 seconds.
+
+### 🏹 Defenders (Towers)
+
+| Tower                | Ability                | Availability      |
+| -------------------- | ---------------------- | ----------------- |
+| ⚔️ **Warrior**       | High DPS Melee         | All Maps          |
+| 🏹 **Archer**        | Long-range Sniper      | All Maps          |
+| ⛏️ **Miner**         | Gold generation        | All Maps          |
+| 🗿 **Stone Cannon**  | Stun & Knockback       | Golem Lair (W16+) |
+| 🧊 **Ice Cube**      | Area-of-effect Slow    | Freeze Land       |
+| ⚡ **Lightning Rod** | High-speed Swarm Clear | Dragon's Lair     |
+
+### ♾️ Endless Mode & Boss Rush
+
+- **Endless Mode**: Continue past Wave 25 to see how long your defenses hold. Enemies scale in HP and rewards.
+- **Boss Rush (Wave 40)**: Face every boss in the game back-to-back in an ultimate survival test.
+
+## 📱 Premium Features
+
+- **Cinematic Loading**: A high-fidelity splash screen with Pro-Tips and smooth transitions.
+- **Target Scan Mode**: One-tap upgrade interaction for fast-paced gameplay.
+- **PWA Optimized**: Play offline and install to your home screen.
+- **Personalized Sharing**: Enter your name on the certificate and share your score natively via the Web Share API.
 
 ## 🚀 Getting Started
 
 ### Prerequisites
+
 - Node.js 18+ and npm
-- Modern web browser (Chrome, Firefox, Safari, Edge)
 
 ### Installation
 
 ```bash
 # Clone the repository
-git clone <your-repo-url>
+git clone https://github.com/ahmadkhairul/grid-guard.git
 cd grid-guard
 
 # Install dependencies
@@ -71,115 +75,19 @@ npm run dev
 
 The game will be available at `http://localhost:8080`
 
-### Building for Production
-
-```bash
-# Create optimized production build
-npm run build
-
-# Preview production build
-npm run preview
-```
-
-## 🎯 How to Play
-
-1. **Start the Game** - Click "Start Wave" to begin
-2. **Place Defenders** - Click a defender in the shop, then click an empty grid cell
-3. **Earn Gold** - Defeat enemies or use Miner towers to generate income
-4. **Upgrade** - Click placed defenders to upgrade them for better stats
-5. **Survive** - Prevent enemies from reaching the end of the path
-6. **Win** - Defeat all 25 waves to achieve victory!
-
-### Tips & Strategy
-- 💰 **Use Miners Early** - Generate passive income for late-game upgrades
-- 🎯 **Mix Tower Types** - Combine Warriors (melee) and Archers (range) for coverage
-- ⚡ **Upgrade Strategically** - Focus upgrades on key chokepoints
-- 🗿 **Unlock Stone Cannon** - Beat Wave 15 to unlock the powerful knockback tower
-- 🦹 **Watch for Thieves** - Ultra fast (7x speed)! Won't reduce lives but will steal 5000 gold!
-- 🧚 **Kill Healers Fast** - They heal all enemies +500 HP when they spawn
-
 ## 🛠️ Tech Stack
 
 - **Framework**: React 18 + TypeScript
-- **Build Tool**: Vite
-- **Styling**: Tailwind CSS + shadcn/ui
-- **PWA**: vite-plugin-pwa + Workbox
-- **State Management**: React Hooks
-- **Audio**: Web Audio API
+- **Styling**: Vanilla CSS + Tailwind + Lucide Icons
+- **UI Components**: Radix UI (shadcn)
+- **State**: Custom Hooks & LocalStorage Persistence
+- **Deployment**: Vite + Netlify/Vercel
 
-## 📁 Project Structure
+## 🤝 Support the Developer
 
-```
-grid-guard/
-├── src/
-│   ├── components/
-│   │   ├── game/          # Game components
-│   │   └── ui/            # Reusable UI components
-│   ├── hooks/             # Custom React hooks
-│   │   ├── useGameLoop.ts # Main game loop
-│   │   ├── useGameState.ts # State management
-│   │   └── useAudio.ts    # Audio system
-│   ├── logic/             # Game logic
-│   │   ├── updateLogic.ts # Game tick updates
-│   │   └── waveLogic.ts   # Enemy spawning
-│   ├── config/            # Game configuration
-│   ├── types/             # TypeScript types
-│   └── main.tsx           # Entry point
-├── public/                # Static assets
-└── index.html            # HTML template
-```
-
-## 🎨 Customization
-
-### Adjusting Difficulty
-Edit `src/config/gameConfig.ts`:
-```typescript
-export const MAX_WAVE = 25;        // Total waves
-export const MAX_PER_TYPE = 10;    // Max towers per type
-export const MAX_LEVEL = 20;       // Max upgrade level
-```
-
-### Modifying Enemies
-Edit enemy stats in `ENEMY_CONFIGS` in `gameConfig.ts`
-
-### Adding New Towers
-1. Add type to `DefenderType` in `types/game.ts`
-2. Add config to `DEFENDER_CONFIGS` in `gameConfig.ts`
-3. Implement special abilities in `updateLogic.ts`
-
-## 📱 PWA Installation
-
-### Desktop
-1. Visit the game in Chrome/Edge
-2. Click the install icon in the address bar
-3. Click "Install"
-
-### Mobile (iOS)
-1. Open in Safari
-2. Tap Share button
-3. Select "Add to Home Screen"
-
-### Mobile (Android)
-1. Open in Chrome
-2. Tap the menu (⋮)
-3. Select "Add to Home Screen"
-
-## 🤝 Contributing
-
-Contributions are welcome! Feel free to:
-- Report bugs
-- Suggest new features
-- Submit pull requests
-- Improve documentation
-
-## 📄 License
-
-This project is open source and available under the MIT License.
-
-## 🎮 Play Now!
-
-[Play Grid Defender](https://grid-guard-game.netlify.app)
+If you enjoy the game, consider supporting the continued development of **Grid Guard**:
+[☕ Buy me a Coffee](https://ko-fi.com/ahmadkhairul)
 
 ---
 
-Made with ❤️ using React + TypeScript + Vite
+Made with ❤️ by [Ahmad Khairul](https://ko-fi.com/ahmadkhairul)
