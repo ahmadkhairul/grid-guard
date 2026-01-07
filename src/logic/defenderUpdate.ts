@@ -52,7 +52,8 @@ export const updateDefenders = (
             return { ...d, lastAttack: now };
         }
 
-        const target = newEnemies.find(e => {
+        // Find all enemies in range
+        const enemiesInRange = newEnemies.filter(e => {
             if (e.immuneTo === d.type) return false;
 
             // Phantom: Can't target if invisible
@@ -61,6 +62,12 @@ export const updateDefenders = (
             const dist = Math.sqrt(Math.pow(e.position.x - d.position.x, 2) + Math.pow(e.position.y - d.position.y, 2));
             return dist <= d.range;
         });
+
+        // Target the enemy closest to exit (highest pathIndex)
+        const target = enemiesInRange.reduce((closest, current) => {
+            if (!closest) return current;
+            return current.pathIndex > closest.pathIndex ? current : closest;
+        }, null as Enemy | null);
 
         if (target) {
             attackAnimationsRef.current.add(d.id);

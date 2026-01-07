@@ -109,8 +109,8 @@ export const updateEnemies = (
 
         const idx = Math.floor(nextPathIndex);
         const progress = nextPathIndex - idx;
-        const currentPos = path[idx];
-        const nextPos = path[Math.min(idx + 1, path.length - 1)];
+        const currentPos = enemyPath[idx];
+        const nextPos = enemyPath[Math.min(idx + 1, enemyPath.length - 1)];
 
         return {
             ...enemy,
