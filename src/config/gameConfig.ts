@@ -89,6 +89,12 @@ export const MAPS: MapConfig[] = [
   },
 ];
 
+export const MAP_DEFENDERS: Record<string, DefenderType> = {
+  [MAP_TYPES.GOLEM_LAIR]: DEFENDER_TYPES.STONE,
+  [MAP_TYPES.FREEZE_LAND]: DEFENDER_TYPES.ICE,
+  [MAP_TYPES.DRAGON_CAVE]: DEFENDER_TYPES.LIGHTNING,
+};
+
 // Kept for legacy reference but ideally should be replaced by dynamic calls
 export const ENEMY_PATH = GOLEM_LAIR_PATH;
 

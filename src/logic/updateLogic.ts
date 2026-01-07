@@ -1,5 +1,5 @@
 import { GameState, Achievement, DefenderType, Position } from '@/types/game';
-import { MAX_WAVE } from '@/config/gameConfig';
+import { MAX_WAVE, MAPS, MAP_DEFENDERS, DEFENDER_CONFIGS } from '@/config/gameConfig';
 import { getEnemiesPerWave } from '@/logic/waveLogic';
 import { spawnEnemies, updateEnemies } from '@/logic/enemyUpdate';
 import { updateDefenders } from '@/logic/defenderUpdate';
@@ -137,14 +137,24 @@ export const updateGameTick = (
             const waveBonus = prev.isEndless ? 50 * prev.wave : 25 * prev.wave;
             newCoins += waveBonus;
 
+            const currentMap = MAPS.find(m => m.id === prev.mapId) || MAPS[0];
+            const mapDefender = MAP_DEFENDERS[currentMap.id];
+
             if ([5, 10, 15, 20].includes(newWave)) {
                 returnCheckpoint = newWave;
                 returnCheckpointCoins = newCoins;
                 returnCheckpointDefenders = updatedDefenders.map(d => ({ ...d }));
                 notification = { id: `checkpoint-${newWave}`, title: 'CHECKPOINT SAVED!', description: `You can restart from Wave ${newWave}!`, icon: '💾', color: 'text-blue-500' };
-            } else if (newWave === 16 && !newUnlockedDefenders.includes('stone')) {
-                newUnlockedDefenders.push('stone');
-                notification = { id: `unlock-stone`, title: 'NEW TOWER UNLOCKED!', description: 'Stone Cannon is available in Shop!', icon: '🗿', color: 'text-amber-500' };
+            } else if (newWave === 16 && mapDefender && !newUnlockedDefenders.includes(mapDefender)) {
+                newUnlockedDefenders.push(mapDefender);
+                const defConfig = DEFENDER_CONFIGS[mapDefender];
+                notification = {
+                    id: `unlock-${mapDefender}`,
+                    title: 'NEW TOWER UNLOCKED!',
+                    description: `${defConfig.name} is available in Shop!`,
+                    icon: defConfig.emoji,
+                    color: 'text-amber-500'
+                };
             } else {
                 notification = announceWave(newWave);
             }

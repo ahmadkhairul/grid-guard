@@ -1,6 +1,6 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
-import { GameState } from '@/types/game';
-import { DEFENDER_CONFIGS, isPathCell, MAX_PER_TYPE, MAX_LEVEL, MAPS } from '@/config/gameConfig';
+import { GameState, DefenderType } from '@/types/game';
+import { DEFENDER_CONFIGS, isPathCell, MAX_PER_TYPE, MAX_LEVEL, MAPS, MAP_DEFENDERS } from '@/config/gameConfig';
 import { saveGame, loadGame, clearSave } from '@/lib/storage';
 
 const generateDefenderId = () => `defender-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
@@ -121,30 +121,37 @@ export const useGameState = (mapId: string) => {
     const clearScreenFlash = useCallback(() => setGameState(prev => ({ ...prev, screenFlash: null })), []);
 
     const restoreCheckpoint = useCallback(() => {
-        setGameState(prev => ({
-            coins: prev.checkpointCoins,
-            wave: prev.lastCheckpoint,
-            enemies: [],
-            defenders: prev.checkpointDefenders.map(d => ({ ...d })), // Deep copy defenders
-            lives: 10,
-            isPlaying: false,
-            selectedDefender: null,
-            isLoading: false,
-            gameWon: false,
-            isPaused: false,
-            totalMined: 0,
-            unlockedAchievements: prev.unlockedAchievements,
-            lastUnlockedAchievement: null,
-            floatingTexts: [],
-            notification: null,
-            unlockedDefenders: prev.lastCheckpoint >= 15 ? ['warrior', 'archer', 'miner', 'stone'] : ['warrior', 'archer', 'miner'],
-            screenFlash: null,
-            lastCheckpoint: prev.lastCheckpoint,
-            checkpointCoins: prev.checkpointCoins,
-            checkpointDefenders: prev.checkpointDefenders,
-            mapId: prev.mapId,
-            activeSkills: prev.activeSkills || { meteorReadyAt: 0, blizzardReadyAt: 0, blizzardActiveUntil: 0 },
-        }));
+        setGameState(prev => {
+            const mapDefender = MAP_DEFENDERS[prev.mapId];
+            const shouldUnlockSpecial = prev.lastCheckpoint >= 16 && mapDefender;
+            const updatedUnlocked: DefenderType[] = ['warrior', 'archer', 'miner'];
+            if (shouldUnlockSpecial) updatedUnlocked.push(mapDefender);
+
+            return {
+                coins: prev.checkpointCoins,
+                wave: prev.lastCheckpoint,
+                enemies: [],
+                defenders: prev.checkpointDefenders.map(d => ({ ...d })), // Deep copy defenders
+                lives: 10,
+                isPlaying: false,
+                selectedDefender: null,
+                isLoading: false,
+                gameWon: false,
+                isPaused: false,
+                totalMined: 0,
+                unlockedAchievements: prev.unlockedAchievements,
+                lastUnlockedAchievement: null,
+                floatingTexts: [],
+                notification: null,
+                unlockedDefenders: updatedUnlocked,
+                screenFlash: null,
+                lastCheckpoint: prev.lastCheckpoint,
+                checkpointCoins: prev.checkpointCoins,
+                checkpointDefenders: prev.checkpointDefenders,
+                mapId: prev.mapId,
+                activeSkills: prev.activeSkills || { meteorReadyAt: 0, blizzardReadyAt: 0, blizzardActiveUntil: 0 },
+            };
+        });
         enemiesSpawnedRef.current = 0;
     }, []);
 
