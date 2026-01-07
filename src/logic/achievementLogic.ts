@@ -31,7 +31,7 @@ export const checkAchievements = (
     }
 
     // 3. Midas Touch
-    if (state.totalMined >= 1000000 && state.wave <= MAX_WAVE) {
+    if (state.totalMined >= 1000000) {
         const res = newUnlock('midas_touch');
         if (res) return res;
     }
@@ -74,24 +74,24 @@ export const checkAchievements = (
         // Description says "Warrior and Archer as DPS". 
         // Strict interpretation: ONLY Warrior and Archer towers exist? Or only those deal damage?
         // Let's assume: ONLY Warrior and Archer types exist (plus Miners).
-        const combatDefenders = state.defenders.filter(d => d.type !== 'miner');
-        const hasOthers = combatDefenders.some(d => d.type !== 'warrior' && d.type !== 'archer');
-        const warriors = combatDefenders.filter(d => d.type === 'warrior');
-        const archers = combatDefenders.filter(d => d.type === 'archer');
+        // Limit filter to only Warrior/Archers. 
+        // We allow 'miner', 'stone', 'ice', 'lightning' as non-combat/support or elemental.
+        // The condition "Win Wave 25 with exactly 1 Warrior and 1 Archer" implies those are the specific DPS units.
+        // The user complained about Ice towers causing fail.
+        // So we strictly check if Warrior count == 1 AND Archer count == 1, and ignore others.
+        const warriors = state.defenders.filter(d => d.type === 'warrior');
+        const archers = state.defenders.filter(d => d.type === 'archer');
 
-        if (!hasOthers && warriors.length === 1 && archers.length === 1) {
+        // Check if we have ANY other "Standard" physical towers? No, just ensure we have the duo.
+        // If they have 50 Ice Towers, so be it. The achievement is about the Duo of Legends (Warrior+Archer).
+        if (warriors.length === 1 && archers.length === 1) {
             const res = newUnlock('duo_legends');
             if (res) return res;
         }
 
         // 9. Ironman Run
-        // Assuming we track 'hasContinued' in state? 
-        // If 'lastCheckpoint' is 0 (or default) and lives never dropped to 0?
-        // Limitation: Current state doesn't track 'hasLoadedSave'. 
-        // Workaround: We unlock it if they win and never used a checkpoint feature *in this session*.
-        // This is hard to track perfectly without new state. 
-        // Let's check if 'lastCheckpoint' is > 0.
-        if (state.lastCheckpoint === 0) { // Assuming 0 is default
+        // We now track 'hasUsedCheckpoint' in state.
+        if (!state.hasUsedCheckpoint) {
             const res = newUnlock('ironman_run');
             if (res) return res;
         }

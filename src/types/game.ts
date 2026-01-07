@@ -54,6 +54,7 @@ export interface Enemy {
   teleportCooldown?: number;
   isInvisible?: boolean;
   slowedUntil?: number;
+  createdAt: number;
 }
 
 export interface Defender {
@@ -163,4 +164,5 @@ export interface GameState {
   isEndless?: boolean;
   mapId: string;
   activeSkills: ActiveSkills;
+  hasUsedCheckpoint?: boolean;
 }

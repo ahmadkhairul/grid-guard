@@ -1,7 +1,7 @@
 import { useState, useCallback, useRef, useEffect } from 'react';
 import { GameState, DefenderType } from '@/types/game';
 import { DEFENDER_CONFIGS, isPathCell, MAX_PER_TYPE, MAX_LEVEL, MAPS, MAP_DEFENDERS, SKILL_CONFIGS } from '@/config/gameConfig';
-import { saveGame, loadGame, clearSave } from '@/lib/storage';
+import { saveGame, loadGame, clearSave, saveUsedDefender } from '@/lib/storage';
 
 const generateDefenderId = () => `defender-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
@@ -82,6 +82,8 @@ export const useGameState = (mapId: string) => {
             const count = prev.defenders.filter(d => d.type === prev.selectedDefender).length;
             if (count >= MAX_PER_TYPE) return prev;
 
+            saveUsedDefender(prev.selectedDefender);
+
             return {
                 ...prev,
                 coins: prev.coins - config.cost,
@@ -150,6 +152,7 @@ export const useGameState = (mapId: string) => {
                 checkpointDefenders: prev.checkpointDefenders,
                 mapId: prev.mapId,
                 activeSkills: prev.activeSkills || { meteorReadyAt: 0, blizzardReadyAt: 0, blizzardActiveUntil: 0, meteorLevel: 1, blizzardLevel: 1 },
+                hasUsedCheckpoint: true,
             };
         });
         enemiesSpawnedRef.current = 0;

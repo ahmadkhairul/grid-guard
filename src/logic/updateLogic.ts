@@ -1,4 +1,4 @@
-import { GameState, Achievement, DefenderType, Position } from '@/types/game';
+import { GameState, Achievement, DefenderType, Position, ENEMY_TYPES } from '@/types/game';
 import { MAX_WAVE, MAPS, MAP_DEFENDERS, DEFENDER_CONFIGS } from '@/config/gameConfig';
 import { getEnemiesPerWave } from '@/logic/waveLogic';
 import { spawnEnemies, updateEnemies } from '@/logic/enemyUpdate';
@@ -94,6 +94,13 @@ export const updateGameTick = (
                 }
             });
             addText(e.position.x, e.position.y, 'EXPLOSION!', 'text-blue-500');
+        }
+
+        // BOSS SLAYER LOGIC
+        if (e.type === ENEMY_TYPES.BOSS_DEMON_LORD) {
+            const timeToKill = Date.now() - e.createdAt;
+            const bossKillAch = checkAchievements(prev, 'boss_kill', { bossType: e.type, timeToKill });
+            if (bossKillAch) achievementUnlocked = bossKillAch;
         }
 
         newCoins += e.reward;

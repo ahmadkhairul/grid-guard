@@ -159,5 +159,6 @@ export const createEnemy = (type: EnemyType, wave: number): Enemy => {
                 type === ENEMY_TYPES.BOSS_ARCHER ? DEFENDER_TYPES.ARCHER : undefined,
         isFlying: config.isFlying,
         path: flyingPath,
+        createdAt: Date.now(),
     };
 };
