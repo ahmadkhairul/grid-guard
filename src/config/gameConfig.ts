@@ -15,17 +15,17 @@ export const SKILL_CONFIGS = {
       { upgradeCost: 15000, damagePercent: 0.30, cooldown: 12000 },  // Level 2: 30% HP, 12s
       { upgradeCost: 15000, damagePercent: 0.35, cooldown: 12000 },  // Level 3: 35% HP, 12s
       { upgradeCost: 25000, damagePercent: 0.40, cooldown: 12000 },   // Level 4: 40% HP, 12s
-      { upgradeCost: 50000, damagePercent: 0.50, cooldown: 10000 },   // Level 5: 50% HP, 10s
+      { upgradeCost: 50000, damagePercent: 0.60, cooldown: 10000 },   // Level 5: 60% HP, 10s
     ]
   },
   blizzard: {
     baseCost: 2500, // Usage cost
     levels: [
-      { upgradeCost: 0, duration: 5000, cooldown: 15000 },      // Level 1: 5s freeze, 15s cooldown
-      { upgradeCost: 15000, duration: 6000, cooldown: 15000 },  // Level 2: 6s freeze, 15s cooldown
-      { upgradeCost: 20000, duration: 7000, cooldown: 15000 },  // Level 3: 7s freeze, 15s cooldown
-      { upgradeCost: 25000, duration: 8000, cooldown: 15000 },  // Level 4: 8s freeze, 15s cooldown
-      { upgradeCost: 50000, duration: 10000, cooldown: 13000 }, // Level 5: 10s freeze, 13s cooldown
+      { upgradeCost: 0, duration: 3000, cooldown: 12000 },      // Level 1: 3s freeze, 12s cooldown
+      { upgradeCost: 15000, duration: 3000, cooldown: 11000 },  // Level 2: 3s freeze, 11s cooldown
+      { upgradeCost: 20000, duration: 3000, cooldown: 10000 },  // Level 3: 3s freeze, 10s cooldown
+      { upgradeCost: 25000, duration: 3000, cooldown: 9000 },   // Level 4: 3s freeze, 9s cooldown
+      { upgradeCost: 50000, duration: 5000, cooldown: 8000 },   // Level 5: 5s freeze, 8s cooldown
     ]
   }
 };
