@@ -25,7 +25,7 @@ export const ACTIVE_SKILLS: Record<string, ActiveSkillConfig> = {
         id: 'meteor',
         name: 'Meteor',
         emoji: '☄️',
-        cost: 1,
+        cost: 5000,
         cooldown: 15000, // 15 seconds
         effect: {
             type: 'damage',
@@ -42,7 +42,7 @@ export const ACTIVE_SKILLS: Record<string, ActiveSkillConfig> = {
         id: 'blizzard',
         name: 'Blizzard',
         emoji: '❄️',
-        cost: 1,
+        cost: 2500,
         cooldown: 20000, // 20 seconds
         effect: {
             type: 'freeze',
