@@ -17,16 +17,20 @@ export const NotificationToast = memo(({ notification, onClose }: NotificationTo
   if (!notification) return null;
 
   return (
-    <div className="fixed top-20 left-4 right-4 md:top-auto md:bottom-4 md:left-4 md:right-auto md:w-auto z-[100] animate-in slide-in-from-bottom-4 fade-in duration-500 pointer-events-none">
-      <div className={`bg-card border-2 rounded-lg p-4 shadow-[0_0_20px_rgba(0,0,0,0.3)] flex items-center gap-4 min-w-[300px] ${notification.color ? 'border-current ' + notification.color : 'border-primary/50'}`}>
-        <div className={`w-12 h-12 rounded-full flex items-center justify-center text-2xl border bg-background/50 animate-bounce ${notification.color ? 'border-current text-current' : 'border-primary/30 text-primary'}`}>
+    <div
+      className="fixed top-20 left-4 right-4 md:top-auto md:bottom-4 md:left-4 md:right-auto md:w-auto z-[100] animate-in slide-in-from-bottom-4 fade-in duration-500 cursor-pointer"
+      onClick={onClose}
+      title="Click to dismiss"
+    >
+      <div className={`bg-card border-2 rounded-lg p-3 md:p-4 shadow-[0_0_20px_rgba(0,0,0,0.3)] flex items-center gap-3 md:gap-4 min-w-[280px] md:min-w-[300px] ${notification.color ? 'border-current ' + notification.color : 'border-primary/50'}`}>
+        <div className={`w-10 h-10 md:w-12 md:h-12 rounded-full flex items-center justify-center text-xl md:text-2xl border bg-background/50 animate-bounce ${notification.color ? 'border-current text-current' : 'border-primary/30 text-primary'}`}>
           {notification.icon}
         </div>
-        <div>
-          <h4 className={`font-game text-sm tracking-wider mb-1 flex items-center gap-2 ${notification.color || 'text-primary'}`}>
+        <div className="flex-1">
+          <h4 className={`font-game text-xs md:text-sm tracking-wider mb-1 flex items-center gap-2 ${notification.color || 'text-primary'}`}>
             {notification.title}
           </h4>
-          <p className="font-bold text-foreground text-sm">{notification.description}</p>
+          <p className="font-bold text-foreground text-xs md:text-sm">{notification.description}</p>
         </div>
       </div>
     </div>

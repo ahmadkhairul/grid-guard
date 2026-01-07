@@ -10,7 +10,7 @@ import { MobileBottomBar } from './MobileBottomBar';
 import { NotificationToast } from './NotificationToast'; // New Component
 import { DefenderType } from '@/types/game';
 import { MAX_WAVE, DEFENDER_CONFIGS, MAX_LEVEL, MAPS } from '@/config/gameConfig';
-import { Volume2, VolumeX, Pause, Home, RotateCcw } from 'lucide-react';
+import { Volume2, VolumeX, Pause, RotateCcw } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useNavigate } from 'react-router-dom';
 import { ActiveSkillsPanel } from './ActiveSkillsPanel';
@@ -176,9 +176,6 @@ export const Game = ({ mapId = 'default' }: { mapId?: string }) => {
               {/* Title Bar */}
               <div className="flex items-center justify-between mb-1.5 px-1">
                 <div className="flex items-center gap-2">
-                  <Button variant="ghost" size="icon" className="h-6 w-6 mr-1" onClick={() => navigate('/')}>
-                    <Home className="h-4 w-4" />
-                  </Button>
                   <h1 className="font-game text-xs md:text-base text-primary tracking-wider">
                     GRID DEFENDER <span className="text-muted-foreground ml-2 text-[10px] hidden sm:inline-block">({currentMap.name})</span>
                   </h1>

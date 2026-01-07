@@ -1,4 +1,4 @@
-import { Enemy, GameState, Position, FloatingText, GameNotification } from '@/types/game';
+import { Enemy, GameState, Position, FloatingText, GameNotification, ENEMY_TYPES } from '@/types/game';
 import { getEnemiesPerWave, getNextEnemyType, createEnemy } from '@/logic/waveLogic';
 import { getEnemyImmunity } from '@/config/gameConfig';
 
@@ -39,7 +39,7 @@ export const spawnEnemies = (
         const newEnemy = createEnemy(newEnemyType, prev.wave);
 
         // HEALER LOGIC: Global Heal on Spawn
-        if (newEnemyType === 'healer') {
+        if (newEnemyType === ENEMY_TYPES.HEALER) {
             newEnemies.forEach(e => {
                 const healAmount = 500;
                 if (e.hp < e.maxHp) {
@@ -77,14 +77,14 @@ export const updateEnemies = (
 
         // Ice Mage slow effect
         const isSlowed = enemy.slowedUntil && Date.now() < enemy.slowedUntil;
-        const slowMultiplier = isSlowed ? 0.5 : 1;
+        const slowMultiplier = isSlowed ? 0.3 : 1;
 
         // Blizzard freeze + slow combined
         const effectiveSpeed = isBlizzardActive ? 0 : enemy.speed * slowMultiplier;
         const nextPathIndex = enemy.pathIndex + effectiveSpeed * speedMultiplier * (deltaTime / 1000);
 
         // PHANTOM: Toggle invisibility every 2 seconds
-        if (enemy.type === 'phantom') {
+        if (enemy.type === ENEMY_TYPES.PHANTOM) {
             const shouldToggle = Math.random() < (deltaTime / 2000); // ~50% visible over time
             if (shouldToggle) {
                 enemy.isInvisible = !enemy.isInvisible;
@@ -93,7 +93,7 @@ export const updateEnemies = (
 
         if (nextPathIndex >= enemyPath.length - 1) {
             // THIEF LOGIC: Steal Gold (no life reduction)
-            if (enemy.type === 'thief') {
+            if (enemy.type === ENEMY_TYPES.THIEF) {
                 newCoins = Math.max(0, newCoins - 5000);
                 addText(enemy.position.x, enemy.position.y, '-5000', 'text-red-600 font-bold');
                 notification = { id: `thief-${Date.now()}`, title: 'ROBBERY!', description: 'A Thief stole 5000 Gold!', icon: '🦹', color: 'text-red-500' };

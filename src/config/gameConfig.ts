@@ -145,7 +145,7 @@ export const DEFENDER_CONFIGS: Record<DefenderType, DefenderConfig> = {
     type: DEFENDER_TYPES.STONE,
     name: 'Stone Cannon',
     cost: 300,
-    damage: 40,
+    damage: 50,
     range: 2.0,
     attackSpeed: 2000,
     emoji: '🗿',
@@ -156,9 +156,9 @@ export const DEFENDER_CONFIGS: Record<DefenderType, DefenderConfig> = {
     emoji: '🧊',
     name: 'Ice Cube',
     cost: 300,
-    damage: 25,
-    range: 3.0,
-    attackSpeed: 1250,
+    damage: 50,
+    range: 2.0,
+    attackSpeed: 2000,
     upgradeCost: 150
   },
   lightning: {
@@ -166,9 +166,9 @@ export const DEFENDER_CONFIGS: Record<DefenderType, DefenderConfig> = {
     emoji: '⚡',
     name: 'Lightning Rod',
     cost: 300,
-    damage: 30,
-    range: 2.5,
-    attackSpeed: 1000,
+    damage: 50,
+    range: 2.0,
+    attackSpeed: 2000,
     upgradeCost: 150
   },
 };

@@ -37,7 +37,11 @@ export const EnemyUnit = memo(({ enemy, cellSize }: EnemyUnitProps) => {
         left: enemy.position.x * (cellSize + GAP_SIZE) + cellSize / 2 - (unitSize / 2),
         top: enemy.position.y * (cellSize + GAP_SIZE) + cellSize / 2 - (unitSize / 2),
         transition: 'left 0.05s linear, top 0.05s linear',
-        filter: enemy.healGlow ? 'drop-shadow(0 0 12px rgb(34 197 94))' : undefined,
+        filter: enemy.healGlow
+          ? 'drop-shadow(0 0 12px rgb(34 197 94))'
+          : (enemy.slowedUntil && Date.now() < enemy.slowedUntil)
+            ? 'drop-shadow(0 0 8px rgb(34 211 238))'
+            : undefined,
       }}
     >
       <span className="z-10">{config.emoji}</span>
@@ -45,6 +49,12 @@ export const EnemyUnit = memo(({ enemy, cellSize }: EnemyUnitProps) => {
       {isHit && (
         <div className="absolute -right-1 -top-1 w-5 h-5 flex items-center justify-center text-sm animate-bounce">
           💥
+        </div>
+      )}
+
+      {enemy.slowedUntil && Date.now() < enemy.slowedUntil && (
+        <div className="absolute -left-1 -top-1 w-5 h-5 flex items-center justify-center text-sm animate-pulse">
+          ❄️
         </div>
       )}
 

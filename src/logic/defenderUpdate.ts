@@ -1,5 +1,5 @@
-import { Defender, Enemy, Achievement, DefenderType, ACHIEVEMENTS, Position } from '@/types/game';
-import { getDamageMultiplier } from '@/config/gameConfig';
+import { Defender, Enemy, Achievement, DefenderType, ACHIEVEMENTS, Position, DEFENDER_TYPES, ENEMY_TYPES } from '@/types/game';
+import { ENEMY_CONFIGS, getDamageMultiplier } from '@/config/gameConfig';
 
 interface DefenderUpdateResult {
     updatedDefenders: Defender[];
@@ -39,15 +39,11 @@ export const updateDefenders = (
 
         if (now - d.lastAttack < d.attackSpeed / speedMultiplier) return d;
 
-        if (d.type === 'miner') {
+        if (d.type === DEFENDER_TYPES.MINER) {
             onAttack?.(d.type);
             const gain = 15 + (d.level - 1) * 10;
             newCoins += gain;
             totalMined += gain;
-            if (totalMined >= 1000000 && !newUnlockedIds.includes('rich_man')) {
-                newUnlockedIds.push('rich_man');
-                achievementUnlocked = ACHIEVEMENTS.find(a => a.id === 'rich_man') || null;
-            }
             addText(d.position.x, d.position.y, `+${gain}`, 'text-yellow-400');
             return { ...d, lastAttack: now };
         }
@@ -57,7 +53,7 @@ export const updateDefenders = (
             if (e.immuneTo === d.type) return false;
 
             // Phantom: Can't target if invisible
-            if (e.type === 'phantom' && e.isInvisible) return false;
+            if (e.type === ENEMY_TYPES.PHANTOM && e.isInvisible) return false;
 
             const dist = Math.sqrt(Math.pow(e.position.x - d.position.x, 2) + Math.pow(e.position.y - d.position.y, 2));
             return dist <= d.range;
@@ -82,7 +78,7 @@ export const updateDefenders = (
             finalDamage *= multiplier;
 
             // DRAGON: AOE damage reduction (reduce damage from all defenders in 4x4 grid)
-            if (target.type === 'dragon') {
+            if (target.type === ENEMY_TYPES.DRAGON) {
                 const defendersNearby = defenders.filter(defender => {
                     const dist = Math.sqrt(
                         Math.pow(defender.position.x - target.position.x, 2) +
@@ -94,15 +90,23 @@ export const updateDefenders = (
                 finalDamage *= reductionFactor;
             }
 
+
             // ICE MAGE: Apply slow effect (3 seconds)
-            if (d.type === 'ice') {
-                newEnemies = newEnemies.map(e =>
-                    e.id === target.id ? { ...e, slowedUntil: now + 3000 } : e
-                );
+            if (d.type === DEFENDER_TYPES.ICE) {
+                newEnemies = newEnemies.map(e => {
+                    if (e.id === target.id) {
+                        // Only apply slow if not already slowed
+                        if (!e.slowedUntil || now >= e.slowedUntil) {
+                            addText(target.position.x, target.position.y, 'SLOWED', 'text-cyan-400');
+                            return { ...e, slowedUntil: now + 3000 };
+                        }
+                    }
+                    return e;
+                });
             }
 
             // LIGHTNING TOWER: Chain to nearby enemies
-            if (d.type === 'lightning') {
+            if (d.type === DEFENDER_TYPES.LIGHTNING) {
                 const chainTargets = newEnemies.filter(e => {
                     if (e.id === target.id) return false;
                     const dist = Math.sqrt(
@@ -120,7 +124,7 @@ export const updateDefenders = (
             }
 
             // Stone Cannon Pushback Logic (IRON GOLEM immune to knockback)
-            if (d.type === 'stone' && target.type !== 'iron_golem') {
+            if (d.type === DEFENDER_TYPES.STONE && target.type !== ENEMY_TYPES.IRON_GOLEM) {
                 // Push Back 2 tiles (approx)
                 newEnemies = newEnemies.map(e => {
                     if (e.id !== target.id) return e;

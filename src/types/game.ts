@@ -3,8 +3,6 @@ export interface Position {
   y: number;
 }
 
-
-
 export const MAP_TYPES = {
   GOLEM_LAIR: 'golem_lair',
   FREEZE_LAND: 'freeze_land',

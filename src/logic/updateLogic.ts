@@ -86,8 +86,11 @@ export const updateGameTick = (
             updatedDefenders.forEach((d, idx) => {
                 const dist = Math.sqrt(Math.pow(e.position.x - d.position.x, 2) + Math.pow(e.position.y - d.position.y, 2));
                 if (dist <= 3) {
-                    addText(d.position.x, d.position.y, 'STUNNED', 'text-blue-500 font-bold');
-                    updatedDefenders[idx] = { ...d, stunnedUntil: now + 3000 };
+                    // Only apply stun if not already stunned
+                    if (!d.stunnedUntil || now >= d.stunnedUntil) {
+                        addText(d.position.x, d.position.y, 'STUNNED', 'text-blue-500 font-bold');
+                        updatedDefenders[idx] = { ...d, stunnedUntil: now + 3000 };
+                    }
                 }
             });
             addText(e.position.x, e.position.y, 'EXPLOSION!', 'text-blue-500');
