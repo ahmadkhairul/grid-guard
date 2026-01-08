@@ -42,6 +42,7 @@ export const GameCell = memo(({
   const canPlace = (selectedDefender || draggedDefender) && !isPath && !defender;
   // Allow click if we can place OR if there is a defender (to upgrade/select)
   const isInteractive = canPlace || !!defender;
+  const isOverheated = defender?.overheatedUntil && Date.now() < defender.overheatedUntil;
 
   const handleDragOver = (e: DragEvent<HTMLDivElement>) => {
     if (!canPlace) return;
@@ -126,6 +127,7 @@ export const GameCell = memo(({
             'defender-unit text-2xl relative',
             isAttacking && 'animate-defender-attack',
             defender.stunnedUntil && 'opacity-70 grayscale',
+            isOverheated && "shadow-[0_0_12px_rgba(220,38,38,0.6)]",
             // Visual Progression Effects
             defender.level >= 5 && "shadow-[0_0_10px_rgba(var(--primary),0.3)]",
             defender.level >= 10 && "shadow-[0_0_15px_rgba(var(--primary),0.5)] border-2 border-primary/50",
@@ -146,6 +148,14 @@ export const GameCell = memo(({
           {defender.stunnedUntil && (
             <div className="absolute -top-4 left-1/2 -translate-x-1/2 animate-bounce z-20">
               <span className="text-xl drop-shadow-md">⚡</span>
+            </div>
+          )}
+
+          {isOverheated && (
+            <div className="absolute -top-3 -right-2 z-20 animate-pulse">
+              <span className="text-xl filter drop-shadow-md grayscale hue-rotate-15 saturate-200">🔻</span>
+              {/* Down Arrow for debuff? Or Fire? User wanted 'burning'. */}
+              {/* Let's use a small fire overlay but distinct from enemy burn. */}
             </div>
           )}
 

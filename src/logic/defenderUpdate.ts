@@ -39,13 +39,28 @@ export const updateDefenders = (
 
         if (now - d.lastAttack < d.attackSpeed / speedMultiplier) return d;
 
+        // OVERHEAT EXPIRY CHECK
+        let currentDefender = d;
+        if (d.overheatedUntil && now >= d.overheatedUntil) {
+            currentDefender = { ...d, overheatedUntil: undefined };
+        }
+
+        // Use updated object for further logic
+        // Use updated object for further logic
         if (d.type === DEFENDER_TYPES.MINER) {
             onAttack?.(d.type);
-            const gain = 15 + (d.level - 1) * 10;
+            let gain = 15 + (d.level - 1) * 10;
+
+            // OVERHEAT PENALTY (50% Mining)
+            if (currentDefender.overheatedUntil && now < currentDefender.overheatedUntil) {
+                gain = Math.floor(gain * 0.5);
+                addText(d.position.x, d.position.y, 'OVERHEATED!', 'text-red-500 text-[8px]');
+            }
+
             newCoins += gain;
             totalMined += gain;
             addText(d.position.x, d.position.y, `+${gain}`, 'text-yellow-400');
-            return { ...d, lastAttack: now };
+            return { ...currentDefender, lastAttack: now };
         }
 
         // Find all enemies in range
@@ -71,24 +86,24 @@ export const updateDefenders = (
             onAttack?.(d.type);
 
             // Calculate damage with special modifiers
+            // Calculate damage with special modifiers
             let finalDamage = d.damage;
+
+            // OVERHEAT PENALTY (50% DMG)
+            if (currentDefender.overheatedUntil && now < currentDefender.overheatedUntil) {
+                finalDamage *= 0.5;
+            }
+
+            // FIRE TOWER: Bonus damage to burning enemies (50%) - COUNTER
+            if (target.burningUntil && now < target.burningUntil) {
+                finalDamage *= 1.5;
+            }
 
             // GENERIC RESISTANCE: Apply resistance from config
             const multiplier = getDamageMultiplier(target.type, d.type);
             finalDamage *= multiplier;
 
-            // DRAGON: AOE damage reduction (reduce damage from all defenders in 4x4 grid)
-            if (target.type === ENEMY_TYPES.DRAGON) {
-                const defendersNearby = defenders.filter(defender => {
-                    const dist = Math.sqrt(
-                        Math.pow(defender.position.x - target.position.x, 2) +
-                        Math.pow(defender.position.y - target.position.y, 2)
-                    );
-                    return dist <= 4;
-                });
-                const reductionFactor = Math.max(0.3, 1 - (defendersNearby.length * 0.1)); // Max 70% reduction
-                finalDamage *= reductionFactor;
-            }
+
 
 
             // ICE MAGE: Apply slow effect (3 seconds)
@@ -105,23 +120,23 @@ export const updateDefenders = (
                 });
             }
 
-            // LIGHTNING TOWER: Chain to nearby enemies
-            if (d.type === DEFENDER_TYPES.LIGHTNING) {
-                const chainTargets = newEnemies.filter(e => {
-                    if (e.id === target.id) return false;
-                    const dist = Math.sqrt(
-                        Math.pow(e.position.x - target.position.x, 2) +
-                        Math.pow(e.position.y - target.position.y, 2)
-                    );
-                    return dist <= 2; // Chain within 2 tiles
-                }).slice(0, 2); // Max 2 additional targets
-
-                chainTargets.forEach(chainTarget => {
-                    newEnemies = newEnemies.map(e =>
-                        e.id === chainTarget.id ? { ...e, hp: e.hp - (finalDamage * 0.5), isHit: true } : e
-                    );
+            // FIRE TOWER: Apply Burn (5s)
+            if (d.type === DEFENDER_TYPES.FIRE) {
+                newEnemies = newEnemies.map(e => {
+                    if (e.id === target.id) {
+                        return { ...e, burningUntil: now + 5000 };
+                    }
+                    return e;
                 });
+                // Visual Text handled in damage application or here?
+                // Let's optimize: only show text if not already burning
+                if (!target.burningUntil || now >= target.burningUntil) {
+                    addText(target.position.x, target.position.y, 'BURN!', 'text-orange-500');
+                }
             }
+
+            // LIGHTNING REMOVED
+
 
             // Stone Cannon Pushback Logic (IRON GOLEM immune to knockback)
             if (d.type === DEFENDER_TYPES.STONE && target.type !== ENEMY_TYPES.IRON_GOLEM) {
@@ -144,9 +159,9 @@ export const updateDefenders = (
             }
 
             setTimeout(() => { }, 200);
-            return { ...d, lastAttack: now };
+            return { ...currentDefender, lastAttack: now };
         }
-        return d;
+        return currentDefender;
     });
 
     return { updatedDefenders, updatedEnemies: newEnemies, newCoins, newUnlockedIds, achievementUnlocked };

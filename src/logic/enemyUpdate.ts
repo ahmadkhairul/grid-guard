@@ -77,7 +77,11 @@ export const updateEnemies = (
 
         // Ice Mage slow effect
         const isSlowed = enemy.slowedUntil && Date.now() < enemy.slowedUntil;
-        const slowMultiplier = isSlowed ? 0.3 : 1;
+        const isBurning = enemy.burningUntil && Date.now() < enemy.burningUntil;
+
+        let slowMultiplier = 1;
+        if (isSlowed) slowMultiplier *= 0.3;
+        if (isBurning) slowMultiplier *= 0.5;
 
         // Blizzard freeze + slow combined
         const effectiveSpeed = isBlizzardActive ? 0 : enemy.speed * slowMultiplier;

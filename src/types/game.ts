@@ -54,6 +54,7 @@ export interface Enemy {
   teleportCooldown?: number;
   isInvisible?: boolean;
   slowedUntil?: number;
+  burningUntil?: number;
   createdAt: number;
 }
 
@@ -67,6 +68,7 @@ export interface Defender {
   level: number;
   type: DefenderType;
   stunnedUntil?: number;
+  overheatedUntil?: number;
 }
 
 export const DEFENDER_TYPES = {
@@ -75,7 +77,7 @@ export const DEFENDER_TYPES = {
   MINER: 'miner',
   STONE: 'stone',
   ICE: 'ice',
-  LIGHTNING: 'lightning',
+  FIRE: 'fire',
 } as const;
 
 export type DefenderType = typeof DEFENDER_TYPES[keyof typeof DEFENDER_TYPES];

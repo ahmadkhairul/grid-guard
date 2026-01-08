@@ -96,6 +96,22 @@ export const updateGameTick = (
             addText(e.position.x, e.position.y, 'EXPLOSION!', 'text-blue-500');
         }
 
+        // DRAGON DEATH LOGIC: Overheat nearby towers
+        if (e.type === ENEMY_TYPES.DRAGON) {
+            const now = Date.now();
+            updatedDefenders.forEach((d, idx) => {
+                const dist = Math.sqrt(Math.pow(e.position.x - d.position.x, 2) + Math.pow(e.position.y - d.position.y, 2));
+                if (dist <= 4) {
+                    // Apply Overheat (5s)
+                    // If already overheated, extend? Or set max?
+                    // Just set to now + 5000
+                    addText(d.position.x, d.position.y, 'OVERHEAT!', 'text-red-600 font-bold');
+                    updatedDefenders[idx] = { ...d, overheatedUntil: now + 5000 };
+                }
+            });
+            addText(e.position.x, e.position.y, 'MAGMA BURST!', 'text-orange-600 font-bold');
+        }
+
         // BOSS SLAYER LOGIC
         if (e.type === ENEMY_TYPES.BOSS_DEMON_LORD) {
             const timeToKill = Date.now() - e.createdAt;

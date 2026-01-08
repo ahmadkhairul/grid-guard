@@ -5,12 +5,15 @@ import { ENEMY_TYPES } from '@/types/game';
 const generateEnemyId = () => `enemy-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
 
 export const getEnemiesPerWave = (wave: number): number => {
-    if (wave === 25) return 35;
-    if (wave === 20) return 25;
-    if (wave === 15) return 20;
-    if (wave === 10) return 17;
-    if (wave === 7) return 11;
-    const effectiveWave = Math.min(wave, 25);
+    // ENDLESS SCALING: Reset count every 25 waves (Cycle 1: 1-25, Cycle 2: 26-50...)
+    const effectiveWave = (wave - 1) % 25 + 1;
+
+    if (effectiveWave === 25) return 35;
+    if (effectiveWave === 20) return 25;
+    if (effectiveWave === 15) return 20;
+    if (effectiveWave === 10) return 17;
+    if (effectiveWave === 7) return 11;
+
     return 8 + effectiveWave * 3;
 };
 

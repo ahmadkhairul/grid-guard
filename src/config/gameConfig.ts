@@ -115,7 +115,7 @@ export const MAPS: MapConfig[] = [
 export const MAP_DEFENDERS: Record<string, DefenderType> = {
   [MAP_TYPES.GOLEM_LAIR]: DEFENDER_TYPES.STONE,
   [MAP_TYPES.FREEZE_LAND]: DEFENDER_TYPES.ICE,
-  [MAP_TYPES.DRAGON_CAVE]: DEFENDER_TYPES.LIGHTNING,
+  [MAP_TYPES.DRAGON_CAVE]: DEFENDER_TYPES.FIRE,
 };
 
 // Kept for legacy reference but ideally should be replaced by dynamic calls
@@ -184,13 +184,13 @@ export const DEFENDER_CONFIGS: Record<DefenderType, DefenderConfig> = {
     attackSpeed: 2000,
     upgradeCost: 150
   },
-  lightning: {
-    type: DEFENDER_TYPES.LIGHTNING,
-    emoji: '⚡',
-    name: 'Lightning Rod',
+  fire: {
+    type: DEFENDER_TYPES.FIRE,
+    emoji: '🔥',
+    name: 'Fire Tower',
     cost: 300,
     damage: 50,
-    range: 2.0,
+    range: 2.5,
     attackSpeed: 2000,
     upgradeCost: 150
   },

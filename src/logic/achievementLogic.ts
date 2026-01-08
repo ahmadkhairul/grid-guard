@@ -31,7 +31,7 @@ export const checkAchievements = (
     }
 
     // 3. Midas Touch
-    if (state.totalMined >= 1000000) {
+    if (state.totalMined >= 500000) {
         const res = newUnlock('midas_touch');
         if (res) return res;
     }
@@ -39,7 +39,7 @@ export const checkAchievements = (
     // 4. Elementalist (Global Check)
     if (event === 'tick') {
         const used = getUsedDefenders();
-        const allTypes = ['warrior', 'archer', 'stone', 'ice', 'lightning', 'miner'];
+        const allTypes = ['warrior', 'archer', 'stone', 'ice', 'fire', 'miner'];
         const hasAll = allTypes.every(t => used.includes(t));
 
         if (hasAll) {
