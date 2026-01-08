@@ -9,16 +9,21 @@ import {
 import { Button } from '@/components/ui/button';
 import { Sword, Target, Coins, Heart, GripVertical, ChevronRight, ChevronLeft, Zap, Skull, Shield, ArrowUpCircle, Trophy, History as HistoryIcon } from 'lucide-react';
 import { DEFENDER_CONFIGS, MAX_WAVE } from '@/config/gameConfig';
+import { ENEMY_TYPES } from '@/types/game';
 
 interface TutorialModalProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
 }
 
+const formatBossName = (name: string) => {
+  return name.split('_').map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(' ');
+};
+
 export const TutorialModal = ({ open, onOpenChange }: TutorialModalProps) => {
   const [page, setPage] = useState(0);
 
-  const totalPages = 6;
+  const totalPages = 8;
 
   const handleNext = () => setPage(p => Math.min(totalPages - 1, p + 1));
   const handlePrev = () => setPage(p => Math.max(0, p - 1));
@@ -34,9 +39,11 @@ export const TutorialModal = ({ open, onOpenChange }: TutorialModalProps) => {
             {page === 0 && "Basic Controls & Active Skills"}
             {page === 1 && "Basic Towers (Standard)"}
             {page === 2 && "Special Towers (Advanced)"}
-            {page === 3 && "Enemy Intelligence"}
-            {page === 4 && "Achievements & Certificates"}
-            {page === 5 && "Bosses & Endless Mode"}
+            {page === 3 && "Enemy Intelligence: Common"}
+            {page === 4 && "Enemy Intelligence: Special Threats"}
+            {page === 5 && "Elite Enemies & Bosses"}
+            {page === 6 && "Achievements & Certificates"}
+            {page === 7 && "High Score & Endless Mode"}
           </DialogDescription>
         </DialogHeader>
 
@@ -93,19 +100,54 @@ export const TutorialModal = ({ open, onOpenChange }: TutorialModalProps) => {
             </div>
           )}
 
-          {/* PAGE 4: ENEMIES */}
+          {/* PAGE 4: COMMON ENEMIES */}
           {page === 3 && (
             <div className="space-y-3">
-              <UnitRow emoji="🛡️" name="Orc Tank" desc="High HP. Needs Stone Cannons or Warrior focus." />
-              <UnitRow emoji="🦅" name="Flying Units" desc="Ignores paths. Only Archers and Fire Towers can hit them!" />
-              <UnitRow emoji="🧚" name="Healer" desc="Restores huge HP to all enemies. Primary target!" />
-              <UnitRow emoji="🦹" name="Thief" desc="Doesn't take lives, but steals your hard-earned gold if he escapes." />
-              <UnitRow emoji="🎭" name="Phantoms" desc="Moves fast and has high HP. Use Ice to slow them down." />
+              <UnitRow emoji="👾" name="Normal" desc="Standard infantry" />
+              <UnitRow emoji="🏃" name="Fast" desc="Fast variants have lower HP but highly mobile." stats='Fast' />
+              <UnitRow emoji="🛡️" name="Tank" desc="High HP. Movement speed is slow but can soak up massive damage." stats='High HP' />
+              <UnitRow emoji="🦅" name="Flying" desc="Ignores paths and flies directly! Archers are your best defenders against them." stats='Flying' />
+
+              <div className="bg-primary/10 p-4 rounded-lg border border-primary/20 text-sm mt-4">
+                <h4 className="font-bold text-primary mb-1">Defense Tip:</h4>
+                Watch for the flying unit paths. They don't follow the road!
+              </div>
             </div>
           )}
 
-          {/* PAGE 5: ACHIEVEMENTS */}
+          {/* PAGE 5: SPECIAL THREATS */}
           {page === 4 && (
+            <div className="space-y-3">
+              <UnitRow emoji="🧚" name="Healer" desc="Primary target! Pulsates healing to all nearby enemies." stats="Healing" />
+              <UnitRow emoji="🦹" name="Thief" desc="Doesn't take lives, but steals your hard-earned gold if he reaches the goal." stats="Super Fast/Steal" />
+              <UnitRow emoji="🦇" name="Stunner" desc="Flying unit that occasionally disables (stuns) your towers for 3 seconds." stats="Fly/Stun" />
+              <UnitRow emoji="🐉" name="Dragon" desc="Released Overheat on death. Reduces nearby towers mining/damage by 50% for 5s." stats="Fly/Overheat" />
+              <UnitRow emoji="🪨" name="Iron Golem" desc="Extreme HP. Knockback immunity Heavy armor grants 50% resistance to Archer attacks." stats="Resistant" />
+              <UnitRow emoji="🥶" name="Phantoms" desc="Invisible warriors that move extremely fast. Use ice tower to slow it down." stats="Invisibility" />
+            </div>
+          )}
+
+          {/* PAGE 6: ELITE & BOSSES */}
+          {page === 5 && (
+            <div className="space-y-3">
+              <UnitRow emoji="👹" name={formatBossName(ENEMY_TYPES.BOSS_DEMON)} desc="Initial floor boss. Rotate immunities based of percentage HP" stats="Immunity" />
+              <UnitRow emoji="🤖" name={formatBossName(ENEMY_TYPES.BOSS_WARRIOR)} desc="Warrior from future. Immune to warrior attack." stats="Immunity" />
+              <UnitRow emoji="👻" name={formatBossName(ENEMY_TYPES.BOSS_ARCHER)} desc="Ghost Archer. An Arrow pass his body. Immune to archer attack." stats="Speedster" />
+              <UnitRow emoji="🦍" name={formatBossName(ENEMY_TYPES.BOSS_GOLEM)} desc="Special boss of Golem Lair. Defeat him to unlock stone cannon" />
+              <UnitRow emoji="🐲" name={formatBossName(ENEMY_TYPES.BOSS_DRAGON)} desc="The flying terror boss of 15th Dragon Cave. Defeat him to unlock fire tower." />
+              <UnitRow emoji="🎭" name={formatBossName(ENEMY_TYPES.BOSS_PHANTOM)} desc="Spectral assassin of 15th Frezee Land. Grid Guard Command build ice tower just for him." />
+              <UnitRow emoji="🥷" name={formatBossName(ENEMY_TYPES.BOSS_ASSASSIN)} desc="Ultimate speedster." />
+              <UnitRow emoji="👿" name={formatBossName(ENEMY_TYPES.BOSS_DEMON_LORD)} desc="Demon comeback in his strongest form. Rotate Immunities based on percentage HP." stats="Immunity" />
+
+              <div className="bg-destructive/10 p-4 rounded-lg border border-destructive/20 text-sm mt-2 text-center">
+                <h4 className="font-bold text-destructive mb-1">⚠️ ELITE INTEL:</h4>
+                Bosses spawn every 5 waves in Endless Mode. Prepare your high-level towers!
+              </div>
+            </div>
+          )}
+
+          {/* PAGE 7: ACHIEVEMENTS */}
+          {page === 6 && (
             <div className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <TutorialCard icon={<Trophy className="text-yellow-500" />} title="Global Progress">
@@ -120,14 +162,14 @@ export const TutorialModal = ({ open, onOpenChange }: TutorialModalProps) => {
                 <div className="text-4xl">📜</div>
                 <div className="text-sm">
                   <h4 className="font-bold text-yellow-600 mb-1">CERTIFICATE OF VALOR</h4>
-                  Enter your name in the Achievement Modal to generate a personalized shareable certificate of your progress!
+                  Enter your name in the Achievement Modal to generate a personalized shareable certificate!
                 </div>
               </div>
             </div>
           )}
 
-          {/* PAGE 6: BOSSES & ENDLESS */}
-          {page === 5 && (
+          {/* PAGE 8: ENDLESS MODE */}
+          {page === 7 && (
             <div className="space-y-4">
               <div className="bg-destructive/10 p-4 rounded-lg border border-destructive/20 text-center">
                 <h3 className="font-game text-destructive text-lg mb-2">INFINITY CHALLENGE</h3>
@@ -137,11 +179,11 @@ export const TutorialModal = ({ open, onOpenChange }: TutorialModalProps) => {
               <div className="space-y-2 text-sm mt-2">
                 <div className="flex items-start gap-3 p-3 bg-secondary/20 rounded-lg">
                   <Skull className="w-5 h-5 text-destructive shrink-0" />
-                  <p><b>Wave 25:</b> Defeat the Demon Lord to unlock <b>Endless Mode</b>.</p>
+                  <p><b>Endless Mode:</b> Enemies scale in HP and Gold rewards infinitely.</p>
                 </div>
                 <div className="flex items-start gap-3 p-3 bg-secondary/20 rounded-lg">
                   <HistoryIcon className="w-5 h-5 text-primary shrink-0" />
-                  <p>How long can you survive?</p>
+                  <p>Every 25 waves, enemy counts cycle to prevent overswarming, but their power grows.</p>
                 </div>
               </div>
             </div>

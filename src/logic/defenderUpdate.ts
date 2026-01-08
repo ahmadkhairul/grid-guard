@@ -5,6 +5,7 @@ interface DefenderUpdateResult {
     updatedDefenders: Defender[];
     updatedEnemies: Enemy[];
     newCoins: number;
+    newTotalMined: number;
     newUnlockedIds: string[];
     achievementUnlocked: Achievement | null;
 }
@@ -164,5 +165,5 @@ export const updateDefenders = (
         return currentDefender;
     });
 
-    return { updatedDefenders, updatedEnemies: newEnemies, newCoins, newUnlockedIds, achievementUnlocked };
+    return { updatedDefenders, updatedEnemies: newEnemies, newCoins, newTotalMined: totalMined, newUnlockedIds, achievementUnlocked };
 };

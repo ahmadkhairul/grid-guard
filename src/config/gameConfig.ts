@@ -239,7 +239,7 @@ export const ENEMY_CONFIGS: Record<EnemyType, EnemyConfig> = {
   },
 
   iron_golem: {
-    emoji: '🤖', hpMultiplier: 35, speedMultiplier: 0.4, rewardMultiplier: 30,
+    emoji: '🪨', hpMultiplier: 35, speedMultiplier: 0.4, rewardMultiplier: 30,
     color: 'bg-stone-600', label: 'GOLEM', labelColor: 'text-stone-500',
     resistances: { [DEFENDER_TYPES.ARCHER]: 0.5 } // 50% from Arrows
   },

@@ -102,7 +102,7 @@ const Home = () => {
                                                     </Badge>
                                                     {isCleared && (
                                                         <Badge className="bg-green-500/20 text-green-500 hover:bg-green-500/30 border-green-500/50 text-[10px] h-5 px-1.5 uppercase font-bold tracking-wider gap-1">
-                                                            ✓ CLEARED
+                                                            CLEARED
                                                         </Badge>
                                                     )}
                                                 </div>

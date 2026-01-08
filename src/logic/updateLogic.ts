@@ -68,12 +68,13 @@ export const updateGameTick = (
     const updatedDefenders = defenderUpdateResult.updatedDefenders;
     newEnemies = defenderUpdateResult.updatedEnemies;
     newCoins = defenderUpdateResult.newCoins;
+    const newTotalMined = defenderUpdateResult.newTotalMined;
     const updatedUnlockedIds = defenderUpdateResult.newUnlockedIds;
     if (defenderUpdateResult.achievementUnlocked) achievementUnlocked = defenderUpdateResult.achievementUnlocked;
 
     // Check Tick Achievements (Real-time: Midas, Elementalist)
     if (!achievementUnlocked) { // Only check if we haven't already unlocked one this tick
-        const tickAch = checkAchievements({ ...prev, defenders: updatedDefenders, coins: newCoins, totalMined: (prev.totalMined || 0) + (newCoins - prev.coins) }, 'tick');
+        const tickAch = checkAchievements({ ...prev, defenders: updatedDefenders, coins: newCoins, totalMined: newTotalMined }, 'tick');
         if (tickAch) achievementUnlocked = tickAch;
     }
 
@@ -144,25 +145,26 @@ export const updateGameTick = (
     const enemiesPerWave = getEnemiesPerWave(prev.wave);
 
     if (newEnemies.length === 0 && enemiesSpawnedRef.current >= enemiesPerWave) {
-        if (prev.wave >= MAX_WAVE && !prev.isEndless) {
+        // ALWAYS increment and reset when a wave is cleared
+        const curWave = prev.wave;
+        newWave = curWave + 1;
+        enemiesSpawnedRef.current = 0;
+
+        // Achievements for the wave just finished
+        const waveAch = checkAchievements({ ...prev, wave: curWave, coins: newCoins, lives: newLives }, 'wave_end');
+        if (waveAch) achievementUnlocked = waveAch;
+
+        // Coin Bonus
+        const waveBonus = prev.isEndless ? 50 * curWave : 25 * curWave;
+        newCoins += waveBonus;
+
+        // Victory Logic
+        if (curWave >= MAX_WAVE && !prev.isEndless) {
             gameWon = true;
-
-            // Check Victory Achievements
-            const victoryAch = checkAchievements({ ...prev, isPlaying: false, gameWon: true, lives: newLives, defenders: updatedDefenders }, 'game_won');
+            const victoryAch = checkAchievements({ ...prev, isPlaying: false, gameWon: true, lives: newLives, defenders: updatedDefenders, wave: newWave }, 'game_won');
             if (victoryAch) achievementUnlocked = victoryAch;
-
         } else {
-            newWave++;
-            enemiesSpawnedRef.current = 0;
-
-            // Check Wave End Achievements
-            const waveAch = checkAchievements({ ...prev, wave: prev.wave, coins: newCoins, lives: newLives }, 'wave_end'); // Use PREV wave since we just finished it? Or new? "End of wave".
-            if (waveAch) achievementUnlocked = waveAch;
-
-            // Endless Scaling: more coins
-            const waveBonus = prev.isEndless ? 50 * prev.wave : 25 * prev.wave;
-            newCoins += waveBonus;
-
+            // Normal progression logic
             const currentMap = MAPS.find(m => m.id === prev.mapId) || MAPS[0];
             const mapDefender = MAP_DEFENDERS[currentMap.id];
 
@@ -193,7 +195,7 @@ export const updateGameTick = (
         ...prev, enemies: newEnemies, defenders: updatedDefenders, coins: newCoins, lives: newLives,
         wave: newWave, gameWon, unlockedAchievements: updatedUnlockedIds, floatingTexts: newFloatingTexts,
         lastUnlockedAchievement: achievementUnlocked || prev.lastUnlockedAchievement,
-        totalMined: (prev.totalMined || 0) + (newCoins - prev.coins),
+        totalMined: newTotalMined,
         notification,
         unlockedDefenders: newUnlockedDefenders,
         screenFlash,

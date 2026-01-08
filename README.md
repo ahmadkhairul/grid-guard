@@ -41,6 +41,21 @@ Turn the tide of battle with powerful manual abilities:
 | 🧊 **Ice Cube**     | Area-of-effect Slow     | Freeze Land       |
 | 🔥 **Fire Tower**   | Burn (Slow + Dmg Boost) | Dragon Cave       |
 
+### 👾 Enemy Intelligence
+
+Face a diverse cast of adversaries with unique behaviors and resistances:
+
+| Entity              | Special Ability          | Best Counter              |
+| ------------------- | ------------------------ | ------------------------- |
+| 🛡️ **Orc Tank**     | High Durability          | Stone Cannon (Pushback)   |
+| 🦅 **Flying Units** | Path-Independent Flight  | Archer / Fire Tower       |
+| 🧚 **Healer**       | AoE HP Restoration       | Manual Focus / Meteor     |
+| 🦹 **Thief**        | Gold Stealing (No Life)  | Warrior (Short-range dps) |
+| 🐉 **Dragon**       | Overheat Burst (Death)   | Long-range Snipers        |
+| 🤖 **Iron Golem**   | 50% Physical Resistance  | Fire Tower (Magic Burn)   |
+| 🎭 **Phantoms**     | High Speed Teleportation | Ice Cube (Freeze Slow)    |
+| 👿 **Demon Lord**   | Massive Global Pressure  | Max Level Defense Grid    |
+
 ### ♾️ Endless Mode & Boss Rush
 
 - **Endless Mode**: Continue past Wave 25 to see how long your defenses hold. Enemies scale in HP and rewards.
