@@ -50,6 +50,14 @@ export const updateGameTick = (
     newLives = enemyUpdateResult.newLives;
     if (enemyUpdateResult.notification) notification = enemyUpdateResult.notification;
 
+    // Trigger damage flash if lives lost
+    if (newLives < prev.lives) {
+        screenFlash = 'damage';
+    } else if (screenFlash === 'damage') {
+        // Clear flash if no longer taking damage (though it clears in Game.tsx too)
+        screenFlash = null;
+    }
+
     // 3. DEFENDER COMBAT LOGIC
     const defenderUpdateResult = updateDefenders(
         prev.defenders,

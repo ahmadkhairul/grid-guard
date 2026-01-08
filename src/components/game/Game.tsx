@@ -231,6 +231,7 @@ export const Game = ({ mapId = 'default' }: { mapId?: string }) => {
                 path={currentMap.path}
                 meteorAnimating={meteorAnimating}
                 blizzardAnimating={blizzardAnimating}
+                screenFlash={gameState.screenFlash}
               />
             </div>
           </div>

@@ -3,6 +3,7 @@ import { GameCell } from './GameCell';
 import { EnemyUnit } from './EnemyUnit';
 import { GRID_WIDTH, GRID_HEIGHT, isPathCell } from '@/config/gameConfig';
 import { Defender, Enemy, DefenderType, FloatingText, Position } from '@/types/game';
+import { cn } from '@/lib/utils';
 
 interface GameBoardProps {
   defenders: Defender[];
@@ -18,6 +19,7 @@ interface GameBoardProps {
   path: Position[];
   meteorAnimating?: boolean;
   blizzardAnimating?: boolean;
+  screenFlash?: 'heal' | 'damage' | null;
 }
 
 export const GameBoard = memo(({
@@ -34,6 +36,7 @@ export const GameBoard = memo(({
   path,
   meteorAnimating = false,
   blizzardAnimating = false,
+  screenFlash = null,
 }: GameBoardProps) => {
   const [hoveredCell, setHoveredCell] = useState<{ x: number; y: number } | null>(null);
   const [draggedOverCell, setDraggedOverCell] = useState<{ x: number; y: number } | null>(null);
@@ -114,6 +117,32 @@ export const GameBoard = memo(({
       >
         {grid}
       </div>
+
+      {/* Goal Zone effect at the end of the path */}
+      {path.length > 0 && (
+        <div
+          className={cn(
+            "absolute pointer-events-none z-40 transition-all duration-300 flex items-center justify-center",
+            "animate-vortex opacity-60",
+            screenFlash === 'damage' && "scale-125 opacity-100"
+          )}
+          style={{
+            left: path[path.length - 1].x * cellSize + 16, // +16 for grid padding
+            top: path[path.length - 1].y * cellSize + 16,
+            width: cellSize,
+            height: cellSize,
+          }}
+        >
+          <div className={cn(
+            "w-4/5 h-4/5 rounded-full bg-destructive/30 border-4 border-destructive blur-sm animate-pulse",
+            screenFlash === 'damage' && "bg-destructive/60 border-destructive shadow-[0_0_30px_rgba(255,0,0,0.8)]"
+          )} />
+          <div className="absolute inset-0 flex items-center justify-center text-2xl animate-spin-slow">🌑</div>
+          {screenFlash === 'damage' && (
+            <div className="absolute inset-0 flex items-center justify-center text-4xl animate-ping-slow">💥</div>
+          )}
+        </div>
+      )}
 
       {/* Enemies layer - z-50 to stay above grid cells */}
       <div className="absolute inset-4 pointer-events-none z-45">

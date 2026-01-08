@@ -106,7 +106,11 @@ export const updateEnemies = (
 
             // Other enemies reduce lives
             const isBoss = enemy.type.startsWith('boss');
-            newLives -= isBoss ? 5 : 1;
+            const lifePenalty = isBoss ? 5 : 1;
+            newLives -= lifePenalty;
+
+            // Add visual feedback for escape
+            addText(enemy.position.x, enemy.position.y, `-${lifePenalty} ❤️`, 'text-destructive font-bold animate-bounce');
 
             return null;
         }
