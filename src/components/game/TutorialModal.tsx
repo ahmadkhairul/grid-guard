@@ -84,7 +84,7 @@ export const TutorialModal = ({ open, onOpenChange }: TutorialModalProps) => {
             <div className="space-y-3">
               <UnitRow emoji="🗿" name="Stone Cannon" desc="Massive damage & Pushback! Heavy crowd control." stats="Stun/Push" />
               <UnitRow emoji="🧊" name="Ice Cube" desc="Slows enemies on hit. Essential for fast phantoms." stats="Debuff" />
-              <UnitRow emoji="⚡" name="Lightning Rod" desc="Fast attack speed. Efficient for cleaning up low-HP swarms." stats="Turbo" />
+              <UnitRow emoji="🔥" name="Fire Tower" desc="Apply Burn status. Reduces enemy speed and increases damage taken." stats="Burn/Debuff" />
 
               <div className="bg-blue-500/10 p-4 rounded-lg border border-blue-500/20 text-sm mt-4">
                 <h4 className="font-bold text-blue-400 mb-1">🌈 ELEMENTALIST:</h4>
@@ -97,7 +97,7 @@ export const TutorialModal = ({ open, onOpenChange }: TutorialModalProps) => {
           {page === 3 && (
             <div className="space-y-3">
               <UnitRow emoji="🛡️" name="Orc Tank" desc="High HP. Needs Stone Cannons or Warrior focus." />
-              <UnitRow emoji="🦅" name="Flying Units" desc="Ignores paths. Only Archers and Lightning can hit them!" />
+              <UnitRow emoji="🦅" name="Flying Units" desc="Ignores paths. Only Archers and Fire Towers can hit them!" />
               <UnitRow emoji="🧚" name="Healer" desc="Restores huge HP to all enemies. Primary target!" />
               <UnitRow emoji="🦹" name="Thief" desc="Doesn't take lives, but steals your hard-earned gold if he escapes." />
               <UnitRow emoji="🎭" name="Phantoms" desc="Moves fast and has high HP. Use Ice to slow them down." />

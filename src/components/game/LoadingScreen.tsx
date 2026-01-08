@@ -9,7 +9,7 @@ interface LoadingScreenProps {
 const PRO_TIPS = [
   { icon: <Coins className="w-4 h-4 text-yellow-500" />, text: "Miners generate more gold as they level up." },
   { icon: <Shield className="w-4 h-4 text-blue-500" />, text: "Stone towers can stun multiple enemies at once." },
-  { icon: <Zap className="w-4 h-4 text-purple-500" />, text: "Lightning towers are great against fast-moving phantoms." },
+  { icon: <Zap className="w-4 h-4 text-orange-500" />, text: "Fire towers apply a Burn effect that slows enemies and increases damage taken." },
   { icon: <Swords className="w-4 h-4 text-red-500" />, text: "Upgrading a tower's Level significantly boosts its damage." },
   { icon: <Coins className="w-4 h-4 text-yellow-500" />, text: "Defeating Bosses grants massive gold rewards!" },
 ];

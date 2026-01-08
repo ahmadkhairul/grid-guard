@@ -12,7 +12,7 @@ Battle across different environments, each with unique paths and exclusive defen
 
 - **Golem Lair (Easy)**: A winding path through ancient ruins.
 - **Freeze Land (Medium)**: A treacherous spiral. Home of the **Ice Cube** defender.
-- **Dragon's Lair (Hard)**: The ultimate test. Home of the **Lightning Rod** defender.
+- **Dragon Cave (Hard)**: The ultimate test. Home of the **Fire Tower** defender.
 
 ### 🏆 Global Achievement System
 
@@ -32,14 +32,14 @@ Turn the tide of battle with powerful manual abilities:
 
 ### 🏹 Defenders (Towers)
 
-| Tower                | Ability                | Availability      |
-| -------------------- | ---------------------- | ----------------- |
-| ⚔️ **Warrior**       | High DPS Melee         | All Maps          |
-| 🏹 **Archer**        | Long-range Sniper      | All Maps          |
-| ⛏️ **Miner**         | Gold generation        | All Maps          |
-| 🗿 **Stone Cannon**  | Stun & Knockback       | Golem Lair (W16+) |
-| 🧊 **Ice Cube**      | Area-of-effect Slow    | Freeze Land       |
-| ⚡ **Lightning Rod** | High-speed Swarm Clear | Dragon's Lair     |
+| Tower               | Ability                 | Availability      |
+| ------------------- | ----------------------- | ----------------- |
+| ⚔️ **Warrior**      | High DPS Melee          | All Maps          |
+| 🏹 **Archer**       | Long-range Sniper       | All Maps          |
+| ⛏️ **Miner**        | Gold generation         | All Maps          |
+| 🗿 **Stone Cannon** | Stun & Knockback        | Golem Lair (W16+) |
+| 🧊 **Ice Cube**     | Area-of-effect Slow     | Freeze Land       |
+| 🔥 **Fire Tower**   | Burn (Slow + Dmg Boost) | Dragon Cave       |
 
 ### ♾️ Endless Mode & Boss Rush
 
