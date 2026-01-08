@@ -20,6 +20,41 @@ export const migrateOldSaves = () => {
     }
 };
 
+export const migrateLightningToFire = () => {
+    try {
+        const keys = Object.keys(localStorage);
+
+        // 1. Migrate saved games
+        keys.forEach(key => {
+            if (key.startsWith(STORAGE_PREFIX)) {
+                const b64 = localStorage.getItem(key);
+                if (b64) {
+                    try {
+                        const json = atob(b64);
+                        if (json.includes('"lightning"')) {
+                            const migrated = json.replace(/"lightning"/g, '"fire"');
+                            localStorage.setItem(key, btoa(migrated));
+                            console.log('Migrated tower type in save:', key);
+                        }
+                    } catch (e) {
+                        console.error('Failed to parse save during migration:', key);
+                    }
+                }
+            }
+        });
+
+        // 2. Migrate used defenders history
+        const usedJson = localStorage.getItem(USED_DEFENDERS_KEY);
+        if (usedJson && usedJson.includes('"lightning"')) {
+            localStorage.setItem(USED_DEFENDERS_KEY, usedJson.replace(/"lightning"/g, '"fire"'));
+            console.log('Migrated used defenders history');
+        }
+
+    } catch (e) {
+        console.error('Failed to run lightning-to-fire migration', e);
+    }
+};
+
 export const saveGame = (state: GameState) => {
     try {
         const key = getStorageKey(state.mapId || 'default');

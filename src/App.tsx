@@ -4,7 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useNavigate, BrowserRouter, Routes, Route } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { migrateOldSaves } from "@/lib/storage";
+import { migrateOldSaves, migrateLightningToFire } from "@/lib/storage";
 import { LoadingScreen } from "@/components/game/LoadingScreen";
 import Home from "./pages/Home";
 import Play from "./pages/Play";
@@ -17,6 +17,7 @@ const App = () => {
 
   useEffect(() => {
     migrateOldSaves();
+    migrateLightningToFire();
   }, []);
 
   return (
