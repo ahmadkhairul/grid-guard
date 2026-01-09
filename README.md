@@ -1,8 +1,8 @@
-# 🛡️ Grid Guard: The Global Guardian (V2.0)
+# 🛡️ GRID DEFENDER: The Global Guardian (V2.0)
 
 An epic, cinematic tower defense game built with **React 18**, **TypeScript**, and **Vite**. Defend your grid against ever-evolving threats using strategic placement, active magic skills, and global progression.
 
-![Grid Guard Banner](public/icon-512.png)
+![GRID DEFENDER Banner](public/icon-512.png)
 
 ## 🎮 Version 2.0 Major Features
 
@@ -78,8 +78,8 @@ Face a diverse cast of adversaries with unique behaviors and resistances:
 
 ```bash
 # Clone the repository
-git clone https://github.com/ahmadkhairul/grid-guard.git
-cd grid-guard
+git clone https://github.com/ahmadkhairul/grid-defender.git
+cd grid-defender
 
 # Install dependencies
 npm install
@@ -100,7 +100,7 @@ The game will be available at `http://localhost:8080`
 
 ## 🤝 Support the Developer
 
-If you enjoy the game, consider supporting the continued development of **Grid Guard**:
+If you enjoy the game, consider supporting the continued development of **GRID DEFENDER**:
 [☕ Buy me a Coffee](https://ko-fi.com/ahmadkhairul)
 
 ---

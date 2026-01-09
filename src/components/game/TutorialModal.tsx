@@ -135,7 +135,7 @@ export const TutorialModal = ({ open, onOpenChange }: TutorialModalProps) => {
               <UnitRow emoji="👻" name={formatBossName(ENEMY_TYPES.BOSS_ARCHER)} desc="Ghost Archer. An Arrow pass his body. Immune to archer attack." stats="Speedster" />
               <UnitRow emoji="🦍" name={formatBossName(ENEMY_TYPES.BOSS_GOLEM)} desc="Special boss of Golem Lair. Defeat him to unlock stone cannon" />
               <UnitRow emoji="🐲" name={formatBossName(ENEMY_TYPES.BOSS_DRAGON)} desc="The flying terror boss of 15th Dragon Cave. Defeat him to unlock fire tower." />
-              <UnitRow emoji="🎭" name={formatBossName(ENEMY_TYPES.BOSS_PHANTOM)} desc="Spectral assassin of 15th Frezee Land. Grid Guard Command build ice tower just for him." />
+              <UnitRow emoji="🎭" name={formatBossName(ENEMY_TYPES.BOSS_PHANTOM)} desc="Spectral assassin of 15th Frezee Land. GRID DEFENDER Command build ice tower just for him." />
               <UnitRow emoji="🥷" name={formatBossName(ENEMY_TYPES.BOSS_ASSASSIN)} desc="Ultimate speedster." />
               <UnitRow emoji="👿" name={formatBossName(ENEMY_TYPES.BOSS_DEMON_LORD)} desc="Demon comeback in his strongest form. Rotate Immunities based on percentage HP." stats="Immunity" />
 

@@ -1,7 +1,7 @@
 import { GameState } from '@/types/game';
 
-const STORAGE_PREFIX = 'grid_guard_save_v2_';
-const OLD_STORAGE_PREFIX = 'grid_guard_save_v1_';
+const STORAGE_PREFIX = 'grid_defender_save_v2_';
+const OLD_STORAGE_PREFIX = 'grid_defender_save_v1_';
 
 const getStorageKey = (mapId: string) => `${STORAGE_PREFIX}${mapId}`;
 
@@ -98,7 +98,7 @@ export const clearSave = (mapId: string) => {
     }
 };
 
-const CLEARED_MAPS_KEY = 'grid_guard_cleared_maps';
+const CLEARED_MAPS_KEY = 'grid_defender_cleared_maps';
 
 export const saveMapClear = (mapId: string) => {
     try {
@@ -125,7 +125,7 @@ export const hasMapClear = (mapId: string): boolean => {
     return getClearedMaps().includes(mapId);
 };
 
-const ACHIEVEMENTS_KEY = 'grid_guard_global_achievements';
+const ACHIEVEMENTS_KEY = 'grid_defender_global_achievements';
 
 export const getUnlockedAchievements = (): string[] => {
     try {
@@ -148,7 +148,7 @@ export const saveAchievement = (id: string) => {
     }
 };
 
-const USED_DEFENDERS_KEY = 'grid_guard_used_defenders';
+const USED_DEFENDERS_KEY = 'grid_defender_used_defenders';
 
 export const getUsedDefenders = (): string[] => {
     try {

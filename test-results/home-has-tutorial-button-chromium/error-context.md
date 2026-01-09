@@ -1,0 +1,128 @@
+# Page snapshot
+
+```yaml
+- generic:
+  - generic:
+    - list
+    - region "Notifications alt+T"
+    - generic:
+      - generic:
+        - generic:
+          - heading [level=1]:
+            - text: GRID DEFENDER
+            - generic:
+              - img
+          - paragraph: Defend the grid against the endless waves. Choose your battlefield.
+          - generic:
+            - button:
+              - img
+              - generic: Tutorial
+            - button:
+              - img
+              - generic: Achievements
+            - button:
+              - img
+              - generic: Patch Notes
+            - generic:
+              - link:
+                - /url: https://ko-fi.com/ahmadkhairul
+                - generic: ❤️
+                - generic: Support Developer
+        - generic:
+          - generic:
+            - generic:
+              - generic:
+                - generic:
+                  - generic:
+                    - img
+                  - generic:
+                    - generic:
+                      - heading [level=3]: Golem Lair
+                      - generic: Easy
+                - paragraph: A winding path ideal for beginners using standard strategies.
+              - generic:
+                - generic:
+                  - img
+                  - generic: 10x7
+            - generic:
+              - button:
+                - img
+                - text: START
+          - generic:
+            - generic:
+              - generic:
+                - generic:
+                  - generic:
+                    - img
+                  - generic:
+                    - generic:
+                      - heading [level=3]: Freeze Land
+                      - generic: Medium
+                - paragraph: A long spiral path maximizing tower exposure time. Home of the Phantom.
+              - generic:
+                - generic:
+                  - img
+                  - generic: 10x7
+            - generic:
+              - button:
+                - img
+                - text: START
+          - generic:
+            - generic:
+              - generic:
+                - generic:
+                  - generic:
+                    - img
+                  - generic:
+                    - generic:
+                      - heading [level=3]: Dragon Cave
+                      - generic: Hard
+                - paragraph: A winding path through the Dragon's domain.
+              - generic:
+                - generic:
+                  - img
+                  - generic: 10x7
+            - generic:
+              - button:
+                - img
+                - text: START
+  - dialog "GRID DEFENDER GUIDE (1/8)" [ref=e2]:
+    - generic [ref=e3]:
+      - heading "GRID DEFENDER GUIDE (1/8)" [level=2] [ref=e4]
+      - paragraph [ref=e5]: Basic Controls & Active Skills
+    - generic [ref=e7]:
+      - generic [ref=e8]:
+        - generic [ref=e9]:
+          - img [ref=e11]
+          - generic [ref=e18]:
+            - heading "Placement" [level=4] [ref=e19]
+            - paragraph [ref=e20]: Drag defenders from the shop or tap then place on the grid.
+        - generic [ref=e21]:
+          - img [ref=e23]
+          - generic [ref=e26]:
+            - heading "Upgrades" [level=4] [ref=e27]
+            - paragraph [ref=e28]: Tap "Target Scan" to toggle Upgrade Mode for instant leveling.
+        - generic [ref=e29]:
+          - img [ref=e31]
+          - generic [ref=e33]:
+            - heading "Meteor Strike" [level=4] [ref=e34]
+            - paragraph [ref=e35]: "A high-damage fire spell that hits EVERY enemy on the map. Cost: 1 Gold."
+        - generic [ref=e36]:
+          - img [ref=e38]
+          - generic [ref=e40]:
+            - heading "Blizzard" [level=4] [ref=e41]
+            - paragraph [ref=e42]: "Freeze all enemies in place for 5 seconds. Perfect for emergencies! Cost: 1 Gold."
+      - generic [ref=e43]:
+        - heading "💡 COMMAND CENTER:" [level=4] [ref=e44]
+        - text: Use Skills wisely! They have long cooldowns but can save a "Close Call" run.
+    - generic [ref=e45]:
+      - button "Prev" [disabled]:
+        - img
+        - text: Prev
+      - button "Next" [active] [ref=e46] [cursor=pointer]:
+        - text: Next
+        - img
+    - button "Close" [ref=e47] [cursor=pointer]:
+      - img [ref=e48]
+      - generic [ref=e51]: Close
+```

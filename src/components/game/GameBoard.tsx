@@ -137,7 +137,7 @@ export const GameBoard = memo(({
             "w-4/5 h-4/5 rounded-full bg-destructive/30 border-4 border-destructive blur-sm animate-pulse",
             screenFlash === 'damage' && "bg-destructive/60 border-destructive shadow-[0_0_30px_rgba(255,0,0,0.8)]"
           )} />
-          <div className="absolute inset-0 flex items-center justify-center text-2xl animate-spin-slow">🌑</div>
+          <div className="absolute inset-0 flex items-center justify-center text-2xl animate-spin-slow"></div>
           {screenFlash === 'damage' && (
             <div className="absolute inset-0 flex items-center justify-center text-4xl animate-ping-slow">💥</div>
           )}

@@ -18,12 +18,12 @@ export const CertificateModal = ({ open, onOpenChange, unlockedCount, totalCount
     const [playerName, setPlayerName] = useState('GRID DEFENDER');
 
     const getShareText = () => {
-        return `🏆 GRID GUARD DEFENDER REPORT 🏆\n\n${playerName} has unlocked ${unlockedCount}/${totalCount} achievements in Grid Guard!\n\nCan you beat this score? #GridGuard`;
+        return `🏆 GRID DEFENDER DEFENDER REPORT 🏆\n\n${playerName} has unlocked ${unlockedCount}/${totalCount} achievements in GRID DEFENDER!\n\nCan you beat this score? #GridDefender`;
     };
 
     const handleShare = async () => {
         const shareData = {
-            title: 'Grid Guard - Achievement Certificate',
+            title: 'GRID DEFENDER - Achievement Certificate',
             text: getShareText(),
             url: window.location.origin,
         };
@@ -122,7 +122,7 @@ export const CertificateModal = ({ open, onOpenChange, unlockedCount, totalCount
                         </div>
                         <div className="flex flex-col items-center">
                             <Award className="w-10 h-10 text-yellow-700 mb-1 opacity-80" />
-                            <div className="font-serif font-bold text-yellow-900 text-[10px] tracking-widest uppercase">Grid Guard Command</div>
+                            <div className="font-serif font-bold text-yellow-900 text-[10px] tracking-widest uppercase">GRID DEFENDER Command</div>
                         </div>
                     </div>
 

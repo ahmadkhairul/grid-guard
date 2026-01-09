@@ -66,7 +66,7 @@ export const LoadingScreen = memo(({ onComplete }: LoadingScreenProps) => {
       <div className="relative z-10 flex flex-col items-center w-full max-w-sm px-6">
         {/* Logo Section */}
         <div className="mb-12 text-center space-y-2 animate-in fade-in zoom-in duration-1000">
-          <h2 className="text-xs uppercase tracking-[0.3em] text-primary/60 font-game mb-1">Grid Guard Command</h2>
+          <h2 className="text-xs uppercase tracking-[0.3em] text-primary/60 font-game mb-1">GRID DEFENDER Command</h2>
           <h1 className="text-5xl md:text-6xl font-game text-white tracking-widest drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">
             LOADING
           </h1>
