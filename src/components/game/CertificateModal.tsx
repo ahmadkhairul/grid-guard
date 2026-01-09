@@ -2,8 +2,9 @@ import { Dialog, DialogContent } from '@/components/ui/dialog';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { ACHIEVEMENTS } from '@/types/game';
-import { Trophy, Award, Copy, Share2 } from 'lucide-react';
-import { useState } from 'react';
+import { Trophy, Award, Copy, Share2, Download } from 'lucide-react';
+import { useState, useRef } from 'react';
+import { toBlob } from 'html-to-image';
 
 interface CertificateModalProps {
     open: boolean;
@@ -15,26 +16,55 @@ interface CertificateModalProps {
 
 export const CertificateModal = ({ open, onOpenChange, unlockedCount, totalCount, unlockedIds }: CertificateModalProps) => {
     const [copied, setCopied] = useState(false);
+    const [isGenerating, setIsGenerating] = useState(false);
     const [playerName, setPlayerName] = useState('GRID DEFENDER');
+    const certificateRef = useRef<HTMLDivElement>(null);
 
     const getShareText = () => {
         return `🏆 GRID DEFENDER DEFENDER REPORT 🏆\n\n${playerName} has unlocked ${unlockedCount}/${totalCount} achievements in GRID DEFENDER!\n\nCan you beat this score? #GridDefender`;
     };
 
     const handleShare = async () => {
-        const shareData = {
-            title: 'GRID DEFENDER - Achievement Certificate',
-            text: getShareText(),
-            url: window.location.origin,
-        };
+        if (!certificateRef.current) return;
 
-        if (navigator.share && navigator.canShare(shareData)) {
-            try {
+        try {
+            setIsGenerating(true);
+
+            // Hide the buttons during capture
+            const actionButtons = certificateRef.current.querySelector('.action-buttons-container') as HTMLElement;
+            if (actionButtons) actionButtons.style.display = 'none';
+
+            const blob = await toBlob(certificateRef.current, {
+                cacheBust: true,
+                backgroundColor: '#ffffff',
+            });
+
+            if (actionButtons) actionButtons.style.display = 'flex';
+            setIsGenerating(false);
+
+            if (!blob) return;
+
+            const file = new File([blob], 'certificate.png', { type: 'image/png' });
+            const shareData = {
+                title: 'GRID DEFENDER - Achievement Certificate',
+                text: getShareText(),
+                files: [file],
+            };
+
+            if (navigator.canShare && navigator.canShare(shareData)) {
                 await navigator.share(shareData);
-            } catch (err) {
-                handleCopy();
+            } else {
+                // Fallback: Download if sharing files is not supported
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${playerName.replace(/\s+/g, '_')}_Certificate.png`;
+                a.click();
+                URL.revokeObjectURL(url);
             }
-        } else {
+        } catch (err) {
+            console.error('Error sharing certificate:', err);
+            setIsGenerating(false);
             handleCopy();
         }
     };
@@ -48,7 +78,10 @@ export const CertificateModal = ({ open, onOpenChange, unlockedCount, totalCount
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
             <DialogContent className="max-w-[750px] w-full bg-white text-black border-8 border-double border-yellow-600 p-0 overflow-hidden">
-                <div className="relative p-6 md:p-8 flex flex-col items-center text-center bg-[url('https://www.transparenttextures.com/patterns/cream-paper.png')]">
+                <div
+                    ref={certificateRef}
+                    className="relative p-6 md:p-8 flex flex-col items-center text-center bg-[url('https://www.transparenttextures.com/patterns/cream-paper.png')] bg-white"
+                >
 
                     {/* Corner Decorations */}
                     <div className="absolute top-0 left-0 w-16 h-16 border-t-8 border-l-8 border-yellow-600 rounded-tl-lg" />
@@ -127,19 +160,27 @@ export const CertificateModal = ({ open, onOpenChange, unlockedCount, totalCount
                     </div>
 
                     {/* Action Buttons */}
-                    <div className="mt-6 flex flex-col gap-2 w-full max-w-xs no-print">
+                    <div className="mt-6 flex flex-col gap-2 w-full max-w-xs no-print action-buttons-container">
                         <Button
                             className="w-full gap-2 font-bold bg-gradient-to-r from-yellow-600 to-orange-600 hover:from-yellow-700 hover:to-orange-700 text-white shadow-lg"
                             onClick={handleShare}
+                            disabled={isGenerating}
                         >
-                            <Share2 className="w-4 h-4" />
-                            SHARE ACHIEVEMENT
+                            {isGenerating ? (
+                                <>Generating...</>
+                            ) : (
+                                <>
+                                    <Share2 className="w-4 h-4" />
+                                    SHARE CERTIFICATE (IMAGE)
+                                </>
+                            )}
                         </Button>
                         <Button
                             variant="ghost"
                             size="sm"
                             className="text-yellow-800/60 hover:text-yellow-800 hover:bg-yellow-50 text-[10px]"
                             onClick={handleCopy}
+                            disabled={isGenerating}
                         >
                             {copied ? 'COPIED TO CLIPBOARD!' : 'COPY AS TEXT'}
                             <Copy className="w-3 h-3 ml-2" />
